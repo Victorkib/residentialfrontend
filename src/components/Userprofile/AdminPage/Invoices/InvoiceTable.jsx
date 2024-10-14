@@ -247,7 +247,7 @@ const InvoiceTable = () => {
                     </td>
                     <td>
                       <p className="payment-status">
-                        {invoice?.isPaid ? "Paid" : "Unpaid"}
+                        {invoice?.isPaid ? 'Paid' : 'Unpaid'}
                       </p>
                     </td>
                     <td>
@@ -293,10 +293,8 @@ const InvoiceTable = () => {
       )}
 
       {isInvoiceDownloadVisible && (
-        <div className="confirmation-popup-overlay">
-          <div className="confirmation-popup">
-            <EditInvoice invoiceData={invoiceData} onClose={closeInvoice} />
-          </div>
+        <div className="regenInvoice">
+          <EditInvoice invoiceData={invoiceData} onClose={closeInvoice} />
         </div>
       )}
 
@@ -414,11 +412,11 @@ const InvoiceTable = () => {
               <label htmlFor="paidStatus">Paid Status:</label>
               <select
                 id="paidStatus"
-                value={editInvoice.isPaid ? "Paid" : "Unpaid"}
+                value={editInvoice.isPaid ? 'Paid' : 'Unpaid'}
                 onChange={(e) =>
                   setEditInvoice({
                     ...editInvoice,
-                    isPaid: e.target.value === "Paid",
+                    isPaid: e.target.value === 'Paid',
                   })
                 }
               >
