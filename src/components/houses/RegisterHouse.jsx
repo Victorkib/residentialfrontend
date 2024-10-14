@@ -101,7 +101,7 @@ const RegisterHouse = () => {
         await fetchHouses();
       }
     } catch (error) {
-      toast.error(error.response.data.message);
+      toast.error(error?.response?.data?.message);
     } finally {
       setLoading(false);
     }
@@ -128,10 +128,11 @@ const RegisterHouse = () => {
   };
 
   const handleAddFloor = async () => {
+    setLoading(true);
+
     if (newFloorNumber === '') return;
     const floorNumber = Number(newFloorNumber);
     const floorName = getFloorName(floorNumber);
-
     try {
       const response = await apiRequest.post('/v2/floors/addFloor', {
         floorNumber,
@@ -145,7 +146,9 @@ const RegisterHouse = () => {
         await fetchFloors(); // Refetch floors after adding a new one
       }
     } catch (error) {
-      toast.error('Error adding floor');
+      toast.error(error?.response?.data?.message || 'Error adding floor');
+    } finally {
+      setLoading(false);
     }
   };
 
