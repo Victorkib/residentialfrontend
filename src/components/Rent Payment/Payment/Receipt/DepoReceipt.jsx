@@ -12,7 +12,7 @@ const DepoReceipt = ({ receiptData, onClose }) => {
 
     // Load the logo image to get its dimensions
     const logo = new Image();
-    logo.src = '/public/homelogo.png'; // Path to the logo
+    logo.src = '/homelogo.png'; // Path to the logo
 
     logo.onload = function () {
       // Get original dimensions
@@ -81,7 +81,7 @@ const DepoReceipt = ({ receiptData, onClose }) => {
       </div>
 
       <div className="header">
-        <img src="/public/homelogo.png" alt="Logo" className="logo" />
+        <img src="/homelogo.png" alt="Logo" className="logo" />
         <h1>Sleek Abode Apartments</h1>
         <p className="company-info">Kimbo, Ruiru</p>
         <p className="company-info">Phone: (254) 88-413-323</p>

@@ -10,10 +10,3 @@ const apiRequest = axios.create({
 });
 
 export default apiRequest;
-
-// import axios from 'axios';
-// const apiRequest = axios.create({
-//   withCredentials: true, // Keep credentials for cookies, etc.
-// });
-
-// export default apiRequest;

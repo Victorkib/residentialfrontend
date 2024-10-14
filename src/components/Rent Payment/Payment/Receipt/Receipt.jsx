@@ -11,7 +11,7 @@ const Receipt = ({ receiptData }) => {
 
     // Load the logo image to get its dimensions
     const logo = new Image();
-    logo.src = 'public/homelogo.png'; // Path to the logo
+    logo.src = '/homelogo.png'; // Path to the logo
 
     logo.onload = function () {
       // Get original dimensions
@@ -70,7 +70,7 @@ const Receipt = ({ receiptData }) => {
   return (
     <div className="receipt">
       <div className="header">
-        <img src="public/homelogo.png" alt="Logo" className="logo" />
+        <img src="/homelogo.png" alt="Logo" className="logo" />
         <h1>Sleek Abode Apartments</h1>
         <p className="company-info">Kimbo, Ruiru</p>
         <p className="company-info">Phone: (254) 88-413-323</p>
