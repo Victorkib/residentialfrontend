@@ -1,0 +1,72 @@
+@mixin sm {
+  @media (max-width: 738px) {
+    @content;
+  }
+}
+
+@mixin md {
+  @media (max-width: 1024px) {
+    @content;
+  }
+}
+
+@mixin lg {
+  @media (max-width: 1366px) {
+    @content;
+  }
+}
+
+.layout {
+  position: fixed;
+  width: 100%;
+  margin: 0 auto;
+  height: 100vh;
+  // border: 1px solid gold;
+  background-color: #696767;
+
+  .content {
+    position: absolute;
+    top: 10%;
+    left: 15%;
+    width: 85%;
+    margin: 0 auto;
+    height: 95%;
+    overflow: scroll;
+    overflow-x: hidden;
+    // border: 10px solid greenyellow;
+
+    @include md {
+      width: 100%;
+      position: absolute;
+      top: 10%;
+      left: 0;
+      height: 100%;
+    }
+    @include sm {
+      width: 100%;
+      position: absolute;
+      top: 10%;
+      left: 0;
+      height: 100%;
+    }
+  }
+}
+.authlayout {
+  position: fixed;
+  width: 100%;
+  margin: 0 auto;
+  height: 100vh;
+  // border: 1px solid gold;
+
+  .content {
+    position: absolute;
+    top: 10%;
+    left: 0;
+    width: 100%;
+    margin: 0 auto;
+    height: 100%;
+    overflow: scroll;
+    overflow-x: hidden;
+    // border: 1px solid crimson;
+  }
+}

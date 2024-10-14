@@ -1,0 +1,131 @@
+:root {
+  --primary-color: #0066ff;
+}
+
+.sidebar {
+  position: absolute;
+  top: 0; /* Adjust based on the height of your navbar */
+  left: 0;
+  width: 15%;
+  height: 100%;
+  background-color: #000;
+  color: white;
+  overflow: scroll;
+  overflow-x: hidden;
+  transition: transform 0.3s ease;
+}
+
+.sidebar.open {
+  transform: translateX(0);
+}
+
+.hamburger-menu {
+  display: none;
+  position: absolute;
+  top: 30px;
+  left: 10px;
+  font-size: 18px;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  z-index: 1000;
+}
+
+.close-btn {
+  display: none;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 24px;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  z-index: 1000;
+}
+
+.h2 {
+  padding: 10px 15px;
+  font-size: 18px;
+}
+
+.sidebar a,
+.sidebar .dash {
+  padding: 10px 15px;
+  text-decoration: none;
+  font-size: 18px;
+  color: white;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.sidebar a:hover,
+.sidebar .dash:hover {
+  background-color: #575757;
+}
+
+.icon {
+  margin-right: 10px;
+  color: var(--primary-color);
+}
+
+.h {
+  width: 80%;
+  background-color: var(--primary-color);
+  margin: 0 auto;
+  height: 0.2px;
+}
+
+.dropdown-content {
+  display: none;
+  background-color: #000;
+  padding-left: 10px;
+}
+
+.dropdown-content a {
+  color: var(--primary-color);
+  margin-left: 20%;
+  background-color: chocolate;
+  border: 1px solid olive;
+  font-size: 10px;
+}
+
+.dropdown-content a:hover {
+  background-color: #575757;
+}
+
+.dropdown .caret {
+  margin-left: auto;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+@media (max-width: 800px) {
+  .sidebar {
+    z-index: 1000;
+    transform: translateX(-100%);
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+    width: 30%;
+  }
+
+  .hamburger-menu {
+    display: block;
+  }
+
+  .close-btn {
+    display: block;
+  }
+}
+
+@media (min-width: 800px) {
+  .sidebar {
+    transform: translateX(0);
+  }
+}

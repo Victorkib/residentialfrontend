@@ -1,0 +1,671 @@
+@import '../../../../responsive.scss';
+
+.register-tenant {
+  // Basic styling for the component
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  max-width: 100%;
+  height: 100%;
+  margin: 0 auto;
+  padding-bottom: 10px;
+  font-family: Arial, sans-serif;
+  // border: 1px solid whitesmoke;
+  background-image: linear-gradient(rgba(9, 9, 9, 0.8), rgba(9, 8, 8, 0.8)),
+    url(/register.jpeg);
+
+  .loader-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Transparent overlay */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* Ensures it's on top of everything */
+  }
+  .registration-card {
+    width: 40%;
+    padding: 10px;
+    height: 92%;
+    overflow: scroll;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+
+    backdrop-filter: blur(10px);
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(228, 7, 25, 0.938);
+    // border: 1px solid crimson;
+    @include sm {
+      width: 70%;
+    }
+    h2 {
+      width: 100%;
+      font-size: 20px;
+      color: #007bff;
+      // text-decoration: underline;
+    }
+    .h {
+      width: 10%;
+      height: 30px;
+      color: #007bff;
+      // border: none;
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+      height: 90%;
+      // margin-bottom: 20px;
+      // padding: 10px;
+      //border: 1px solid crimson;
+
+      label {
+        margin: 10px 0 5px;
+        font-size: 14px;
+        color: #b8980b;
+      }
+
+      input {
+        margin-bottom: 15px;
+        padding: 10px;
+        color: white;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 14px;
+      }
+
+      button {
+        padding: 10px;
+        border: none;
+        margin-top: 10px;
+        margin-bottom: 30px;
+        border-radius: 4px;
+        background-color: #007bff;
+        color: #fff;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.5s;
+
+        &:hover {
+          background-color: #b8980b;
+        }
+      }
+
+      .house-selection {
+        padding: 10px;
+        border: 1px solid #ddd;
+        color: #b8980b;
+        font-size: 18px;
+        font-weight: 800;
+        border-radius: 4px;
+        cursor: pointer;
+        text-align: center;
+        background-color: #f8f9fa;
+        transition: background-color 0.3s;
+
+        &:hover {
+          background-color: #e2e6ea;
+        }
+      }
+    }
+  }
+
+  .post-selection {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    width: 100%;
+    margin-bottom: 20px;
+
+    .post-card {
+      background: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      width: 48%; // Two cards in a row
+      margin-bottom: 15px;
+      padding: 10px;
+      transition: transform 0.2s, box-shadow 0.2s;
+
+      &:hover {
+        transform: scale(1.02);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      }
+
+      .post-title {
+        font-size: 16px;
+        font-weight: bold;
+        color: #333;
+      }
+
+      .post-details {
+        font-size: 14px;
+        color: #555;
+      }
+
+      .select-button {
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        padding: 8px 12px;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+
+        &:hover {
+          background-color: #0056b3;
+        }
+      }
+    }
+  }
+
+  .deposit-popup {
+    margin-bottom: 20px;
+    background-image: linear-gradient(
+        rgba(250, 250, 250, 0.8),
+        rgba(250, 250, 250, 0.8)
+      ),
+      url('/house2.jpg');
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    width: 50%;
+    height: 95%;
+    // border: 1px solid crimson;
+    @include md {
+      width: 100%;
+    }
+    @include sm {
+      width: 100%;
+    }
+    h2 {
+      color: rgb(32, 31, 31);
+      margin-bottom: 20px;
+
+      span {
+        color: #b8980b;
+        font-weight: 800;
+      }
+    }
+
+    h2 {
+      font-size: 20px;
+      margin-bottom: 20px;
+    }
+
+    .close-popup {
+      background-color: #007bff;
+      border: none;
+      font-size: 20px;
+      padding: 2px 4px;
+      border-radius: 5px;
+      color: #eaece9;
+      cursor: pointer;
+      position: relative;
+      top: 0%;
+      right: 0%;
+    }
+    .deposit-toggle {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+
+      button {
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: background-color 0.3s;
+
+        &:hover {
+          background-color: #0056b3;
+        }
+      }
+    }
+
+    .card-options {
+      height: 70%;
+      overflow: scroll;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      // border: 1px solid crimson;
+
+      .deposit-card {
+        width: 100%;
+        height: 100%;
+        padding: 20px;
+        // margin-bottom: 20px;
+        border-radius: 8px;
+        border: 1px solid #b8980b;
+        @include md {
+          width: 100%;
+        }
+        @include sm {
+          width: 100%;
+        }
+        h3 {
+          font-size: 18px;
+          margin-bottom: 15px;
+          text-align: center;
+        }
+
+        input {
+          margin-bottom: 10px;
+          margin-bottom: 15px;
+          padding: 10px;
+          border: 1px solid #8b8585a2;
+          color: black;
+          border-radius: 4px;
+          font-size: 14px;
+        }
+
+        button {
+          width: 100%;
+          padding: 10px;
+          border: none;
+          border-radius: 4px;
+          font-size: 16px;
+          cursor: pointer;
+          transition: background-color 0.3s;
+        }
+      }
+
+      .single-deposit {
+        // background-color: #e9f5ff;
+        backdrop-filter: blur(8px);
+        border: 1px solid #b8980b;
+        width: 60%;
+
+        @include md {
+          width: 50%;
+        }
+        @include sm {
+          width: 90%;
+        }
+        form {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+          justify-content: left;
+
+          @include sm {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+          }
+        }
+
+        label {
+          color: #3d3d03;
+        }
+        h3 {
+          color: #0056b3;
+        }
+
+        button {
+          background-color: #0056b3;
+          color: #fff;
+
+          &:hover {
+            background-color: #b8980b;
+          }
+        }
+      }
+
+      .multiple-deposits {
+        backdrop-filter: blur(8px);
+        border: 1px solid #b8980b;
+        width: 60%;
+        height: 100%;
+        overflow: scroll;
+        overflow-x: hidden;
+
+        @include md {
+          width: 50%;
+        }
+        @include sm {
+          width: 90%;
+        }
+
+        form {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+          justify-content: left;
+
+          @include sm {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+          }
+        }
+        label {
+          color: #3d3d03;
+        }
+        h3 {
+          color: #0056b3;
+        }
+
+        button {
+          background-color: #0056b3;
+          color: #fff;
+
+          &:hover {
+            background-color: #b8980b;
+          }
+        }
+      }
+    }
+  }
+
+  .floor-popup {
+    position: absolute;
+    top: 20%;
+    left: 50%;
+    transform: translate(-50%, 0);
+    background: #fff;
+    color: olive;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    width: 300px;
+    z-index: 1000;
+
+    .closePopup {
+      background-color: #8a1515;
+      border: none;
+      font-size: 20px;
+      padding: 2px 4px;
+      border-radius: 5px;
+      color: #eaece9;
+      cursor: pointer;
+      position: relative;
+      top: 0%;
+      right: 0%;
+    }
+
+    .floor-option {
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+      cursor: pointer;
+      transition: background-color 0.3s;
+
+      &:hover {
+        background-color: #6cb619;
+      }
+    }
+
+    .house-popup {
+      position: absolute;
+      left: 100%;
+      top: 0;
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 10px;
+      width: 200px;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+
+      .house-option {
+        padding: 10px;
+        cursor: pointer;
+        border-bottom: 1px solid chocolate;
+        transition: background-color 0.3s;
+
+        &:hover {
+          background-color: #b8980b;
+        }
+      }
+    }
+    .house-option {
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      position: relative;
+
+      &.occupied {
+        color: #d9534f; // Red color for occupied
+        cursor: not-allowed;
+        text-decoration: line-through; // Optional: line-through to indicate unavailability
+        pointer-events: none; // Disable clicking
+      }
+
+      &:hover {
+        background-color: #6cb619;
+      }
+
+      &:hover.occupied {
+        background-color: #f2dede; // Lighter red for hover effect
+      }
+    }
+  }
+}
+.register-tenant {
+  // Base styles for the registration card
+  .registration-card {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+
+    h2 {
+      margin-bottom: 20px;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+
+      label {
+        margin-bottom: 5px;
+      }
+
+      input {
+        margin-bottom: 15px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+      }
+
+      button {
+        padding: 10px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+
+        &:hover {
+          background-color: #0056b3;
+        }
+      }
+    }
+  }
+
+  // Styles for the house selection popup
+  .floor-popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 20px;
+    z-index: 1000;
+    width: 90%;
+    max-width: 600px;
+    margin: 0 auto;
+    height: 80%;
+    overflow: scroll;
+    overflow-x: scroll;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    // border: 1px solid crimson;
+
+    .closePopup {
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      position: absolute;
+      color: #333;
+      top: 10px;
+      right: 10px;
+      transition: all 300ms ease-in-out;
+    }
+    .closePopup:hover {
+      background-color: #6cb619;
+    }
+
+    h3 {
+      margin: 10px 0;
+    }
+
+    .apartment-selection {
+      display: flex;
+      flex-direction: column;
+
+      .apartment-option {
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        margin-bottom: 5px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+
+        &.selected {
+          background-color: #007bff;
+          color: white;
+        }
+
+        &:hover {
+          background-color: #f0f0f0;
+        }
+      }
+    }
+
+    .floorAndHouse {
+      display: flex;
+      align-items: flex-start;
+      // justify-content: space-between;
+      gap: 2px;
+      width: 100%;
+    }
+    // Floor selection styles
+    .floor-selection {
+      display: flex;
+      flex-direction: column;
+      margin-top: 15px;
+      width: 40%;
+
+      .floor-option {
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        margin-bottom: 5px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+
+        &.selected {
+          background-color: #007bff;
+          color: white;
+        }
+
+        &:hover {
+          background-color: #f0f0f0;
+        }
+      }
+    }
+
+    .houseSelectionParent {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 15px;
+      width: 60%;
+      flex-wrap: wrap;
+      border-radius: 10px;
+      padding: 5px;
+      border: 1px solid wheat;
+    }
+
+    // House selection styles
+    .house-selection {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      flex-wrap: wrap;
+
+      h3 {
+        margin-top: 5px;
+      }
+
+      .house-option {
+        padding: 2px;
+        width: 25%;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        margin-bottom: 5px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+
+        &.selected {
+          background-color: #007bff;
+          color: white;
+        }
+
+        &.occupied {
+          color: red;
+        }
+
+        &:hover {
+          background-color: #f0f0f0;
+        }
+      }
+    }
+  }
+
+  // Responsive design
+  @media (min-width: 768px) {
+    .floor-popup {
+      display: flex;
+      flex-direction: column;
+
+      .house-selection {
+        display: flex;
+        flex-direction: row; // Align house options in a row
+        flex-wrap: wrap; // Allow wrapping for smaller screens
+
+        .house-option {
+          flex: 1 1 calc(50% - 10px); // Two options per row with spacing
+          margin-right: 10px; // Spacing between options
+
+          &:nth-child(2n) {
+            margin-right: 0; // Remove margin on every second child
+          }
+        }
+      }
+    }
+  }
+}

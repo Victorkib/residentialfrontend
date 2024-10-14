@@ -1,0 +1,331 @@
+.tenant-payment-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgb(51, 51, 51);
+  background: radial-gradient(
+    circle,
+    rgba(51, 51, 51, 1) 18%,
+    rgba(51, 51, 51, 1) 63%,
+    rgba(4, 5, 5, 1) 89%,
+    rgba(51, 51, 51, 1) 93%,
+    rgba(1, 1, 8, 0.9866071428571429) 100%
+  );
+  // border-radius: 8px;
+  width: 100%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  // border: 1px solid salmon;
+
+  h2 {
+    text-transform: capitalize;
+    color: #dc3545;
+  }
+
+  .form-container {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    gap: 20px;
+    .form-card {
+      background-image: linear-gradient(
+          rgba(255, 255, 255, 0.8),
+          rgba(255, 255, 255, 0.8)
+        ),
+        url(/house1.jpg);
+    }
+    .form-card,
+    .right-card {
+      // background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+
+      form,
+      .update-form,
+      .default-values {
+        display: flex;
+        flex-direction: column;
+
+        label,
+        p {
+          margin-bottom: 10px;
+          font-size: 14px;
+        }
+        input {
+          color: black;
+        }
+
+        button {
+          background: #007bff;
+          width: 200px;
+          border: none;
+          color: #fff;
+          padding: 10px;
+          border-radius: 4px;
+          cursor: pointer;
+          margin-top: 10px;
+          font-size: 14px;
+          box-shadow: rgba(89, 88, 88, 0.4) 0px 2px 4px,
+            rgba(65, 65, 65, 0.3) 0px 7px 13px -3px,
+            rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
+          transition: transform 0.3s ease;
+          &:hover {
+            background-color: #0056b3;
+            transform: scale(1.1);
+          }
+        }
+      }
+
+      .update-form button {
+        background: #28a745;
+
+        &:hover {
+          background-color: #218838;
+        }
+      }
+    }
+
+    .left-card {
+      flex: 1;
+
+      .innerLeftCard {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-around;
+        // border: 1px solid black;
+
+        .innerLeftCardForm {
+          padding: 5px;
+          border: 1px solid wheat;
+          border-radius: 5px;
+        }
+        .inneRightCard {
+          padding: 5px;
+          border: 1px solid wheat;
+          border-radius: 5px;
+
+          h5 {
+            color: blueviolet;
+
+            span {
+              color: cadetblue;
+            }
+          }
+        }
+      }
+    }
+
+    .right-card {
+      flex: 1;
+    }
+  }
+
+  .outstanding-payments-header {
+    width: 100%;
+    text-align: right;
+    margin: 20px 0;
+
+    button {
+      background: #007bff;
+      border: none;
+      color: #fff;
+      padding: 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      box-shadow: rgba(89, 88, 88, 0.4) 0px 2px 4px,
+        rgba(65, 65, 65, 0.3) 0px 7px 13px -3px,
+        rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
+      transition: transform 0.3s ease;
+      &:hover {
+        background-color: #0056b3;
+        transform: scale(1.1);
+      }
+    }
+  }
+
+  .outstanding-payments {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    margin-top: 20px;
+  }
+  .popup-content1 {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+
+    .mini-card {
+      background: whitesmoke;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 10px;
+      margin: 10px 0;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+      p {
+        margin: 0;
+        font-size: 14px;
+      }
+
+      button {
+        background: #007bff;
+        border: none;
+        color: #fff;
+        padding: 5px 10px;
+        border-radius: 4px;
+        cursor: pointer;
+        margin-top: 10px;
+        font-size: 14px;
+
+        &:hover {
+          background-color: #0056b3;
+        }
+      }
+    }
+  }
+  .popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    z-index: 1000;
+    width: 90%;
+    max-width: 500px;
+
+    .popup-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+
+      h3 {
+        margin-bottom: 20px;
+      }
+
+      form {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+
+        label {
+          margin-bottom: 10px;
+          font-size: 14px;
+
+          input {
+            width: 100%;
+            padding: 8px;
+            border-radius: 4px;
+            color: black;
+            border: 1px solid #ddd;
+          }
+        }
+
+        button {
+          background: #007bff;
+          border: none;
+          color: #fff;
+          padding: 10px;
+          border-radius: 4px;
+          cursor: pointer;
+          margin-top: 10px;
+          font-size: 14px;
+
+          &:first-child {
+            background: #28a745;
+          }
+
+          &:last-child {
+            background: #dc3545;
+          }
+
+          &:hover {
+            opacity: 0.9;
+          }
+        }
+      }
+    }
+
+    .close-button {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: transparent;
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+    }
+  }
+
+  .see-more {
+    cursor: pointer;
+    color: #007bff;
+    font-size: 14px;
+    margin-top: 10px;
+    text-decoration: underline;
+  }
+  // Confirmation Popup
+  .confirmation-popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+
+  .confirmation-popup-content {
+    background: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    text-align: center;
+    max-width: 400px;
+    width: 100%;
+
+    h3 {
+      margin-top: 0;
+    }
+
+    p {
+      margin: 15px 0;
+    }
+
+    button {
+      background: #007bff;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      margin: 5px;
+      cursor: pointer;
+
+      &:hover {
+        background: #0056b3;
+      }
+    }
+
+    .cancel-button {
+      background: #6c757d;
+
+      &:hover {
+        background: #5a6268;
+      }
+    }
+  }
+}
