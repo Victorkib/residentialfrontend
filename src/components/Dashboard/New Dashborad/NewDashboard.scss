@@ -34,7 +34,7 @@
       top: -25%;
       width: 90%;
       height: 35px;
-      background-color: #34495e;
+      background-color: var(--primary-color);
       border-radius: 1px;
       display: flex;
       flex-direction: column;
@@ -46,14 +46,13 @@
       }
     }
     .c2 {
-      background-color: chartreuse;
+      background-color: var(--yellow);
     }
     .glassy {
       width: 100%;
       height: 18px;
       backdrop-filter: blur(10px);
       background-color: rgba(0, 0, 0, 0.1);
-      color: black;
       position: absolute;
       bottom: -45%;
       right: 0;
