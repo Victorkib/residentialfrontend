@@ -7,6 +7,7 @@ import { useDispatch } from 'react-redux';
 import { setAdmin } from '../../../features/Admin/adminSlice';
 import { TailSpin } from 'react-loader-spinner';
 import { toast, ToastContainer } from 'react-toastify';
+import { FaEye, FaEyeSlash } from 'react-icons/fa'; // Import Font Awesome eye icons
 
 function Login() {
   const [username, setUsername] = useState('');
@@ -19,6 +20,7 @@ function Login() {
   const dispatch = useDispatch();
 
   const [adminBc, setAdminFromBc] = useState([]);
+  const [showPassword, setShowPassword] = useState(false); // New state to toggle password visibility
 
   useEffect(() => {
     const checkIfthereIsAnUserLoggedIn = async () => {
@@ -26,7 +28,6 @@ function Login() {
       try {
         const response = await apiRequest.get('/auth/getAdmins');
         if (response.status) {
-          // console.log('admins found: ', response.data);
           setAdminFromBc(response.data);
         }
       } catch (error) {
@@ -51,7 +52,6 @@ function Login() {
       });
 
       if (response.status) {
-        // console.log('logged from login page', response.data);
         dispatch(setAdmin(response.data));
         localStorage.setItem('adminData', JSON.stringify(response.data));
         setLoading(false);
@@ -60,7 +60,6 @@ function Login() {
       }
     } catch (err) {
       setLoading(false);
-
       console.log('error: ', error);
       toast.error(error?.response?.data?.message || 'Failed To login!');
       setError(err.response?.data?.message || 'Failed to login.');
@@ -83,14 +82,22 @@ function Login() {
               onChange={(e) => setUsername(e.target.value)}
               required
             />
-            <input
-              type="password"
-              placeholder="Password"
-              name="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
+            <div className="password-container">
+              <input
+                type={showPassword ? 'text' : 'password'} // Toggle input type
+                placeholder="Password"
+                name="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+              <span
+                onClick={() => setShowPassword(!showPassword)}
+                className="eye-icon"
+              >
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
+              </span>
+            </div>
 
             <div className="reset">
               <p>

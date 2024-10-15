@@ -14,7 +14,7 @@
   .login-container {
     width: 350px;
     height: 400px;
-    background-image: url('bghm.jfif');
+    background-image: url('/bghm.jfif');
     box-shadow: 0 0 10px var(--primary-color);
     border: 1.5px solid #315d7d;
     display: flex;
@@ -76,5 +76,18 @@
     text-align: center;
     height: 5vh;
     border-radius: 15px;
+  }
+  .password-container {
+    position: relative;
+  }
+
+  .eye-icon {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    font-size: 1.2rem;
+    color: #333;
   }
 }
