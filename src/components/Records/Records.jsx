@@ -167,7 +167,7 @@ const Records = () => {
     detailsY += 5; // Spacing between lines
     doc.text('Contact: sleekabodemanagement@gmail.com', detailsX, detailsY);
     detailsY += 5; // Spacing between lines
-    doc.text('Phone: (+254) 88-413-323', detailsX, detailsY);
+    doc.text('Phone: (+254) 788-413-323', detailsX, detailsY);
 
     // Records title
     doc.setFontSize(18);

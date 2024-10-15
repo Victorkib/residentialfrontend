@@ -33,7 +33,7 @@ const DepoReceipt = ({ receiptData, onClose }) => {
       doc.text('Sleek Abode Apartments', 70, 20);
       doc.setFontSize(12);
       doc.text('Kimbo, Ruiru.', 70, 30);
-      doc.text('Phone: (+254) 88-413-323', 70, 40);
+      doc.text('Phone: (+254) 788-413-323', 70, 40);
 
       doc.setLineWidth(1);
       doc.line(10, 45, 200, 45);
@@ -45,7 +45,7 @@ const DepoReceipt = ({ receiptData, onClose }) => {
       doc.text(`Email: ${tenant.email}`, 14, 80);
       doc.text(`Phone No: ${tenant.phoneNo}`, 14, 90);
       doc.text(
-        `Deposit Date: ${moment(tenant.depositDate).toLocaleString()}`,
+        `Deposit Date: ${moment(tenant.depositDate).format('MMM DD YYYY')}`,
         14,
         100
       );
