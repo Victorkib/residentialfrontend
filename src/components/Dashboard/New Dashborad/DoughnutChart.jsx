@@ -63,7 +63,7 @@ const DoughnutChart = () => {
       <div className="chart-wrapper">
         <Doughnut data={data} options={options} width={200} height={200} />
 
-        <input type="date" placeholder="Date" className="chartdate" />
+        {/* <input type="date" placeholder="Date" className="chartdate" /> */}
       </div>
 
       <div className="totals-container">
