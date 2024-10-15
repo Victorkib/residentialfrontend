@@ -2,8 +2,10 @@ import { useState, useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import './TenantUpdateDeposits.scss';
 import apiRequest from '../../../../lib/apiRequest';
+import { TailSpin } from 'react-loader-spinner';
 
 const TenantUpdateDeposit = () => {
+  const [loading, setLoading] = useState(false);
   const { state } = useLocation();
   const tenant = state?.tenant;
   const navigate = useNavigate();
@@ -58,6 +60,7 @@ const TenantUpdateDeposit = () => {
   // Submit handlers
   const handleSubmitTotal = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
       const response = await apiRequest.put(
         '/v2/tenants/updateWithIndividualDepoAmount',
@@ -76,6 +79,8 @@ const TenantUpdateDeposit = () => {
       }
     } catch (error) {
       console.error('Error updating total deposit deficit:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -297,6 +302,17 @@ const TenantUpdateDeposit = () => {
           {renderToggleForm()}
         </div>
       </div>
+      {loading && (
+        <div className="loader-overlay">
+          <TailSpin
+            height="100"
+            width="100"
+            color="#4fa94d"
+            ariaLabel="loading"
+            visible={true}
+          />
+        </div>
+      )}
     </div>
   );
 };

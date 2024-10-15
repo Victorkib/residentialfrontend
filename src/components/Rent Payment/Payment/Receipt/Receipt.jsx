@@ -32,7 +32,8 @@ const Receipt = ({ receiptData }) => {
       doc.text('Sleek Abode Apartments', 70, 20);
       doc.setFontSize(12);
       doc.text('Kimbo, Ruiru.', 70, 30);
-      doc.text('Phone: (+254) 88-413-323', 70, 40);
+      doc.text('Contact: sleekabodemanagement@gmail.com', 70, 35);
+      doc.text('Phone: (+254) 788-413-323', 70, 40);
 
       doc.setLineWidth(1);
       doc.line(10, 45, 200, 45);
@@ -74,6 +75,7 @@ const Receipt = ({ receiptData }) => {
         <h1>Sleek Abode Apartments</h1>
         <p className="company-info">Kimbo, Ruiru</p>
         <p className="company-info">Phone: (254) 88-413-323</p>
+        <p className="company-info">sleekabodemanagement@gmail.com</p>
       </div>
       <div className="tenant-details">
         <h2>Tenant Details</h2>

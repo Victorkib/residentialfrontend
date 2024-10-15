@@ -33,6 +33,7 @@ const DepoReceipt = ({ receiptData, onClose }) => {
       doc.text('Sleek Abode Apartments', 70, 20);
       doc.setFontSize(12);
       doc.text('Kimbo, Ruiru.', 70, 30);
+      doc.text('Contact: sleekabodemanagement@gmail.com', 70, 35);
       doc.text('Phone: (+254) 788-413-323', 70, 40);
 
       doc.setLineWidth(1);
@@ -67,7 +68,13 @@ const DepoReceipt = ({ receiptData, onClose }) => {
       });
 
       // Save the PDF
-      doc.save(`receipt_${receiptData.referenceNumber}.pdf`);
+      doc.save(
+        `receipt_${
+          receiptData?.referenceNumber
+            ? receiptData?.referenceNumber
+            : 'DepoReceipt'
+        }.pdf`
+      );
     };
   };
 
@@ -84,7 +91,8 @@ const DepoReceipt = ({ receiptData, onClose }) => {
         <img src="/homelogo.png" alt="Logo" className="logo" />
         <h1>Sleek Abode Apartments</h1>
         <p className="company-info">Kimbo, Ruiru</p>
-        <p className="company-info">Phone: (254) 88-413-323</p>
+        <p className="company-info">Phone: (+254) 788-413-323</p>
+        <p className="company-info">Email: sleekabodemanagement@gmail.com</p>
       </div>
       <div className="tenant-details">
         <h2>Tenant Details</h2>
@@ -99,7 +107,7 @@ const DepoReceipt = ({ receiptData, onClose }) => {
         </p>
         <p>
           <strong>Deposit Date:</strong>{' '}
-          {moment(tenant.depositDate).toLocaleString()}
+          {moment(tenant.depositDate).format('MMM DD YYYY')}
         </p>
       </div>
       <hr />
