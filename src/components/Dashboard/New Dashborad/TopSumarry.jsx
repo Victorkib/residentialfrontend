@@ -56,7 +56,7 @@ function TopSumarry() {
       <div className="summaryCard">
         <div className="currentTotal c2">
           <div>
-            <h3>2</h3>
+            <h3>1</h3>
           </div>
           <div className="glassy"></div>
         </div>

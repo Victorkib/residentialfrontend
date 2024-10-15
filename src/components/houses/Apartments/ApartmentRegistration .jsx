@@ -135,6 +135,36 @@ const ApartmentRegistration = () => {
     setCurrentPage(pageNumber);
   };
 
+  const [apartmentToDelete, setApartmentToDelete] = useState('');
+  const [apartmentToDeletePopup, setApartmentToDeletePopup] = useState(false);
+  const handleDeleteApartmentClick = (apartment) => {
+    setApartmentToDelete(apartment);
+    setApartmentToDeletePopup(true);
+  };
+  const closeDeleteApartmentPopup = () => {
+    setApartmentToDelete('');
+    setApartmentToDeletePopup(false);
+  };
+
+  const handleDeleteApartment = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const response = await apiRequest.delete(
+        `/v2/apartments/deleteApartment/${apartmentToDelete._id}`
+      );
+      if (response.status) {
+        fetchApartments();
+        closeDeleteApartmentPopup();
+        toast.success(response?.data?.message || 'Success Deleting Apartment!');
+      }
+    } catch (error) {
+      toast.error(error?.response?.data?.message || 'Error Deleting Apartment');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="apartment-registration-container">
       <div className="cards2">
@@ -185,16 +215,25 @@ const ApartmentRegistration = () => {
                 <h3>{apartment?.name}</h3>
                 <p>Houses: {apartment?.noHouses}</p>
                 <p>location: {apartment?.location}</p>
-                <button
-                  className="btn-secondary"
-                  onClick={() =>
-                    navigate(`/apartment/${apartment._id}`, {
-                      state: { apartmentData: apartment },
-                    })
-                  }
-                >
-                  View Houses
-                </button>
+                <div className="apartmentButtons">
+                  {' '}
+                  <button
+                    className="btn-secondary"
+                    onClick={() =>
+                      navigate(`/apartment/${apartment._id}`, {
+                        state: { apartmentData: apartment },
+                      })
+                    }
+                  >
+                    View Houses
+                  </button>
+                  <button
+                    className="btn-secondary deleteApartmentBtn"
+                    onClick={() => handleDeleteApartmentClick(apartment)}
+                  >
+                    Delete Apartment
+                  </button>
+                </div>
               </div>
             ))}
 
@@ -220,6 +259,40 @@ const ApartmentRegistration = () => {
           />
         </div>
       )}
+      {apartmentToDeletePopup && (
+        <div className="confirmation-popup-overlay">
+          <div className="confirmation-popup">
+            <h2>Delete Apartment</h2>
+            <p className="warning-text">
+              You are about to delete the apartment{' '}
+              <strong>{apartmentToDelete?.name}</strong>.
+              <span className="warningTextUn">
+                This action cannot be undone.{' '}
+              </span>{' '}
+              The following associated data will be deleted:
+            </p>
+            <ul className="delete-list">
+              <li>All houses linked to {apartmentToDelete?.name}</li>
+              <li>All tenants residing in {apartmentToDelete?.name}</li>
+              <li>All payments made for {apartmentToDelete?.name}</li>
+              <li>The KRA history for {apartmentToDelete?.name}</li>
+              <li>All other records tied to {apartmentToDelete?.name}</li>
+            </ul>
+            <div className="confirmation-actions">
+              <button className="delete-btn" onClick={handleDeleteApartment}>
+                Yes, Delete
+              </button>
+              <button
+                className="cancel-btn"
+                onClick={closeDeleteApartmentPopup}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <ToastContainer />
     </div>
   );
