@@ -182,8 +182,8 @@ const Listall = () => {
       doc.text('Sleek Abode Apartments', 70, 20);
       doc.setFontSize(10);
       doc.text('Kimbo, Ruiru.', 70, 30);
-      doc.text('Contact: your-email@example.com', 70, 35);
-      doc.text('Phone: (+254) 88-413-323', 70, 40);
+      doc.text('Contact: sleekabodemanagement@gmail.com', 70, 35);
+      doc.text('Phone: (+254) 788-413-323', 70, 40);
 
       // Title for the tenant report
       doc.setFontSize(16);
@@ -202,7 +202,15 @@ const Listall = () => {
       const date = `${today.getDate()}/${
         today.getMonth() + 1
       }/${today.getFullYear()}`;
-      const time = `${today.getHours()}:${today.getMinutes()}`;
+
+      // Convert to 12-hour format with AM/PM
+      let hours = today.getHours();
+      const minutes = today.getMinutes().toString().padStart(2, '0'); // Pad minutes to always show two digits
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+      hours = hours % 12;
+      hours = hours ? hours : 12; // If hour is 0 (midnight), set it to 12
+
+      const time = `${hours}:${minutes} ${ampm}`;
       doc.setFontSize(12);
       doc.text(`Generated on: ${date} at ${time}`, 100, 70); // Right-aligned date
 
