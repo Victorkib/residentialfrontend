@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import jsPDF from 'jspdf'; // PDF generation library
 import 'jspdf-autotable'; // To generate tables in PDFs
 import './TenantDataPopup.scss'; // SCSS file for styling
@@ -37,11 +37,20 @@ const TenantDataPopup = ({ tenantData, onClose }) => {
       doc.text('Tenant Data Report', 10, 70);
 
       // Adding professional date and time
+      // Date and Time
       const today = new Date();
       const date = `${today.getDate()}/${
         today.getMonth() + 1
       }/${today.getFullYear()}`;
-      const time = `${today.getHours()}:${today.getMinutes()}`;
+
+      // Convert to 12-hour format with AM/PM
+      let hours = today.getHours();
+      const minutes = today.getMinutes().toString().padStart(2, '0'); // Pad minutes to always show two digits
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+      hours = hours % 12;
+      hours = hours ? hours : 12; // If hour is 0 (midnight), set it to 12
+
+      const time = `${hours}:${minutes} ${ampm}`;
       doc.setFontSize(12);
       doc.text(`Generated on: ${date} at ${time}`, 100, 70); // Right-aligned date
 
