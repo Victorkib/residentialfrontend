@@ -165,7 +165,7 @@ const Records = () => {
     detailsY += 6; // Spacing between lines
     doc.text('Kimbo, Ruiru.', detailsX, detailsY);
     detailsY += 5; // Spacing between lines
-    doc.text('Contact: your-email@example.com', detailsX, detailsY);
+    doc.text('Contact: sleekabodemanagement@gmail.com', detailsX, detailsY);
     detailsY += 5; // Spacing between lines
     doc.text('Phone: (+254) 88-413-323', detailsX, detailsY);
 

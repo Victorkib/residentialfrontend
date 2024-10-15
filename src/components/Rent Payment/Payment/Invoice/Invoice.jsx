@@ -116,7 +116,7 @@ const Invoice = ({ invoiceData, onClose, tenantId }) => {
         doc.text('Sleek Abode Apartments', 70, 20);
         doc.setFontSize(10);
         doc.text('Kimbo, Ruiru.', 70, 30);
-        doc.text('Contact: your-email@example.com', 70, 35);
+        doc.text('Contact: sleekabodemanagement@gmail.com', 70, 35);
         doc.text('Phone: (+254) 88-413-323', 70, 40);
 
         // Add a line to separate the letterhead from the invoice details
