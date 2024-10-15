@@ -71,6 +71,7 @@ const GreyList = () => {
   };
 
   const handlePaymentUpdate = async (_id) => {
+    setLoading(true);
     try {
       const response = await apiRequest.put(
         `/tenants/updateAmountPaid/${_id}`,
@@ -97,6 +98,7 @@ const GreyList = () => {
       setError(error.response.data.message);
     } finally {
       closePopup();
+      setLoading(false);
     }
   };
 
