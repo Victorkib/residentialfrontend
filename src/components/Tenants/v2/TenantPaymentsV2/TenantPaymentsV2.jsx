@@ -566,7 +566,7 @@ const TenantPayments = () => {
         }
       );
       if (response.status) {
-        toast.success('Sucess');
+        toast.success('Success');
         /**********/
         fetchUnpaidPayments(tenantId);
         fetchFullyPaidPayments(tenantId);
