@@ -4,9 +4,13 @@ import { useEffect, useState } from 'react';
 import apiRequest from '../../lib/apiRequest';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable'; // Ensure you import the autotable plugin
+import { TailSpin } from 'react-loader-spinner';
+import { toast, ToastContainer } from 'react-toastify';
 
 const TaxPaymentHistory = () => {
   const [payments, setPayments] = useState([]);
+
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [showModal, setShowModal] = useState(false); // State for modal visibility
   const [paymentToDelete, setPaymentToDelete] = useState(null); // State for selected payment
@@ -14,13 +18,17 @@ const TaxPaymentHistory = () => {
 
   useEffect(() => {
     const fetchAllKra = async () => {
+      setLoading(true);
       try {
         const response = await apiRequest.get('/kra/allKra');
         if (response.status === 200) {
           setPayments(response.data);
         }
       } catch (error) {
-        setError(error.response.data.message);
+        toast.error(error?.response?.data?.message || 'Eror Getting Kras!');
+        setError(error?.response?.data?.message || 'Eror Getting Kras!');
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -42,14 +50,19 @@ const TaxPaymentHistory = () => {
   };
 
   const handleTaxDelete = async (_id) => {
+    setLoading(true);
     try {
       const response = await apiRequest.delete(`/kra/deleteKraRecord/${_id}`);
       if (response.status === 200) {
+        toast.success('Success Deleting Kra!');
         setPayments(payments.filter((payment) => payment._id !== _id));
         setShowModal(false); // Close modal on successful deletion
       }
     } catch (error) {
-      setError(error.response.data.message);
+      toast.error(error?.response?.data?.message || 'Eror Deleting Kra');
+      setError(error?.response?.data?.message || 'Eror Deleting Kra');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -183,6 +196,21 @@ const TaxPaymentHistory = () => {
           </div>
         )}
       </div>
+      {loading && (
+        <div className="loader-overlay">
+          <TailSpin
+            height="100"
+            width="100"
+            radius="2"
+            color="#4fa94d"
+            ariaLabel="three-dots-loading"
+            wrapperStyle={{}}
+            wrapperClass="loader"
+            visible={true}
+          />
+        </div>
+      )}
+      <ToastContainer />
     </div>
   );
 };

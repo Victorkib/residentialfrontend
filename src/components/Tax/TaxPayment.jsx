@@ -3,9 +3,12 @@ import './TaxPayment.scss';
 import apiRequest from '../../lib/apiRequest';
 import { useNavigate } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
+import { TailSpin } from 'react-loader-spinner';
 
 const TaxPayment = () => {
   const [yearsData, setYearsData] = useState([]);
+
+  const [loading, setLoading] = useState(false);
   const [selectedYear, setSelectedYear] = useState('');
   const [totalYearRent, setTotalYearRent] = useState(0);
   const [date, setDate] = useState('');
@@ -118,7 +121,7 @@ const TaxPayment = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    setLoading(true);
     try {
       const response = await apiRequest.post('/kra/', {
         date,
@@ -136,6 +139,8 @@ const TaxPayment = () => {
       }
     } catch (error) {
       console.error('Error submitting data:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -278,6 +283,20 @@ const TaxPayment = () => {
         </div>
       </div>
       <ToastContainer />
+      {loading && (
+        <div className="loader-overlay">
+          <TailSpin
+            height="100"
+            width="100"
+            radius="2"
+            color="#4fa94d"
+            ariaLabel="three-dots-loading"
+            wrapperStyle={{}}
+            wrapperClass="loader"
+            visible={true}
+          />
+        </div>
+      )}
     </div>
   );
 };
