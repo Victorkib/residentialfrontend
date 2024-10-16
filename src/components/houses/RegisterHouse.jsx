@@ -19,7 +19,7 @@ const getFloorName = (floorNumber) => {
   return `${floorNumber}${ordinalSuffix(floorNumber)} Floor`;
 };
 
-const houseLetterOptions = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'];
+const houseLetterOptions = ['A', 'B', 'C', 'D'];
 
 const RegisterHouse = () => {
   const { apartmentId } = useParams();
