@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
-import './TaxPayment.css';
+import './TaxPayment.scss';
 import apiRequest from '../../lib/apiRequest';
 import { useNavigate } from 'react-router-dom';
+import { toast, ToastContainer } from 'react-toastify';
 
 const TaxPayment = () => {
   const [yearsData, setYearsData] = useState([]);
@@ -17,6 +18,7 @@ const TaxPayment = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [monthsPerPage] = useState(4); // Number of months per page
   const [currentMonths, setCurrentMonths] = useState([]);
+  const [filedKraMonths, setFiledKraMonths] = useState([]); // For KRA filed data
 
   const navigate = useNavigate();
 
@@ -36,6 +38,24 @@ const TaxPayment = () => {
     };
 
     fetchYearsData();
+  }, []);
+
+  // Fetch KRA filed data
+  useEffect(() => {
+    const fetchAllKra = async () => {
+      try {
+        const response = await apiRequest.get('/kra/allKra');
+        if (response.status === 200) {
+          setFiledKraMonths(response.data || []); // Assuming 'filedMonths' contains the KRA filed data
+        } else {
+          console.error('Failed to fetch KRA data');
+        }
+      } catch (error) {
+        toast.error(error.response.data.message);
+      }
+    };
+
+    fetchAllKra();
   }, []);
 
   useEffect(() => {
@@ -103,6 +123,7 @@ const TaxPayment = () => {
       const response = await apiRequest.post('/kra/', {
         date,
         month: selectedMonth,
+        selectedYear,
         rent: monthRent,
         tax,
         referenceNo: formData.referenceNo,
@@ -116,6 +137,13 @@ const TaxPayment = () => {
     } catch (error) {
       console.error('Error submitting data:', error);
     }
+  };
+
+  // Helper function to check if KRA is filed for a specific month
+  const isKraFiled = (year, month) => {
+    return filedKraMonths?.some(
+      (filedMonth) => filedMonth?.year === year && filedMonth?.month === month
+    );
   };
 
   // Pagination handlers
@@ -145,9 +173,17 @@ const TaxPayment = () => {
             <>
               <div className="month-cards">
                 {currentMonths.map((month) => (
-                  <div key={month.month} className="month-card">
+                  <div
+                    key={month.month}
+                    className={`month-card ${
+                      isKraFiled(selectedYear, month.month) ? 'kra-filed' : ''
+                    }`}
+                  >
                     <h3>{month.month}</h3>
                     <p>Total Rent: {month.totalRent.toFixed(2)}</p>
+                    {isKraFiled(selectedYear, month.month) && (
+                      <div className="kra-overlay">KRA Filed</div>
+                    )}
                   </div>
                 ))}
               </div>
@@ -195,6 +231,14 @@ const TaxPayment = () => {
                 </label>
               </div>
             )}
+            {selectedYear && (
+              <div className="input-group">
+                <label>
+                  Selected Year:{' '}
+                  <span className="selected-month">{selectedYear}</span>
+                </label>
+              </div>
+            )}
             <div className="input-group">
               <label>
                 Total Rent for the Selected Month:{' '}
@@ -233,6 +277,7 @@ const TaxPayment = () => {
           </form>
         </div>
       </div>
+      <ToastContainer />
     </div>
   );
 };

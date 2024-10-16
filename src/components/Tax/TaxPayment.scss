@@ -1,7 +1,8 @@
-.taxPaying{
+.taxPaying {
   width: 100%;
   height: 100vh;
-background-image: linear-gradient(rgba(11, 11, 11, 0.8), rgba(10, 9, 9, 0.8)), url(/Kra.jpeg);
+  background-image: linear-gradient(rgba(11, 11, 11, 0.8), rgba(10, 9, 9, 0.8)),
+    url(/Kra.jpeg);
   background-size: cover;
   background-repeat: no-repeat;
   display: flex;
@@ -14,7 +15,6 @@ background-image: linear-gradient(rgba(11, 11, 11, 0.8), rgba(10, 9, 9, 0.8)), u
   display: flex;
   justify-content: space-between;
   padding: 20px;
-  
 }
 
 .left-card,
@@ -23,9 +23,15 @@ background-image: linear-gradient(rgba(11, 11, 11, 0.8), rgba(10, 9, 9, 0.8)), u
   border-radius: 8px;
   padding: 20px;
   width: 48%;
-  box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px,
+    rgba(0, 0, 0, 0.3) 0px 30px 60px -30px,
+    rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
   background-color: #fff;
-  background-image: linear-gradient(rgba(190, 187, 187, 0.9), rgba(139, 139, 139, 0.9)), url(/krarecord.jpeg);
+  background-image: linear-gradient(
+      rgba(190, 187, 187, 0.9),
+      rgba(139, 139, 139, 0.9)
+    ),
+    url(/krarecord.jpeg);
   background-size: cover;
 }
 
@@ -84,15 +90,14 @@ select {
 }
 
 .btn {
-  display: inline-block;
-  padding: 10px 20px;
+  padding: 12px 20px;
   font-size: 0.8rem;
   color: #fff;
   background-color: #007bff;
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  text-align: center;
+  text-align: start;
   text-decoration: none;
   transition: background-color 0.3s ease;
 }
@@ -164,4 +169,62 @@ select {
   margin-top: 20px;
   font-weight: bold;
   font-size: 1.1rem;
+}
+
+/***********************************************/
+.month-card {
+  position: relative;
+  width: calc(50% - 10px);
+  background-color: #fff;
+  border: 1px solid #dcdcdc;
+  border-radius: 8px;
+  padding: 15px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  text-align: center;
+  transition: transform 0.3s ease;
+
+  h3 {
+    font-size: 1.25rem;
+    color: #333;
+    margin-bottom: 10px;
+  }
+
+  p {
+    font-size: 1rem;
+    color: #666;
+    margin-bottom: 5px;
+  }
+
+  &:hover {
+    transform: translateY(-5px);
+  }
+
+  &.kra-filed {
+    background-color: rgba(60, 179, 113, 0.1);
+    border-color: #3cb371;
+  }
+
+  .kra-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(60, 179, 114, 0.61);
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.1rem;
+    font-weight: bold;
+    border-radius: 8px;
+    transition: opacity 0.3s ease;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  &.kra-filed .kra-overlay {
+    opacity: 1;
+    pointer-events: auto;
+  }
 }
