@@ -355,17 +355,26 @@ function EditTenant() {
               <h3>Floor Selection</h3>
               <div className="floorAndHouse">
                 <div className="floor-selection">
-                  {floors.map((floor) => (
-                    <div
-                      key={floor?.floorNumber}
-                      className={`floor-option ${
-                        selectedFloor === floor?.floorNumber ? 'selected' : ''
-                      }`}
-                      onClick={() => handleFloorSelection(floor?.floorNumber)}
-                    >
-                      {floor?.floorName}
-                    </div>
-                  ))}
+                  {Object.keys(
+                    organizedData[selectedApartment?._id]?.floors || {}
+                  ).map((floorNumber) => {
+                    const floorName = getFloorName(Number(floorNumber));
+                    return (
+                      <div
+                        key={floorNumber}
+                        className={`floor-option ${
+                          selectedFloor === Number(floorNumber)
+                            ? 'selected'
+                            : ''
+                        }`}
+                        onClick={() =>
+                          handleFloorSelection(Number(floorNumber))
+                        }
+                      >
+                        {floorName}
+                      </div>
+                    );
+                  })}
                 </div>
 
                 {selectedFloor !== null && (
