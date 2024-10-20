@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
-import { Puff } from 'react-loader-spinner'; // Importing the loader
+import { InfinitySpin } from 'react-loader-spinner';
 import { toast, ToastContainer } from 'react-toastify'; // Importing toast notifications
 import 'react-toastify/dist/ReactToastify.css'; // Importing toast styles
 
@@ -56,7 +56,7 @@ const MapComponent = ({ location }) => {
   }, [location]); // Run when location changes
 
   if (loading) {
-    return <Puff color="#00BFFF" height={100} width={100} />; // Loading spinner
+    return <InfinitySpin color="#00BFFF" height={100} width={100} />; // Loading spinner
   }
 
   return (
