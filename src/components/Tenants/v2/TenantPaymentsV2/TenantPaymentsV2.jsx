@@ -309,12 +309,13 @@ const TenantPayments = () => {
         fetchUnpaidPayments(tenantId);
         fetchFullyPaidPayments(tenantId);
         await getMostRecentPaymentByTenantId(tenantId);
+        await getTenantDetails();
         // handleOverpayTransfer();
         setIsOverpayTransferred(false);
         setError('');
         toast.success(`Success`);
 
-        await handleGenerateReceipt(dataToSend);
+        handleGenerateReceipt(dataToSend);
         // Reset form fields
         setNewMonthlyAmount('');
         setReferenceNumber('');
@@ -372,21 +373,20 @@ const TenantPayments = () => {
     }
   };
   useEffect(() => {
-    const getTenantDetails = async () => {
-      try {
-        const response = await apiRequest.get(
-          `/v2/tenants/getSingleTenant/${tenantId}`
-        );
-        if (response.status) {
-          setTenantDetails(response.data);
-        }
-      } catch (error) {
-        setError(error.response.data.message);
-      }
-    };
     getTenantDetails();
   }, [rentDefault, tenantId]);
-
+  const getTenantDetails = async () => {
+    try {
+      const response = await apiRequest.get(
+        `/v2/tenants/getSingleTenant/${tenantId}`
+      );
+      if (response.status) {
+        setTenantDetails(response.data);
+      }
+    } catch (error) {
+      setError(error.response.data.message);
+    }
+  };
   const handlePaymentClick = (payment) => {
     setSelectedPayment(payment);
     // Initialize Water Bill States with existing data if available
@@ -452,30 +452,34 @@ const TenantPayments = () => {
   const [extraAmountReferenceNo, setExtraAmountReferenceNo] = useState('');
   const [extraAmountGivenDate, setExtraAmountGivenDate] = useState('');
 
+  const moneyWithinMonthData = {
+    currentYear,
+    nextMonth,
+    extraAmountProvided: extraAmount,
+    extraAmountReferenceNo,
+    extraAmountGivenDate,
+  };
   const handleInternalMonthExtraGivenAmount = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
       const response = await apiRequest.put(
         `/v2/payments/ExtraAmountGivenInAmonth/${outstandingPayments[0]?._id}`,
-        {
-          currentYear,
-          nextMonth,
-          extraAmountProvided: extraAmount,
-          extraAmountReferenceNo,
-          extraAmountGivenDate,
-        }
+        moneyWithinMonthData
       );
       if (response.status) {
         console.log('All good');
         fetchUnpaidPayments(tenantId);
         fetchFullyPaidPayments(tenantId);
+        await getMostRecentPaymentByTenantId(tenantId);
+        await getTenantDetails();
+        setAddInternalAmountPopup(false);
+        toast.success('Amount Added!');
+
+        handleGenerateReceipt(moneyWithinMonthData);
         setExtraAmount('');
         setExtraAmountReferenceNo('');
         setExtraAmountGivenDate('');
-        await getMostRecentPaymentByTenantId(tenantId);
-        setAddInternalAmountPopup(false);
-        toast.success('Amount Added!');
       }
     } catch (error) {
       setError(error.response.data.message);
@@ -661,9 +665,9 @@ const TenantPayments = () => {
     invoiceNumber: `INV-${Math.floor(Math.random() * 1000) + 1}`,
   };
 
-  const handleGenerateReceipt = (dataToSend) => {
+  const handleGenerateReceipt = async (dataToSend) => {
     // console.log('Generating receipt for payed:', dataToSend);
-    handleDownload(dataToSend);
+    await handleDownload(dataToSend);
   };
   // Function to handle downloading the PDF receipt
   const handleDownload = (dataToSend) => {
@@ -703,15 +707,21 @@ const TenantPayments = () => {
 
       // Add tenant details
       doc.setFontSize(12);
-      doc.text(`Tenant Name: ${tenantDetails.name}`, 14, 70);
-      doc.text(`Phone No: ${tenantDetails.phoneNo}`, 14, 75);
-      doc.text(`Apartment: ${tenantDetails.apartmentId.name}`, 14, 80);
+      doc.text(`Tenant Name: ${tenantDetails?.name || 'Tenant'}`, 14, 70);
+      doc.text(`Phone No: ${tenantDetails?.phoneNo || '+254'}`, 14, 75);
+      doc.text(
+        `Apartment: ${
+          tenantDetails?.apartmentId?.name || 'Sleek Abode Apartments'
+        }`,
+        14,
+        80
+      );
       doc.text(
         `House: ${
           'Floor' +
-          tenantDetails.houseDetails.floorNo +
+          tenantDetails?.houseDetails?.floorNo +
           ', ' +
-          tenantDetails.houseDetails.houseNo
+          tenantDetails?.houseDetails?.houseNo
         }`,
         14,
         85
@@ -719,14 +729,27 @@ const TenantPayments = () => {
 
       // Payment summary table
       const details = [
-        ['Payment Reference No', dataToSend.referenceNumber],
-        ['Payment Amount', `KSH ${dataToSend.newMonthlyAmount.toFixed(2)}`],
+        [
+          'Payment Reference No',
+          dataToSend?.referenceNumber ||
+            dataToSend?.extraAmountReferenceNo ||
+            'ReferenceNo',
+        ],
+        [
+          'Payment Amount',
+          `KSH ${
+            dataToSend?.newMonthlyAmount || dataToSend?.extraAmountProvided || 0
+          }`,
+        ],
         [
           'Payment Date',
-          moment(dataToSend.newPaymentDate).format('MMM DD YYYY'),
+          moment(
+            dataToSend?.newPaymentDate ||
+              dataToSend?.extraAmountGivenDate ||
+              new Date()
+          ).format('MMM DD YYYY'),
         ],
       ];
-
       doc.autoTable({
         head: [['Description', 'Details']],
         body: details,
@@ -736,7 +759,13 @@ const TenantPayments = () => {
       });
 
       // Save the PDF
-      doc.save(`receipt_${dataToSend.referenceNumber || 'PaymentReceipt'}.pdf`);
+      doc.save(
+        `receipt_${
+          dataToSend?.referenceNumber ||
+          dataToSend?.extraAmountReferenceNo ||
+          'PaymentReceipt'
+        }.pdf`
+      );
     };
   };
   return (

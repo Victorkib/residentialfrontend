@@ -26,6 +26,7 @@ const RegisterHouse = () => {
   const { apartmentId } = useParams();
   const location = useLocation();
   const apartment = location?.state?.apartmentData || {};
+  console.log('apartment: ', apartment);
   const [floorOptions, setFloorOptions] = useState([]);
   const [houseName, setHouseName] = useState('');
   const [loading, setLoading] = useState(false);
@@ -296,7 +297,7 @@ const RegisterHouse = () => {
             +
           </button>
         </div>
-        <MapComponent />
+        <MapComponent location={apartment?.location || 'Ruiru Nairobi'} />
       </div>
 
       <div className="house-list">

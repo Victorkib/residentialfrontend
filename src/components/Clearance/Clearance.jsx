@@ -5,16 +5,21 @@ import apiRequest from '../../lib/apiRequest';
 import { toast, ToastContainer } from 'react-toastify';
 import { TailSpin } from 'react-loader-spinner';
 import Pagination from 'react-js-pagination';
+import { AiOutlinePlus, AiOutlineClose, AiOutlineDown } from 'react-icons/ai';
+import { RiDeleteBin6Line } from 'react-icons/ri'; // Delete icon
 
 import { GiReceiveMoney } from 'react-icons/gi'; // Receipt icon
-import { RiDeleteBin6Line } from 'react-icons/ri'; // Delete icon
 
 function Clearance() {
   const { tenantId } = useParams();
   const navigate = useNavigate();
   const [tenant, setTenant] = useState('');
   const [paintingFee, setPaintingFee] = useState('');
-  const [otherCharges, setOtherCharges] = useState('');
+  // const [otherCharges, setOtherCharges] = useState('');
+  const [miscellaneous, setMiscellaneous] = useState([
+    { title: '', amount: '' },
+  ]);
+
   const [date, setDate] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -35,6 +40,29 @@ function Clearance() {
   const [moneyPopup, setMoneypopup] = useState(false);
   const [selectedClearData, setSelectedClearData] = useState('');
   const [amount, setAmount] = useState('');
+
+  const handleAddMiscellaneous = () => {
+    setMiscellaneous([...miscellaneous, { title: '', amount: '' }]);
+  };
+
+  const handleMiscellaneousChange = (index, field, value) => {
+    const updatedMiscellaneous = [...miscellaneous];
+    updatedMiscellaneous[index][field] = value;
+    setMiscellaneous(updatedMiscellaneous);
+  };
+
+  // Add states to toggle open and close the miscellaneous section
+  const [miscSectionOpen, setMiscSectionOpen] = useState(false);
+
+  const toggleMiscSection = () => {
+    setMiscSectionOpen(!miscSectionOpen);
+  };
+
+  // To remove a specific miscellaneous item
+  const handleRemoveMiscellaneous = (index) => {
+    const updatedMiscellaneous = miscellaneous?.filter((_, i) => i !== index);
+    setMiscellaneous(updatedMiscellaneous);
+  };
 
   // console.log('selectedPayment: ', selectedPayment);
   useEffect(() => {
@@ -126,13 +154,14 @@ function Clearance() {
         {
           date,
           paintingFee,
-          miscellaneous: otherCharges,
+          miscellaneous,
         }
       );
       if (response.status) {
         if (!response.data.status) {
           setPaintingFee('');
-          setOtherCharges('');
+          // setOtherCharges('');
+          setMiscellaneous({ title: '', amount: '' });
           setError('');
           setDate('');
           toast.success(
@@ -143,7 +172,8 @@ function Clearance() {
           await fetchClearingData(tenantId);
         } else {
           setPaintingFee('');
-          setOtherCharges('');
+          // setOtherCharges('');
+          setMiscellaneous({ title: '', amount: '' });
           setError('');
           setDate('');
           toast.success('Tenant cleared successfully!');
@@ -238,13 +268,13 @@ function Clearance() {
     setLoading(true);
     try {
       const response = await apiRequest.put(
-        `/v2/clearance/updateClearanceData/${selectedClearData._id}`,
+        `/v2/clearance/updateClearanceData/${selectedClearData?._id}`,
         {
           amount,
           tenantId,
           date: new Date(Date.now()),
-          receivedMonth: selectedClearData.month,
-          year: selectedClearData.year,
+          receivedMonth: selectedClearData?.month,
+          year: selectedClearData?.year,
         }
       );
       if (response.status) {
@@ -311,22 +341,23 @@ function Clearance() {
               <div className="innerHolder">
                 <div className="mini-cards-container">
                   {mostRecentPayments
-                    .slice(
+                    ?.slice(
                       (activePage - 1) * itemsPerPage,
                       activePage * itemsPerPage
                     )
-                    .map((payment) => (
+                    ?.map((payment) => (
                       <div
-                        key={payment._id}
+                        key={payment?._id}
                         className={`mini-card ${
-                          !payment.waterBill.paid && !payment.waterBill.deficit
+                          !payment?.waterBill?.paid &&
+                          !payment?.waterBill?.deficit
                             ? 'heartbeat-blink'
                             : ''
                         }`}
                         onClick={() => handleDisplayPayment(payment)}
                       >
-                        <h4>{payment.title}</h4>
-                        <p>{payment.month}</p>
+                        <h4>{payment?.title}</h4>
+                        <p>{payment?.month}</p>
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
@@ -363,13 +394,68 @@ function Clearance() {
                     />
                   </div>
                   <div className="clear">
-                    <label htmlFor="">Miscellaneous</label>
-                    <input
-                      value={otherCharges}
-                      onChange={(e) => setOtherCharges(e.target.value)}
-                      type="number"
-                    />
+                    <label>Miscellaneous</label>
+
+                    {/* Toggle Open/Close Section */}
+                    <div className="misc-toggle">
+                      {miscSectionOpen ? (
+                        <AiOutlineClose
+                          onClick={toggleMiscSection}
+                          className="icon-button"
+                        />
+                      ) : (
+                        <AiOutlineDown
+                          onClick={toggleMiscSection}
+                          className="icon-button"
+                        />
+                      )}
+                    </div>
+
+                    {miscSectionOpen && (
+                      <div className="misc-section">
+                        {miscellaneous &&
+                          miscellaneous?.map((item, index) => (
+                            <div key={index} className="misc-item">
+                              <input
+                                type="text"
+                                placeholder="Title"
+                                value={item?.title}
+                                onChange={(e) =>
+                                  handleMiscellaneousChange(
+                                    index,
+                                    'title',
+                                    e.target.value
+                                  )
+                                }
+                              />
+                              <input
+                                type="number"
+                                placeholder="Amount"
+                                value={item?.amount}
+                                onChange={(e) =>
+                                  handleMiscellaneousChange(
+                                    index,
+                                    'amount',
+                                    e.target.value
+                                  )
+                                }
+                              />
+                              {/* Delete Icon */}
+                              <RiDeleteBin6Line
+                                onClick={() => handleRemoveMiscellaneous(index)}
+                                className="icon-button"
+                              />
+                            </div>
+                          ))}
+                        {/* Add New Miscellaneous */}
+                        <AiOutlinePlus
+                          onClick={handleAddMiscellaneous}
+                          className="icon-button"
+                        />
+                      </div>
+                    )}
                   </div>
+
                   <div className="clear">
                     <label htmlFor="">Exiting Date</label>
                     <input
@@ -456,7 +542,7 @@ function Clearance() {
                     </tr>
                   </tbody>
                 </table>
-                {selectedPayment.isCleared ? (
+                {selectedPayment?.isCleared ? (
                   ''
                 ) : (
                   <>
@@ -583,7 +669,7 @@ function Clearance() {
               </label>
             </div>
             {clearanceDataArray?.length > 0 &&
-            clearanceDataArray[0].isCleared ? (
+            clearanceDataArray[0]?.isCleared ? (
               ''
             ) : (
               <button
@@ -596,7 +682,7 @@ function Clearance() {
           </div>
           <div
             className={`cleardiv ${
-              mostRecentPayments.some((payment) => !payment.isCleared)
+              mostRecentPayments?.some((payment) => !payment?.isCleared)
                 ? 'blur'
                 : ''
             }`}
@@ -605,7 +691,7 @@ function Clearance() {
               <label htmlFor="">
                 Refund:
                 {clearanceDataArray[0]?.overpay ? (
-                  clearanceDataArray[0].overpay
+                  clearanceDataArray[0]?.overpay
                 ) : (
                   <>
                     {clearanceDataArray && clearanceDataArray[0]?.overpay > 0
@@ -619,10 +705,10 @@ function Clearance() {
             </div>
             <button
               disabled={clearanceDataArray?.some(
-                (payment) => !payment.isCleared
+                (payment) => !payment?.isCleared
               )}
               className={`btn ${
-                clearanceDataArray.some((payment) => !payment.isCleared)
+                clearanceDataArray?.some((payment) => !payment?.isCleared)
                   ? 'blur'
                   : ''
               }`}
@@ -791,11 +877,23 @@ function Clearance() {
                     <tr key={clearanaceDt?._id}>
                       <td>{tenant?.name}</td>
                       <td>{`${clearanaceDt?.month}, ${clearanaceDt?.year}`}</td>
-
                       <td>{clearanaceDt?.paintingFee?.deficit}</td>
-
-                      <td>{clearanaceDt?.miscellaneous?.deficit}</td>
-
+                      <td className="misc">
+                        {/* Assuming miscellaneous is an array and displaying total deficit */}
+                        {clearanaceDt?.miscellaneous?.length > 0 ? (
+                          clearanaceDt?.miscellaneous?.map((misc, index) => (
+                            <div key={index}>
+                              <span>
+                                {misc?.title}
+                                {'  '}
+                                {misc?.deficit}
+                              </span>
+                            </div>
+                          ))
+                        ) : (
+                          <span>No Miscellaneous Fees</span>
+                        )}
+                      </td>
                       <td>{clearanaceDt?.isCleared ? 'Cleared' : 'Pending'}</td>
                       <td>
                         <button
