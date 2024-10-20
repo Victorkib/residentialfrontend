@@ -92,23 +92,48 @@ const TaxPayment = () => {
 
     // Parse the selected date using JavaScript's Date object
     const dateObj = new Date(selectedDate);
-    const monthName = dateObj.toLocaleString('default', { month: 'long' });
+    const monthIndex = dateObj.getMonth(); // Get current month index
     const year = dateObj.getFullYear();
 
-    setSelectedMonth(monthName);
+    // Determine the previous month and possibly the previous year
+    let previousMonthIndex;
+    let previousYear = year;
 
-    if (year === parseInt(selectedYear)) {
-      const yearData = yearsData.find((data) => data.year === selectedYear);
-      if (yearData) {
-        const monthData = yearData.months.find((m) => m.month === monthName);
-        if (monthData) {
-          setMonthRent(monthData.totalRent);
-          setTax((monthData.totalRent * 0.075).toFixed(2));
-        } else {
-          setMonthRent(0);
-          setTax('0.00');
-        }
+    if (monthIndex == 0) {
+      // If January
+      previousMonthIndex = 11; // December
+      previousYear = year - 1; // Move to previous year
+    } else {
+      previousMonthIndex = monthIndex - 1; // Normal case
+    }
+
+    // Create a date object for the previous month
+    const previousMonthDate = new Date(previousYear, previousMonthIndex);
+    const previousMonthName = previousMonthDate.toLocaleString('default', {
+      month: 'long',
+    });
+
+    setSelectedMonth(previousMonthName);
+
+    // Fetch the rent data for the previous month
+    const yearData = yearsData.find((data) => data.year == previousYear);
+
+    if (yearData) {
+      const monthData = yearData.months.find(
+        (m) => m.month == previousMonthName
+      );
+
+      if (monthData) {
+        setMonthRent(monthData.totalRent);
+        setTax((monthData.totalRent * 0.075).toFixed(2));
+      } else {
+        setMonthRent(0);
+        setTax('0.00');
       }
+    } else {
+      // If yearData is not found, set rent and tax to 0
+      setMonthRent(0);
+      setTax('0.00');
     }
   };
 
@@ -231,7 +256,7 @@ const TaxPayment = () => {
             {selectedMonth && (
               <div className="input-group">
                 <label>
-                  Selected Month:{' '}
+                  Previous Month:{' '}
                   <span className="selected-month">{selectedMonth}</span>
                 </label>
               </div>
@@ -246,7 +271,7 @@ const TaxPayment = () => {
             )}
             <div className="input-group">
               <label>
-                Total Rent for the Selected Month:{' '}
+                Total Rent for the Previous Month:{' '}
                 <span className="rental-value">
                   {monthRent.toFixed(2) || '0.00'}
                 </span>

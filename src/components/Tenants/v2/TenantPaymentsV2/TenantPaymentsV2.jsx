@@ -7,6 +7,7 @@ import { TailSpin } from 'react-loader-spinner';
 import { toast, ToastContainer } from 'react-toastify';
 import Invoice from '../../../Rent Payment/Payment/Invoice/Invoice';
 import moment from 'moment';
+import jsPDF from 'jspdf';
 
 const TenantPayments = () => {
   const location = useLocation();
@@ -282,6 +283,17 @@ const TenantPayments = () => {
   // State to track if overpay is transferred to monthly amount
   const [isOverpayTransferred, setIsOverpayTransferred] = useState(false);
 
+  const dataToSend = {
+    tenantId,
+    newMonthlyAmount: isOverpayTransferred ? 0 : newMonthlyAmount,
+    referenceNumber,
+    newPaymentDate,
+    extraCharges: selectedExtraCharge,
+    previousMonthExtraCharges: previousMonthSelectedExtraCharge,
+    month: nextMonth,
+    year: currentYear || nextYear,
+    previousAccumulatedWaterBill,
+  };
   // Actual function to send payment after confirmation
   const handleConfirmAddPayment = async () => {
     setLoading(true);
@@ -290,20 +302,19 @@ const TenantPayments = () => {
     try {
       const response = await apiRequest.post(
         '/v2/payments/monthlyPayProcessing',
-        {
-          tenantId,
-          newMonthlyAmount: isOverpayTransferred ? 0 : newMonthlyAmount,
-          referenceNumber,
-          newPaymentDate,
-          extraCharges: selectedExtraCharge,
-          previousMonthExtraCharges: previousMonthSelectedExtraCharge,
-          month: nextMonth,
-          year: currentYear || nextYear,
-          previousAccumulatedWaterBill,
-        }
+        dataToSend
       );
 
       if (response.status) {
+        fetchUnpaidPayments(tenantId);
+        fetchFullyPaidPayments(tenantId);
+        await getMostRecentPaymentByTenantId(tenantId);
+        // handleOverpayTransfer();
+        setIsOverpayTransferred(false);
+        setError('');
+        toast.success(`Success`);
+
+        await handleGenerateReceipt(dataToSend);
         // Reset form fields
         setNewMonthlyAmount('');
         setReferenceNumber('');
@@ -314,13 +325,6 @@ const TenantPayments = () => {
           description: '',
         });
         setPreviousAccumulatedWaterBill('');
-
-        fetchUnpaidPayments(tenantId);
-        fetchFullyPaidPayments(tenantId);
-        await getMostRecentPaymentByTenantId(tenantId);
-        // handleOverpayTransfer();
-        setError('');
-        toast.success(`Success`);
       }
     } catch (error) {
       console.log('Error occurred:', error);
@@ -657,6 +661,84 @@ const TenantPayments = () => {
     invoiceNumber: `INV-${Math.floor(Math.random() * 1000) + 1}`,
   };
 
+  const handleGenerateReceipt = (dataToSend) => {
+    // console.log('Generating receipt for payed:', dataToSend);
+    handleDownload(dataToSend);
+  };
+  // Function to handle downloading the PDF receipt
+  const handleDownload = (dataToSend) => {
+    const doc = new jsPDF();
+
+    // Load the logo image to get its dimensions
+    const logo = new Image();
+    logo.src = '/homelogo.png'; // Path to the logo
+
+    logo.onload = function () {
+      // Get original dimensions
+      const originalWidth = logo.width;
+      const originalHeight = logo.height;
+
+      // Calculate aspect ratio
+      const aspectRatio = originalWidth / originalHeight;
+
+      // Set desired width
+      const desiredWidth = 50; // You can set your desired width here
+      const newWidth = desiredWidth; // Use desired width
+      const newHeight = desiredWidth / aspectRatio; // Calculate height based on aspect ratio
+
+      // Add letterhead
+      doc.addImage(logo, 'PNG', 10, 10, newWidth, newHeight);
+      doc.setFontSize(16);
+      doc.text('Sleek Abode Apartments', 70, 20);
+      doc.setFontSize(12);
+      doc.text('Kimbo, Ruiru.', 70, 30);
+      doc.text('Contact: sleekabodemanagement@gmail.com', 70, 35);
+      doc.text('Phone: (+254) 788-413-323', 70, 40);
+
+      doc.setLineWidth(1);
+      doc.line(10, 45, 200, 45);
+
+      doc.setFontSize(20);
+      doc.text('Payment Receipt', 14, 60);
+
+      // Add tenant details
+      doc.setFontSize(12);
+      doc.text(`Tenant Name: ${tenantDetails.name}`, 14, 70);
+      doc.text(`Phone No: ${tenantDetails.phoneNo}`, 14, 75);
+      doc.text(`Apartment: ${tenantDetails.apartmentId.name}`, 14, 80);
+      doc.text(
+        `House: ${
+          'Floor' +
+          tenantDetails.houseDetails.floorNo +
+          ', ' +
+          tenantDetails.houseDetails.houseNo
+        }`,
+        14,
+        85
+      );
+
+      // Payment summary table
+      const details = [
+        ['Payment Reference No', dataToSend.referenceNumber],
+        ['Payment Amount', `KSH ${dataToSend.newMonthlyAmount.toFixed(2)}`],
+        [
+          'Payment Date',
+          moment(dataToSend.newPaymentDate).format('MMM DD YYYY'),
+        ],
+      ];
+
+      doc.autoTable({
+        head: [['Description', 'Details']],
+        body: details,
+        startY: 90, // Adjust starting Y position as needed
+        theme: 'grid',
+        styles: { fontSize: 12 },
+      });
+
+      // Save the PDF
+      doc.save(`receipt_${dataToSend.referenceNumber || 'PaymentReceipt'}.pdf`);
+    };
+  };
   return (
     <div className="tenant-payments-container">
       <ToastContainer />

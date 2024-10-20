@@ -111,12 +111,12 @@ const InvoiceTable = () => {
   };
 
   // Function to add a new row in the editable table
-  const handleAddRow = () => {
-    setEditInvoice({
-      ...editInvoice,
-      items: [...editInvoice.items, { name: '', price: 0 }],
-    });
-  };
+  // const handleAddRow = () => {
+  //   setEditInvoice({
+  //     ...editInvoice,
+  //     items: [...editInvoice.items, { name: '', price: 0 }],
+  //   });
+  // };
 
   // Function to remove a row in the editable table
   const handleRemoveRow = (index) => {
@@ -406,7 +406,7 @@ const InvoiceTable = () => {
                 ))}
               </tbody>
             </table>
-            <button onClick={handleAddRow}>Add Extra Charge</button>
+            {/* <button onClick={handleAddRow}>Add Extra Charge</button> */}
 
             <div>
               <label htmlFor="paidStatus">Paid Status:</label>

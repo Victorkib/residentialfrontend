@@ -6,7 +6,6 @@ import { toast, ToastContainer } from 'react-toastify';
 import { TailSpin } from 'react-loader-spinner';
 import Pagination from 'react-js-pagination';
 
-import { FaEdit } from 'react-icons/fa'; // Edit icon
 import { GiReceiveMoney } from 'react-icons/gi'; // Receipt icon
 import { RiDeleteBin6Line } from 'react-icons/ri'; // Delete icon
 
@@ -232,11 +231,6 @@ function Clearance() {
   };
   const closeClearancePopupClick = () => {
     setClearacePopup(false);
-  };
-
-  // Example functions for the action buttons
-  const handleEdit = (id) => {
-    // Logic to edit the clearance
   };
 
   const handleReceiveMoney = async (e) => {
@@ -804,9 +798,6 @@ function Clearance() {
 
                       <td>{clearanaceDt?.isCleared ? 'Cleared' : 'Pending'}</td>
                       <td>
-                        <button onClick={() => handleEdit(clearanaceDt?._id)}>
-                          <FaEdit />
-                        </button>
                         <button
                           onClick={() => displayAddMoneyPopup(clearanaceDt)}
                         >

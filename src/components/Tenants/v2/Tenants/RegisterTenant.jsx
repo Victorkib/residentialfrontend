@@ -48,16 +48,7 @@ const RegisterTenant = () => {
   const [houses, setHouses] = useState([]);
   const [organizedData, setOrganizedData] = useState({});
 
-  const [floors, setFloors] = useState([
-    { floorNumber: 0, floorName: 'Ground Floor' },
-    { floorNumber: 1, floorName: 'First Floor' },
-    { floorNumber: 2, floorName: 'Second Floor' },
-    { floorNumber: 3, floorName: 'Third Floor' },
-    { floorNumber: 4, floorName: 'Fourth Floor' },
-    { floorNumber: 5, floorName: 'Fifth Floor' },
-    { floorNumber: 6, floorName: 'Sixth Floor' },
-    { floorNumber: 7, floorName: 'Seventh Floor' },
-  ]);
+  const [floors, setFloors] = useState([]);
 
   const getFloorName = (floorNumber) => {
     if (floorNumber === 0) return 'Ground Floor';
@@ -155,11 +146,12 @@ const RegisterTenant = () => {
   };
 
   const handleHouseSelection = (house) => {
+    console.log('house: ', house);
     if (!house.isOccupied) {
       const houseLetter = house.houseName.slice(-1);
       const houseNumber = `${selectedFloor}${houseLetter}`;
       setSelectedHouse(houseNumber);
-      setFormData({ ...formData, houseNo: houseNumber });
+      setFormData({ ...formData, houseNo: house?.houseName });
       setIsHousePopupVisible(false);
     }
   };
@@ -171,6 +163,7 @@ const RegisterTenant = () => {
       const response = await apiRequest.post('/v2/tenants/createTenant', {
         ...formData,
         apartmentId: selectedApartment?._id,
+        floorNumber: selectedFloor, // Add this line
       });
       if (response.status) {
         setTenantData(response.data);
@@ -196,6 +189,7 @@ const RegisterTenant = () => {
         tenantId: tenantData._id,
       });
       if (response.status) {
+        console.log('responseData: ', response.data);
         const isCleared = response.data.tenant.deposits.isCleared;
         navigate(isCleared ? '/listAllTenants' : '/v2/incompleteDeposits');
         setLoading(false);
@@ -318,17 +312,26 @@ const RegisterTenant = () => {
               <h3>Floor Selection</h3>
               <div className="floorAndHouse">
                 <div className="floor-selection">
-                  {floors.map((floor) => (
-                    <div
-                      key={floor?.floorNumber}
-                      className={`floor-option ${
-                        selectedFloor === floor?.floorNumber ? 'selected' : ''
-                      }`}
-                      onClick={() => handleFloorSelection(floor?.floorNumber)}
-                    >
-                      {floor?.floorName}
-                    </div>
-                  ))}
+                  {Object.keys(
+                    organizedData[selectedApartment?._id]?.floors || {}
+                  ).map((floorNumber) => {
+                    const floorName = getFloorName(Number(floorNumber));
+                    return (
+                      <div
+                        key={floorNumber}
+                        className={`floor-option ${
+                          selectedFloor === Number(floorNumber)
+                            ? 'selected'
+                            : ''
+                        }`}
+                        onClick={() =>
+                          handleFloorSelection(Number(floorNumber))
+                        }
+                      >
+                        {floorName}
+                      </div>
+                    );
+                  })}
                 </div>
 
                 {selectedFloor !== null && (

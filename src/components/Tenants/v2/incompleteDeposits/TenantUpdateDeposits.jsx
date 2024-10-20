@@ -13,10 +13,18 @@ const TenantUpdateDeposit = () => {
   const [toggleUpdate, setToggleUpdate] = useState(false);
 
   const calculateTotalDeficit = useMemo(() => {
+    const otherDepositsDeficit = tenant?.otherDeposits?.reduce(
+      (total, deposit) => {
+        return total + (deposit?.deficit || 0);
+      },
+      0
+    );
+
     return (
       (tenant?.deposits?.rentDepositDeficit || 0) +
       (tenant?.deposits?.waterDepositDeficit || 0) +
-      (tenant?.deposits?.initialRentPaymentDeficit || 0)
+      (tenant?.deposits?.initialRentPaymentDeficit || 0) +
+      otherDepositsDeficit
     );
   }, [tenant]);
 
@@ -278,6 +286,14 @@ const TenantUpdateDeposit = () => {
           ) : (
             ''
           )}
+          {tenant.otherDeposits
+            .filter((deposit) => deposit.deficit > 0)
+            .map((deposit) => (
+              <div key={deposit._id}>
+                <p>Title: {deposit.title}</p>
+                <p>Deficit: {deposit.deficit}</p>
+              </div>
+            ))}
 
           <p>
             <strong>Total Deficit:</strong> KSH {calculateTotalDeficit}

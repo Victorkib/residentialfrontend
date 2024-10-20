@@ -17,11 +17,6 @@ const EditInvoice = ({ invoiceData, onClose }) => {
   // State to hold editable items
   const [editableItems, setEditableItems] = useState(items);
 
-  // State for new charge visibility and new charge inputs
-  const [showNewCharge, setShowNewCharge] = useState(false);
-  const [newChargeDescription, setNewChargeDescription] = useState('');
-  const [newChargePrice, setNewChargePrice] = useState(0);
-
   // State for total amount
   const [totalAmount, setTotalAmount] = useState(calculateTotalAmount(items));
 
@@ -38,23 +33,6 @@ const EditInvoice = ({ invoiceData, onClose }) => {
       updatedItems[index].price = parseFloat(value) || 0; // Parse to float and default to 0 if NaN
     }
     setEditableItems(updatedItems);
-  };
-
-  const handleAddNewCharge = () => {
-    if (newChargeDescription && newChargePrice > 0) {
-      const newCharge = {
-        name: 'Monthly Extra Charges Transaction', // Name for new charge
-        description: newChargeDescription,
-        price: newChargePrice,
-      };
-      const updatedItems = [...editableItems, newCharge];
-      setEditableItems(updatedItems);
-      setTotalAmount(calculateTotalAmount(updatedItems)); // Update total amount
-      // Reset new charge inputs
-      setNewChargeDescription('');
-      setNewChargePrice(0);
-      setShowNewCharge(false); // Hide new charge input after adding
-    }
   };
 
   // Update total amount when editable items change
@@ -180,35 +158,6 @@ const EditInvoice = ({ invoiceData, onClose }) => {
               </tr>
             ))}
             {/* New Charge Row Toggle */}
-            <tr>
-              <td colSpan={3}>
-                <button
-                  onClick={() => setShowNewCharge(!showNewCharge)}
-                  className="add-charge-button"
-                >
-                  {showNewCharge ? '▲' : '+'}
-                </button>
-                {showNewCharge && (
-                  <div className="new-charge-inputs">
-                    <input
-                      type="text"
-                      value={newChargeDescription}
-                      placeholder="Description"
-                      onChange={(e) => setNewChargeDescription(e.target.value)}
-                    />
-                    <input
-                      type="number"
-                      value={newChargePrice}
-                      placeholder="Price"
-                      onChange={(e) =>
-                        setNewChargePrice(parseFloat(e.target.value) || 0)
-                      }
-                    />
-                    <button onClick={handleAddNewCharge}>Add Charge</button>
-                  </div>
-                )}
-              </td>
-            </tr>
           </tbody>
         </table>
         <div className="invoice-total">

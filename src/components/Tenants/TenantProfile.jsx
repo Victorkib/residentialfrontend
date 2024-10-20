@@ -12,6 +12,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { TailSpin } from 'react-loader-spinner';
 import DepoReceipt from '../Rent Payment/Payment/Receipt/DepoReceipt';
+import DepositHistoryPopup from './v2/DepositHistoryPopup';
 
 function TenantProfile() {
   const { _id } = useParams();
@@ -20,6 +21,9 @@ function TenantProfile() {
   const [loading, setLoading] = useState(true);
   const [tenant, setTenant] = useState(null);
   console.log(tenant);
+
+  const [showPopup, setShowPopup] = useState(false);
+  const [depositDateHistory, setDepositDateHistory] = useState([]);
 
   useEffect(() => {
     fetchTenant();
@@ -31,6 +35,7 @@ function TenantProfile() {
       if (res.status) {
         console.log(res.data);
         setTenant(res.data);
+        setDepositDateHistory(res.data.deposits.depositDateHistory);
         // toast.success('Tenant data fetched successfully');
       }
     } catch (error) {
@@ -141,6 +146,16 @@ function TenantProfile() {
       tenant?.deposits?.initialRentPayment,
     referenceNumber: tenant?.referenceNo,
   };
+
+  // Function to handle opening the popup
+  const openPopup = () => {
+    setShowPopup(true);
+  };
+
+  // Function to handle closing the popup
+  const closePopupDepoHistory = () => {
+    setShowPopup(false);
+  };
   return (
     <div className="TenantProfile">
       <ToastContainer />
@@ -199,7 +214,14 @@ function TenantProfile() {
               <p>Email : {tenant ? tenant.email : 'linda@gmail.com'}</p>
               <p>
                 HouseNo:{' '}
-                {tenant ? tenant.houseDetails.houseNo : 'Not Asssigned'}
+                {tenant ? (
+                  <>
+                    Floor{tenant.houseDetails.floorNo},
+                    {tenant.houseDetails.houseNo}
+                  </>
+                ) : (
+                  'Not Asssigned'
+                )}
               </p>
               {tenant?.blackListTenant == true ? (
                 <span>Blacklisted Status:True</span>
@@ -216,16 +238,33 @@ function TenantProfile() {
 
           <div className="payment">
             <div className="payment-details">
-              <h3>Total Deposit</h3>
+              <h3>
+                Total Deposit:{' '}
+                {tenant && tenant.deposits && tenant.deposits.depositDateHistory
+                  ? tenant.deposits.depositDateHistory.reduce(
+                      (total, deposit) => {
+                        return total + deposit.amount; // Assuming 'amount' is the key in each deposit object
+                      },
+                      0
+                    )
+                  : '0.00'}
+              </h3>
               <div className="dets">
-                <p>Amount</p>
-                <p>
-                  {tenant
-                    ? tenant.deposits.rentDeposit +
-                      tenant.deposits.waterDeposit +
-                      tenant.deposits.initialRentPayment
-                    : '0'}
-                </p>
+                <div className="innerDets">
+                  {/* Button to open the popup */}
+                  <button className="edit-icon-ttDepo" onClick={openPopup}>
+                    View Deposit History
+                  </button>
+
+                  {/* Conditionally render the popup */}
+                  {showPopup && (
+                    <DepositHistoryPopup
+                      tenant={tenant}
+                      depositDateHistory={depositDateHistory}
+                      onClose={closePopupDepoHistory}
+                    />
+                  )}
+                </div>
               </div>
             </div>
             <div className="payment-details">
@@ -241,7 +280,7 @@ function TenantProfile() {
 
           <div className="deposits">
             <div className=" pd">
-              <h3>Tenant{`'`}s Deposits</h3>
+              <h3>Primary Deposits</h3>
               <table className="tenant-table">
                 <thead>
                   <tr>

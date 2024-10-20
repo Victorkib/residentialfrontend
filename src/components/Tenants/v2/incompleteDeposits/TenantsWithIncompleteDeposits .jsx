@@ -17,7 +17,7 @@ const TenantsWithIncompleteDeposits = () => {
         const response = await apiRequest.get(
           '/v2/tenants/tenantWithIncompleteDepo'
         );
-        // console.log(response.data.tenants);
+        console.log('tenantsWithIncomplete: ', response.data.tenants);
         setTenants(response.data.tenants);
       } catch (error) {
         console.error('Error fetching tenants:', error.message);
@@ -28,11 +28,24 @@ const TenantsWithIncompleteDeposits = () => {
   }, []);
 
   const calculateTotalDeficit = (tenant) => {
-    return (
+    // Start with the known deficits (rent, water, initial rent payment)
+    let totalDeficit =
       tenant.deposits.rentDepositDeficit +
       tenant.deposits.waterDepositDeficit +
-      tenant.deposits.initialRentPaymentDeficit
-    );
+      tenant.deposits.initialRentPaymentDeficit;
+
+    // Check if tenant.otherDeposits exists and is an array
+    if (tenant.otherDeposits && Array.isArray(tenant.otherDeposits)) {
+      // Iterate over otherDeposits to sum up any deficits greater than 0
+      tenant.otherDeposits.forEach((deposit) => {
+        if (deposit.deficit > 0) {
+          totalDeficit += deposit.deficit;
+        }
+      });
+    }
+
+    // Return the total deficit
+    return totalDeficit;
   };
 
   const formatLocalDate = (dateString) => {
