@@ -223,6 +223,10 @@ function TenantProfile() {
                   'Not Asssigned'
                 )}
               </p>
+              <p>
+                Apartment:{' '}
+                {tenant ? <>{tenant.apartmentId.name}</> : 'Not Asssigned'}
+              </p>
               {tenant?.blackListTenant == true ? (
                 <span>Blacklisted Status:True</span>
               ) : (
