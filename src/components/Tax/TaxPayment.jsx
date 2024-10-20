@@ -164,6 +164,7 @@ const TaxPayment = () => {
       }
     } catch (error) {
       console.error('Error submitting data:', error);
+      toast.error(error?.response?.data?.message || 'Error Adding kra!');
     } finally {
       setLoading(false);
     }
