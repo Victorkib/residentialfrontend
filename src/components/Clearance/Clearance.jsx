@@ -340,40 +340,43 @@ function Clearance() {
             <div className="flip-card-front">
               <div className="innerHolder">
                 <div className="mini-cards-container">
-                  {mostRecentPayments
-                    ?.slice(
-                      (activePage - 1) * itemsPerPage,
-                      activePage * itemsPerPage
-                    )
-                    ?.map((payment) => (
-                      <div
-                        key={payment?._id}
-                        className={`mini-card ${
-                          !payment?.waterBill?.paid &&
-                          !payment?.waterBill?.deficit
-                            ? 'heartbeat-blink'
-                            : ''
-                        }`}
-                        onClick={() => handleDisplayPayment(payment)}
-                      >
-                        <h4>{payment?.title}</h4>
-                        <p>{payment?.month}</p>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleArrowButtonClick(payment);
-                          }}
-                          className="arrow-btn"
+                  {mostRecentPayments &&
+                    mostRecentPayments
+                      ?.slice(
+                        (activePage - 1) * itemsPerPage,
+                        activePage * itemsPerPage
+                      )
+                      ?.map((payment) => (
+                        <div
+                          key={payment?._id}
+                          className={`mini-card ${
+                            !payment?.waterBill?.paid &&
+                            !payment?.waterBill?.deficit
+                              ? 'heartbeat-blink'
+                              : ''
+                          }`}
+                          onClick={() => handleDisplayPayment(payment)}
                         >
-                          →
-                        </button>
-                      </div>
-                    ))}
+                          <h4>{payment?.title}</h4>
+                          <p>{payment?.month}</p>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleArrowButtonClick(payment);
+                            }}
+                            className="arrow-btn"
+                          >
+                            →
+                          </button>
+                        </div>
+                      ))}
                 </div>
                 <Pagination
                   activePage={activePage}
                   itemsCountPerPage={itemsPerPage}
-                  totalItemsCount={mostRecentPayments?.length}
+                  totalItemsCount={
+                    mostRecentPayments && mostRecentPayments?.length
+                  }
                   pageRangeDisplayed={5}
                   onChange={handlePageChange}
                 />
