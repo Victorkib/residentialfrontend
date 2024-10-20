@@ -33,6 +33,15 @@ const MapComponent = ({ location }) => {
             location
           )}&format=json`
         );
+
+        // Check for the rate limit status
+        if (response.status === 429) {
+          toast.error('Rate limit exceeded. Defaulting to Nairobi, Kenya'); // Notify user about rate limit
+          setPosition([-1.2864, 36.8172]); // Default to Nairobi
+          setError(true); // Set error state
+          return; // Exit early
+        }
+
         const data = await response.json();
         if (data.length > 0) {
           const { lat, lon } = data[0]; // Get the first result's coordinates
