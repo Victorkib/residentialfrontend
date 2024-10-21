@@ -843,7 +843,7 @@ const TenantPayments = () => {
                             {payment?.month || currentMonth}, {payment?.year}
                           </p>
                           <p>
-                            <strong>Total Paid Amount:</strong>{' '}
+                            <strong>Total Amount Recieved:</strong>{' '}
                             {payment?.totalAmountPaid}
                           </p>
                           <p
