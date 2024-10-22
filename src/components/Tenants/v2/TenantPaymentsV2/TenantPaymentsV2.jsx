@@ -59,9 +59,16 @@ const TenantPayments = () => {
     description: '',
   }); // Selected extra charge
 
-  const [displayRefNoHistory, setDisplayRefNoHistory] = useState(false);
-  const HandleRefNoHistroy = () => {
-    setDisplayRefNoHistory((prevState) => !prevState);
+  const [displayRefNoHistory, setDisplayRefNoHistory] = useState(
+    Array(filteredPayments.length).fill(false) // Initialize with false for each card
+  );
+
+  const handleRefNoHistory = (index) => {
+    setDisplayRefNoHistory((prevState) => {
+      const newState = [...prevState];
+      newState[index] = !newState[index]; // Toggle the specific card's state
+      return newState;
+    });
   };
   const toggleExtraChargesDropdown = () => {
     setExtraChargesDropdownOpen((prevState) => !prevState);
@@ -473,6 +480,7 @@ const TenantPayments = () => {
         fetchFullyPaidPayments(tenantId);
         await getMostRecentPaymentByTenantId(tenantId);
         await getTenantDetails();
+        closeExtraAmountConfirmationPopup();
         setAddInternalAmountPopup(false);
         toast.success('Amount Added!');
 
@@ -487,6 +495,15 @@ const TenantPayments = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const [isConfirmExtraPopup, setIsConfirmExtraPopup] = useState(false);
+  const confirmExtraInternalAmount = (e) => {
+    e.preventDefault();
+    setIsConfirmExtraPopup(true);
+  };
+  const closeExtraAmountConfirmationPopup = () => {
+    setIsConfirmExtraPopup(false);
   };
 
   const totalGlobalDeficit = outstandingPayments.reduce(
@@ -588,13 +605,24 @@ const TenantPayments = () => {
         setUpdatedExtraCharges('');
         setUpdatedReferenceNumber('');
         setError('');
+        closeConfirmationPopup();
         setShowUpdatePaymentModal(false);
       }
     } catch (error) {
       console.log(error.response.data.message);
       setError(error.response.data.message);
-      toast.error(error.response?.data?.message || 'Failed to clear tenant');
+      toast.error(error.response?.data?.message || 'Failed to Update Deficits');
     }
+  };
+
+  const [UpdatingDeficitPopup, setIsUpdatingDeficitPopup] = useState(false);
+  const showConfirmationPopup = (e) => {
+    e.preventDefault();
+    setIsUpdatingDeficitPopup(true);
+  };
+
+  const closeConfirmationPopup = () => {
+    setIsUpdatingDeficitPopup(false);
   };
 
   const [invoiceSelectedPayment, setInvoiceSelectedPayment] = useState('');
@@ -737,9 +765,15 @@ const TenantPayments = () => {
         ],
         [
           'Payment Amount',
-          `KSH ${
-            dataToSend?.newMonthlyAmount || dataToSend?.extraAmountProvided || 0
-          }`,
+          new Intl.NumberFormat('en-KE', {
+            style: 'currency',
+            currency: 'KES',
+          }).format(
+            dataToSend?.newMonthlyAmount ||
+              mostRecentPayment?.overpay ||
+              dataToSend?.extraAmountProvided ||
+              0
+          ),
         ],
         [
           'Payment Date',
@@ -768,6 +802,72 @@ const TenantPayments = () => {
       );
     };
   };
+  const deficitUpdates = [
+    {
+      label: 'Updated Rent Deficit',
+      value: updatedRentDeficit
+        ? updatedRentDeficit
+        : selectedPayment?.rent?.deficit,
+    },
+    {
+      label: 'Updated Water Deficit',
+      value: updatedWaterDeficit
+        ? updatedWaterDeficit
+        : selectedPayment?.waterBill?.deficit,
+    },
+    {
+      label: 'Updated Accumulated Water Bill',
+      value: updatedAccumulatedWaterBill
+        ? updatedAccumulatedWaterBill
+        : selectedPayment?.waterBill?.accumulatedAmount,
+    },
+    {
+      label: 'Updated Garbage Deficit',
+      value: updatedGarbageDeficit
+        ? updatedGarbageDeficit
+        : selectedPayment?.garbageFee?.deficit,
+    },
+    {
+      label: 'Updated Reference Number',
+      value: updatedReferenceNumber
+        ? updatedReferenceNumber.toUpperCase()
+        : selectedPayment?.referenceNumber
+        ? selectedPayment.referenceNumber.toUpperCase()
+        : '',
+    },
+
+    {
+      label: 'Updated Extra Charges',
+      value: updatedExtraCharges
+        ? updatedExtraCharges
+        : selectedPayment?.extraCharges?.deficit,
+    },
+  ];
+
+  // Function to get the ordinal suffix
+  const getOrdinalSuffix = (day) => {
+    if (day > 3 && day < 21) return 'th'; // Special case for 11th to 13th
+    switch (day % 10) {
+      case 1:
+        return 'st';
+      case 2:
+        return 'nd';
+      case 3:
+        return 'rd';
+      default:
+        return 'th';
+    }
+  };
+
+  // Date formatting function
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const day = date.getDate();
+    const month = date.toLocaleString('default', { month: 'long' });
+    const year = date.getFullYear();
+    return `${day}${getOrdinalSuffix(day)} ${month} ${year}`;
+  };
+
   return (
     <div className="tenant-payments-container">
       <ToastContainer />
@@ -843,36 +943,49 @@ const TenantPayments = () => {
                             {payment?.month || currentMonth}, {payment?.year}
                           </p>
                           <p>
-                            <strong>Total Amount Recieved:</strong>{' '}
+                            <strong>Total Amount Received:</strong>{' '}
                             {payment?.totalAmountPaid}
                           </p>
                           <p
                             onClick={() => {
-                              HandleRefNoHistroy();
+                              handleRefNoHistory(index); // Pass the index to the handler
                             }}
                           >
-                            <strong>ReferenceNoHistory:</strong>
+                            <strong>Reference No History:</strong>
                             <span className="dropdown-toggle">
-                              {displayRefNoHistory ? '⬆️' : '⬇️'}
+                              {displayRefNoHistory[index] ? '⬆️' : '⬇️'}
                             </span>
-                            {displayRefNoHistory && (
+                            {displayRefNoHistory[index] && ( // Display only for the selected card
                               <>
-                                {payment?.referenceNoHistory?.map((ref) => (
-                                  <p
-                                    className="ReferenceNoHistory"
-                                    key={ref._id}
-                                  >
-                                    <p>Amount:{ref.amount}</p>
-                                    <p>RefNo Used:{ref.referenceNoUsed}</p>
-                                  </p>
-                                ))}
+                                {payment?.referenceNoHistory?.map(
+                                  (ref, index) => (
+                                    <div
+                                      key={ref._id}
+                                      style={{
+                                        backgroundColor:
+                                          index ===
+                                          payment.referenceNoHistory.length - 1 // Check if it's the last item
+                                            ? 'green' // Color for the last item
+                                            : 'red', // Color for all prior items
+                                        color: 'white',
+                                        padding: '10px',
+                                        marginBottom: '10px',
+                                        borderRadius: '5px',
+                                      }}
+                                    >
+                                      <p>Amount Used: {ref.amount}</p>
+                                      <p>RefNo Used: {ref.referenceNoUsed}</p>
+                                      <p>
+                                        Received payment on:{' '}
+                                        {formatDate(ref.date)}{' '}
+                                        {/* Use the formatDate function here */}
+                                      </p>
+                                    </div>
+                                  )
+                                )}
                               </>
                             )}
                           </p>
-                          {/* <p>
-                          <strong>Excess Payment:</strong>{' '}
-                          {payment?.overpay > 0 ? payment?.overpay : 'None'}
-                        </p> */}
                           <p>
                             <strong>Cleared Status:</strong>{' '}
                             {cleared ? 'True' : 'False'}
@@ -1455,7 +1568,7 @@ const TenantPayments = () => {
               <h2>
                 Extra {extraAmount || 0} given within {previousMonth}
               </h2>
-              <form onSubmit={handleInternalMonthExtraGivenAmount}>
+              <form onSubmit={confirmExtraInternalAmount}>
                 <div className="form-group">
                   <label>Amount Added</label>
                   <input
@@ -1632,7 +1745,7 @@ const TenantPayments = () => {
                 Update {selectedPayment.month + `,` + selectedPayment.year}{' '}
                 Deficits
               </h2>
-              <form onSubmit={handleDeficitsUpdate}>
+              <form onSubmit={showConfirmationPopup}>
                 {/* Rent Deficit */}
                 {selectedPayment?.rent?.deficit > 0 ? (
                   <div className="form-group">
@@ -1790,6 +1903,74 @@ const TenantPayments = () => {
                 <button
                   className="confirm-btn"
                   onClick={handleConfirmAddPayment}
+                >
+                  Yes, Proceed
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+        {UpdatingDeficitPopup && (
+          <div className="deficit-confirmation-modal">
+            <div className="deficit-modal-content">
+              <p>
+                Are you sure you want to proceed with this update of payment?
+              </p>
+
+              {/* Conditionally Render List */}
+              <ul>
+                {deficitUpdates?.map((update, index) =>
+                  update.value ? ( // Only render if value exists
+                    <li key={index}>
+                      <strong>{update?.label}: </strong>
+                      <span>{update?.value}</span>
+                    </li>
+                  ) : (
+                    ''
+                  )
+                )}
+              </ul>
+
+              <div className="modal-actions">
+                <button className="cancel-btn" onClick={closeConfirmationPopup}>
+                  Cancel
+                </button>
+                <button className="confirm-btn" onClick={handleDeficitsUpdate}>
+                  Yes, Proceed
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+        {isConfirmExtraPopup && (
+          <div className="deficit-confirmation-modal">
+            <div className="deficit-modal-content">
+              <p>Are you sure you want to proceed with this Extra payment?</p>
+              <h4>
+                Amount to process:{' '}
+                <span>
+                  {new Intl.NumberFormat('en-KE', {
+                    style: 'currency',
+                    currency: 'KES',
+                  }).format(moneyWithinMonthData?.extraAmountProvided)}
+                </span>
+              </h4>
+              <h4>
+                ReferenceNo used:{' '}
+                <span>
+                  {moneyWithinMonthData?.extraAmountReferenceNo?.toUpperCase()}
+                </span>
+              </h4>
+              <div className="modal-actions">
+                <button
+                  className="cancel-btn"
+                  onClick={closeExtraAmountConfirmationPopup}
+                >
+                  Cancel
+                </button>
+                <button
+                  className="confirm-btn"
+                  onClick={handleInternalMonthExtraGivenAmount}
                 >
                   Yes, Proceed
                 </button>

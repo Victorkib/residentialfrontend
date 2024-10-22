@@ -30,6 +30,9 @@ const EditHousePopup = ({ house, onClose, onUpdate }) => {
 
   const handleOtherDepositChange = (index, field, value) => {
     const updatedDeposits = [...otherDeposits];
+    if (!updatedDeposits[index]) {
+      updatedDeposits[index] = {}; // Ensure the object exists
+    }
     updatedDeposits[index][field] = value;
     setOtherDeposits(updatedDeposits);
   };

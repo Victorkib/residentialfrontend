@@ -101,6 +101,57 @@ h3 {
     }
   }
 }
+.payment-tenant-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+  text-align: left;
+  background-color: #f9f9f9; // Light background for the table
+
+  thead {
+    background-color: #16a085; // Teal background for header
+    color: #ffffff;
+
+    th {
+      padding: 12px; // Increased padding for headers
+      text-align: left;
+      font-weight: bold;
+      border: 1px solid #dddddd; // Border for header cells
+    }
+  }
+
+  tbody {
+    tr {
+      border-bottom: 1px solid #dddddd; // Bottom border for rows
+
+      &:hover {
+        background-color: #f1f1f1; // Light grey on hover
+      }
+
+      td {
+        padding: 10px;
+        font-size: 0.9rem;
+        color: #333333; // Dark text for readability
+        border: 1px solid #dddddd; // Border for cells
+        vertical-align: top; // Align content to the top of each cell
+
+        div {
+          border: 1px solid wheat;
+          border-radius: 4px;
+          margin: 3px;
+          text-align: left;
+        }
+      }
+
+      // Special styles for the reference details column
+      td:nth-child(7) {
+        white-space: pre-line; // Allow line breaks for better formatting
+        width: max-content; // Adjust the width to accommodate the content
+        word-wrap: break-word; // Ensure long text wraps properly
+      }
+    }
+  }
+}
 
 .download-btn,
 .closePaymentbtn {
@@ -124,4 +175,31 @@ h3 {
 
 .closeDownloadbtn:hover {
   background-color: #c0392b; // Darker shade on hover
+}
+
+.paginationContainer {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.paginationItem {
+  display: inline-block;
+  padding: 10px;
+  cursor: pointer;
+  color: #007bff;
+  border: 1px solid #007bff;
+  margin: 0 5px;
+  border-radius: 5px;
+}
+
+.paginationLink {
+  text-decoration: none;
+  color: #007bff;
+}
+
+.activePage {
+  background-color: #007bff;
+  color: white;
+  border-color: #007bff;
 }

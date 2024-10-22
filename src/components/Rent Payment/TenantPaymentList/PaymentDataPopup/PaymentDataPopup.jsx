@@ -1,9 +1,27 @@
-import React, { useState } from 'react';
+/* eslint-disable react/prop-types */
+import { useState } from 'react';
 import jsPDF from 'jspdf'; // PDF generation library
 import 'jspdf-autotable'; // To generate tables in PDFs
+import ReactPaginate from 'react-js-pagination'; // Pagination library
 import './PaymentDataPopup.scss'; // SCSS file for styling
 
 const PaymentDataPopup = ({ paymentsData, paymentsDataTenant, onClose }) => {
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 3; // Number of items to display per page
+
+  // Calculate the current payments to display
+  const indexOfLastPayment = currentPage * itemsPerPage;
+  const indexOfFirstPayment = indexOfLastPayment - itemsPerPage;
+  const currentPayments = paymentsData.slice(
+    indexOfFirstPayment,
+    indexOfLastPayment
+  );
+
+  // Function to handle page change
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
   // Function to handle document download
   const handleDownload = () => {
     const doc = new jsPDF();
@@ -26,8 +44,8 @@ const PaymentDataPopup = ({ paymentsData, paymentsDataTenant, onClose }) => {
       doc.text('Sleek Abode Apartments', 70, 20);
       doc.setFontSize(10);
       doc.text('Kimbo, Ruiru.', 70, 30);
-      doc.text('Contact: your-email@example.com', 70, 35);
-      doc.text('Phone: (+254) 88-413-323', 70, 40);
+      doc.text('Contact: sleekabodemanagement@gmail.com', 70, 35);
+      doc.text('Phone: (+254) 788-413-323', 70, 40);
 
       // Title for the payment report
       doc.setFontSize(16);
@@ -60,20 +78,38 @@ const PaymentDataPopup = ({ paymentsData, paymentsDataTenant, onClose }) => {
         'Garbage Fee',
         'Extra Charges',
         'Amount Paid',
-        'Reference No',
+        'Reference No (Amount, Ref No, Date)',
         'Status',
       ];
 
-      const tableRows = paymentsData.map((payment) => [
-        `${payment.month} ${payment.year}`, // Format the date
-        payment.rent.amount,
-        payment.waterBill.amount,
-        payment.garbageFee.amount,
-        payment.extraCharges.amount,
-        payment.totalAmountPaid,
-        payment.referenceNumber,
-        payment.isCleared ? 'Cleared' : 'Pending',
-      ]);
+      // Generate the table rows
+      const tableRows = paymentsData.map((payment) => {
+        // Combine all reference numbers with their date and amount from referenceNoHistory
+        const referenceDetails =
+          payment.referenceNoHistory
+            ?.map(
+              (ref) =>
+                `Amount: ${ref.amount}\nRef No: ${
+                  ref.referenceNoUsed
+                }\nDate: ${new Date(ref.date).toLocaleString('en-GB', {
+                  day: 'numeric',
+                  month: 'long',
+                  year: 'numeric',
+                })}`
+            )
+            .join('\n\n') || 'N/A'; // Display 'N/A' if there are no references
+
+        return [
+          `${payment.month} ${payment.year}`, // Format the date
+          payment.rent.amount,
+          payment.waterBill.amount,
+          payment.garbageFee.amount,
+          payment.extraCharges.amount,
+          payment.totalAmountPaid,
+          referenceDetails, // Vertically formatted reference details
+          payment.isCleared ? 'Cleared' : 'Pending',
+        ];
+      });
 
       // Adding table with improved styling
       doc.autoTable({
@@ -81,21 +117,21 @@ const PaymentDataPopup = ({ paymentsData, paymentsDataTenant, onClose }) => {
         body: tableRows,
         startY: 100, // Start below the title and tenant name
         theme: 'grid', // Use grid lines for better readability
-        styles: { fontSize: 12, cellPadding: 3, overflow: 'linebreak' },
+        styles: { fontSize: 12, cellPadding: 3, overflow: 'linebreak' }, // Cell padding and overflow options
         headStyles: {
           fillColor: [22, 160, 133], // Teal header background
           textColor: [255, 255, 255], // White text for headers
           fontStyle: 'bold',
         },
         columnStyles: {
-          0: { cellWidth: 'auto' }, // Adjust width for the first column
-          1: { halign: 'right' }, // Align numeric columns to the right
-          2: { halign: 'right' },
-          3: { halign: 'right' },
-          4: { halign: 'right' },
-          5: { halign: 'right' },
-          6: { halign: 'right' },
-          7: { halign: 'center' },
+          0: { cellWidth: 'auto' }, // Automatically adjust the width for the first column
+          1: { halign: 'right', cellWidth: 'max-content' }, // Set max-content width for the rent column
+          2: { halign: 'right', cellWidth: 'max-content' }, // Set max-content width for water bill column
+          3: { halign: 'right', cellWidth: 'max-content' }, // Set max-content width for garbage fee column
+          4: { halign: 'right', cellWidth: 'max-content' }, // Set max-content width for extra charges column
+          5: { halign: 'right', cellWidth: 'max-content' }, // Set max-content width for total amount paid column
+          6: { cellWidth: 'max-content', halign: 'left' }, // Increase width for reference details
+          7: { halign: 'center', cellWidth: 'max-content' }, // Center align status and set max-content width
         },
         margin: { top: 10 },
       });
@@ -131,12 +167,12 @@ const PaymentDataPopup = ({ paymentsData, paymentsDataTenant, onClose }) => {
           <div className="letterhead">
             <h2>Sleek Abode Apartments</h2>
             <p>Location: 123 Elegant Lane, Cityville</p>
-            <p>Email: contact@sleekabode.com</p>
-            <p>Phone: +123 456 7890</p>
+            <p>Email:sleekabodemanagement@gmail.com</p>
+            <p>Phone: (+254) 788-413-323</p>
           </div>
         </div>
         <h3>Tenant: {paymentsDataTenant.name}</h3>
-        <p>Total Amount Paid: Ksh {paymentsDataTenant.totalAmountPaid}</p>{' '}
+        <p>Total Amount Paid: Ksh {paymentsDataTenant.totalAmountPaid}</p>
         {/* Display total amount paid */}
         <table className="payment-tenant-table">
           <thead>
@@ -147,31 +183,60 @@ const PaymentDataPopup = ({ paymentsData, paymentsDataTenant, onClose }) => {
               <th>Garbage Fee</th>
               <th>Extra Charges</th>
               <th>Amount Paid</th>
-              <th>Reference No</th>
+              <th>Reference No (Date, Amount)</th>
               <th>Status</th>
             </tr>
           </thead>
           <tbody>
-            {paymentsData.map((payment, index) => (
+            {currentPayments.map((payment, index) => (
               <tr key={index}>
-                <td>{payment.month + payment.year}</td>
+                <td>{`${payment.month} ${payment.year}`}</td>
                 <td>{payment.rent.amount}</td>
                 <td>{payment.waterBill.amount}</td>
                 <td>{payment.garbageFee.amount}</td>
                 <td>{payment.extraCharges.amount}</td>
                 <td>{payment.totalAmountPaid}</td>
-                <td>{payment.referenceNumber}</td>
+
+                {/* Reference No section with date and amount */}
+                <td>
+                  {payment.referenceNoHistory?.map((ref, refIndex) => (
+                    <div key={refIndex}>
+                      Ref: {ref.referenceNoUsed} <br />
+                      Amount: {ref.amount} <br />
+                      Date:{' '}
+                      {new Date(ref.date).toLocaleString('en-GB', {
+                        day: 'numeric',
+                        month: 'long',
+                        year: 'numeric',
+                      })}
+                    </div>
+                  ))}
+                </td>
                 <td>{payment.isCleared ? 'Cleared' : 'Pending'}</td>
               </tr>
             ))}
           </tbody>
         </table>
-        <button className="download-btn" onClick={handleDownload}>
-          Download Document
-        </button>
-        <button className="closePaymentbtn" onClick={onClose}>
-          Close
-        </button>
+        <div className="paginationContainer">
+          <ReactPaginate
+            activePage={currentPage}
+            itemsCountPerPage={itemsPerPage}
+            totalItemsCount={paymentsData.length}
+            pageRangeDisplayed={5}
+            onChange={handlePageChange}
+            itemClass="paginationItem" // CSS class for pagination items
+            linkClass="paginationLink" // CSS class for pagination links
+            activeClass="activePage" // CSS class for the active page
+          />
+        </div>
+        <div className="popupButtons">
+          <button className="downloadButton" onClick={handleDownload}>
+            Download PDF
+          </button>
+          <button className="closeButton" onClick={onClose}>
+            Close
+          </button>
+        </div>
       </div>
     </div>
   );

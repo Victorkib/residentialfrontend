@@ -422,6 +422,7 @@
   justify-content: center;
   align-items: center;
   height: 100px;
+  z-index: 1500;
 }
 
 .loader {
@@ -429,6 +430,7 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  z-index: 1500;
 }
 
 .confirmation-modal {
@@ -495,6 +497,92 @@
 
         &:hover {
           background-color: #0e2e99;
+        }
+      }
+    }
+  }
+}
+.deficit-confirmation-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.5); // semi-transparent background overlay
+  z-index: 1000;
+
+  .deficit-modal-content {
+    background-color: #fff;
+    padding: 2rem;
+    width: 90%;
+    max-width: 600px;
+    border-radius: 10px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    font-family: 'Arial', sans-serif;
+
+    p {
+      font-size: 1.2rem;
+      color: #333;
+      margin-bottom: 1.5rem;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 1rem 0;
+      text-align: left;
+
+      li {
+        font-size: 1rem;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid #eee;
+
+        &:last-child {
+          border-bottom: none;
+        }
+
+        strong {
+          font-weight: 600;
+          color: #444;
+        }
+      }
+    }
+
+    .modal-actions {
+      margin-top: 2rem;
+      display: flex;
+      justify-content: space-between;
+
+      button {
+        padding: 0.8rem 1.5rem;
+        font-size: 1rem;
+        font-weight: 600;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+
+        &.cancel-btn {
+          background-color: #f44336;
+          color: #fff;
+          border: none;
+
+          &:hover {
+            background-color: #d32f2f;
+          }
+        }
+
+        &.confirm-btn {
+          background-color: #4caf50;
+          color: #fff;
+          border: none;
+
+          &:hover {
+            background-color: #388e3c;
+          }
         }
       }
     }

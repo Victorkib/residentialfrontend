@@ -19,8 +19,10 @@ function EditTenant() {
     placementDate: '',
     houseDeposit: '',
     waterDeposit: '',
+    apartmentId: '',
     houseDetails: {
-      houseNo: '', // Nested inside houseDetails
+      houseNo: '',
+      floorNo: '',
     },
     rentPayable: '',
     amountPaid: '',
@@ -39,6 +41,7 @@ function EditTenant() {
           `/v2/tenants/getSingleTenant/${_id}`
         );
         const { data } = response;
+        console.log('tenantData: ', data);
         setFormData(data);
         setError('');
       } catch (error) {
@@ -55,13 +58,21 @@ function EditTenant() {
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    // Special handling for houseDetails.houseNo
+    // Special handling for houseDetails
     if (name === 'houseNo') {
       setFormData((prevFormData) => ({
         ...prevFormData,
         houseDetails: {
           ...prevFormData.houseDetails,
           houseNo: value,
+        },
+      }));
+    } else if (name === 'floorNo') {
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        houseDetails: {
+          ...prevFormData.houseDetails,
+          floorNo: value,
         },
       }));
     } else {
@@ -76,20 +87,29 @@ function EditTenant() {
     e.preventDefault();
     setError('');
     setLoading(true);
+
     try {
-      const res = await apiRequest.put(
+      const updatedFormData = {
+        ...formData,
+        apartmentId: selectedApartment?._id || formData.apartmentId, // Ensure apartmentId is included
+      };
+
+      const res = await apiRequest.patch(
         `/v2/tenants/updateSingleTenantData/${_id}`,
-        formData
+        updatedFormData // Use updatedFormData that includes apartmentId
       );
+
       if (res.status) {
         toast.success('Tenant details updated successfully!');
-        console.log(res.data);
         navigate(`/tenantProfile/${_id}`);
       }
     } catch (err) {
       console.error('Error updating tenant:', err);
-      setError('Error updating tenant. Please try again.');
-      toast.error('Error updating tenant.');
+      setError(
+        err?.response?.data?.message ||
+          'Error updating tenant. Please try again.'
+      );
+      toast.error(err?.response?.data?.message || 'Error updating tenant.');
     } finally {
       setLoading(false);
     }
@@ -104,17 +124,6 @@ function EditTenant() {
   const [houses, setHouses] = useState([]);
   const [organizedData, setOrganizedData] = useState({});
 
-  const [floors, setFloors] = useState([
-    { floorNumber: 0, floorName: 'Ground Floor' },
-    { floorNumber: 1, floorName: 'First Floor' },
-    { floorNumber: 2, floorName: 'Second Floor' },
-    { floorNumber: 3, floorName: 'Third Floor' },
-    { floorNumber: 4, floorName: 'Fourth Floor' },
-    { floorNumber: 5, floorName: 'Fifth Floor' },
-    { floorNumber: 6, floorName: 'Sixth Floor' },
-    { floorNumber: 7, floorName: 'Seventh Floor' },
-  ]);
-
   const getFloorName = (floorNumber) => {
     if (floorNumber === 0) return 'Ground Floor';
 
@@ -127,21 +136,7 @@ function EditTenant() {
     return `${floorNumber}${ordinalSuffix(floorNumber)} Floor`;
   };
   // Fetch available floors from backend
-  const fetchFloors = async () => {
-    setLoading(true);
-    try {
-      const response = await apiRequest.get('/v2/floors/getAllFloors');
-      const floorsData = response.data.map((floor) => ({
-        floorName: getFloorName(floor.floorNumber),
-        floorNumber: floor.floorNumber,
-      }));
-      setFloors(floorsData);
-    } catch (error) {
-      toast.error('Error fetching floors');
-    } finally {
-      setLoading(false);
-    }
-  };
+
   useEffect(() => {
     const fetchHouses = async () => {
       setLoading(true);
@@ -173,7 +168,6 @@ function EditTenant() {
         setLoading(false);
       }
     };
-    fetchFloors();
     fetchHouses();
   }, []);
 
@@ -189,17 +183,17 @@ function EditTenant() {
 
   const handleHouseSelection = (house) => {
     if (!house.isOccupied) {
-      const houseLetter = house.houseName.slice(-1);
-      const houseNumber = `${selectedFloor}${houseLetter}`;
-      setSelectedHouse(houseNumber);
+      setSelectedHouse(house.houseName);
 
-      // Update houseDetails.houseNo in formData
+      // Update houseDetails.houseNo and houseDetails.floorNo in formData, and also update apartmentId
       setFormData((prevFormData) => ({
         ...prevFormData,
         houseDetails: {
           ...prevFormData.houseDetails,
-          houseNo: houseNumber,
+          houseNo: house.houseName,
+          floorNo: selectedFloor,
         },
+        apartmentId: selectedApartment?._id, // Add this to include apartmentId in formData
       }));
       setIsHousePopupVisible(false);
     }
@@ -267,7 +261,14 @@ function EditTenant() {
                 type="text"
                 name="houseNo"
                 id="houseNo"
-                value={formData?.houseDetails?.houseNo}
+                value={
+                  selectedFloor
+                    ? 'Floor ' + selectedFloor + ' ' + selectedHouse
+                    : 'Floor ' +
+                      formData?.houseDetails?.floorNo +
+                      ' ' +
+                      formData?.houseDetails?.houseNo
+                }
                 onChange={handleChange}
                 readOnly
                 onClick={() => setIsHousePopupVisible(true)}
@@ -276,7 +277,7 @@ function EditTenant() {
                 className="house-selection"
                 onClick={() => setIsHousePopupVisible(true)}
               >
-                {selectedHouse ? selectedHouse : 'Change House'}
+                {selectedHouse ? 'New House↑' : 'Change House'}
               </div>
             </div>
             <div className="forminput">
@@ -387,8 +388,7 @@ function EditTenant() {
                         <div
                           key={house?._id}
                           className={`house-option ${
-                            selectedHouse ===
-                            `${selectedFloor}${house?.houseName.slice(-1)}`
+                            selectedHouse === `${house?.houseName}`
                               ? 'selected'
                               : ''
                           } ${house?.isOccupied ? 'occupied' : ''}`}
