@@ -367,7 +367,13 @@ const RegisterTenant = () => {
         <div className="deposit-popup">
           <button
             className="close-popup"
-            onClick={() => (window.location.href = '/v2/incompleteDeposits')}
+            onClick={(e) =>
+              handleDeposit(
+                '/v2/tenants/addSingleAmountDeposit',
+                singleDepositData,
+                e
+              )
+            }
           >
             ×
           </button>
