@@ -1,9 +1,9 @@
-@import '../../../../responsive.scss';
+@import "../../../../responsive.scss";
 
 .tenant-payments-container {
   width: 100%;
   text-transform: capitalize;
-  background-image: url('/background354.jpeg');
+  background-image: url("/background354.jpeg");
   background-size: cover;
   height: 100%;
   color: black;
@@ -172,6 +172,13 @@
         right: 58%;
         top: 80%;
         border: 1px solid var(--primary-color);
+        
+        &:disabled {
+          background-color: #333;
+          color: rgba(255, 255, 255, 0.1);
+        cursor: not-allowed;
+        }
+
         @include md {
           width: 30%;
         }
@@ -184,6 +191,12 @@
         background-color: antiquewhite;
         color: goldenrod;
         cursor: pointer;
+
+        &:disabled {
+          background-color: #333;
+          color: rgba(255, 255, 255, 0.1);
+        cursor: not-allowed;
+        }
       }
     }
   }
@@ -315,7 +328,7 @@
 
     /* Add a semi-transparent overlay */
     &:after {
-      content: '';
+      content: "";
       position: absolute;
       top: 0;
       left: 0;
@@ -522,7 +535,7 @@
     border-radius: 10px;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
     text-align: center;
-    font-family: 'Arial', sans-serif;
+    font-family: "Arial", sans-serif;
 
     p {
       font-size: 1.2rem;
