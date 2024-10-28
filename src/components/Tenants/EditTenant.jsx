@@ -299,7 +299,9 @@ function EditTenant() {
                 className="OriginalPlacementDate"
               >
                 Original Placement date :{" "}
-                <span className="originalPlacement">3/10/2024</span>{" "}
+                <span className="originalPlacement">
+                  {new Date(formData.placementDate).toLocaleDateString()}
+                </span>{" "}
               </label>
             </div>
 
