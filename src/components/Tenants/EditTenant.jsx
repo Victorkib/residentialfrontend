@@ -292,6 +292,17 @@ function EditTenant() {
                 onChange={handleChange}
               />
             </div>
+
+            <div className="opd">
+              <label
+                htmlFor="originalPlacementDate"
+                className="OriginalPlacementDate"
+              >
+                Original Placement date :{" "}
+                <span className="originalPlacement">3/10/2024</span>{" "}
+              </label>
+            </div>
+
             <div className="forminput">
               <label htmlFor="emergencyContactNumber">
                 Emergency Contact Number<span>*</span>
