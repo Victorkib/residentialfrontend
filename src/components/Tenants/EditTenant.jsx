@@ -41,7 +41,7 @@ function EditTenant() {
           `/v2/tenants/getSingleTenant/${_id}`
         );
         const { data } = response;
-        console.log('tenantData: ', data);
+        // console.log('tenantData: ', data);
         setFormData(data);
         setError('');
       } catch (error) {

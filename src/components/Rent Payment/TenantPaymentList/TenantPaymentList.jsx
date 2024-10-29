@@ -13,10 +13,10 @@ import PaymentDataPopup from './PaymentDataPopup/PaymentDataPopup';
 const TenantPaymentList = () => {
   const { tenantId } = useParams();
   const [payments, setPayments] = useState([]);
-  console.log('payments: ', payments);
+  // console.log('payments: ', payments);
   const [onEntryOverPay, setOnEntryOverPay] = useState([]);
   const [tenant, setTenant] = useState('');
-  console.log('tenant: ', tenant);
+  // console.log('tenant: ', tenant);
   const [selectedPayment, setSelectedPayment] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -113,7 +113,25 @@ const TenantPaymentList = () => {
   return (
     <div className="tenant-payment-list">
       {error && <span className="error-message">{error}</span>}
-      <h2>{tenant?.name} Payment History</h2>
+      <h2>{tenant?.name} Payment History</h2>{' '}
+      <div className="pagination">
+        <Pagination
+          activePage={activePage}
+          itemsCountPerPage={itemsPerPage}
+          totalItemsCount={payments.length}
+          pageRangeDisplayed={5}
+          onChange={handlePageChange}
+          innerClass="pagination"
+          linkClass="page-link"
+          activeLinkClass="active"
+          previousLabel={<span className="arrow">&#9664;</span>} // Left arrow
+          nextLabel={<span className="arrow">&#9654;</span>} // Right arrow
+          firstLabel="First"
+          lastLabel="Last"
+          previousClass="arrow"
+          nextClass="arrow"
+        />
+      </div>
       <button className="btn" onClick={handleDowloadBtnClicked}>
         <span className="downloadSpan">
           Print Tenants <FaFileDownload />
@@ -166,14 +184,12 @@ const TenantPaymentList = () => {
           ))}
         </tbody>
       </table>
-
       {showPopup && selectedPayment && (
         <MiniPaymentsPopup
           payment={selectedPayment}
           onClose={handleClosePopup}
         />
       )}
-
       {showModal && (
         <div className="confirmation-modal">
           <div className="modal-content">
@@ -192,7 +208,6 @@ const TenantPaymentList = () => {
           </div>
         </div>
       )}
-
       {loading && (
         <div className="loader-overlay">
           <InfinitySpin
@@ -204,27 +219,7 @@ const TenantPaymentList = () => {
           />
         </div>
       )}
-
       {/* Pagination component */}
-      <div className="pagination">
-        <Pagination
-          activePage={activePage}
-          itemsCountPerPage={itemsPerPage}
-          totalItemsCount={payments.length}
-          pageRangeDisplayed={5}
-          onChange={handlePageChange}
-          innerClass="pagination"
-          linkClass="page-link"
-          activeLinkClass="active"
-          previousLabel={<span className="arrow">&#9664;</span>} // Left arrow
-          nextLabel={<span className="arrow">&#9654;</span>} // Right arrow
-          firstLabel="First"
-          lastLabel="Last"
-          previousClass="arrow"
-          nextClass="arrow"
-        />
-      </div>
-
       {paymentPopupDonwload && (
         <div className="tenantPopupModal">
           <div className="downloadContent">

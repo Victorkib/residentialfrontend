@@ -20,7 +20,9 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: space-around;
-    gap: 20px;
+    gap: 5px;
+    width: 90%;
+    margin: 0 auto;
   }
 
   .tenant-card {
@@ -28,7 +30,7 @@
     border: 1px solid #ddd;
     border-radius: 8px;
     padding: 20px;
-    width: 200px;
+    width: max-content;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
     cursor: pointer;
@@ -70,6 +72,31 @@
     }
   }
 
+  .deleteTenantBtn {
+    margin: 2px;
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #fff;
+    background: #ff4d4f;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease, transform 0.2s ease;
+
+    &:hover {
+      background: #ff1a1f;
+      transform: scale(1.05);
+    }
+
+    &:active {
+      transform: scale(0.98);
+    }
+
+    &:focus {
+      outline: 2px solid #ff4d4f;
+    }
+  }
   .nothing {
     background-color: #61b116;
     position: absolute;
@@ -128,6 +155,109 @@
           background-color: #007bff;
           color: #fff;
           border-color: #007bff;
+        }
+      }
+    }
+  }
+}
+
+.greyListDelete-confirmation-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(39, 39, 39, 0.486);
+
+  .modal-content {
+    padding: 30px;
+    background: rgba(230, 218, 218, 0.4);
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    backdrop-filter: blur(80px); /* Creates the glass effect */
+    color: #fff; /* White text for contrast */
+
+    .disclaimer {
+      font-size: 14px;
+      margin-top: 15px;
+      text-align: left;
+      font-weight: 500;
+      padding: 5px;
+      border: 1px solid rgba(240, 230, 140, 0.623);
+      border-radius: 8px;
+
+      .irreversible {
+        color: rgba(255, 0, 0, 0.404);
+      }
+    }
+
+    .deposit-history {
+      list-style: none;
+      padding: 5px;
+      margin: 10px 0;
+      height: 35vh;
+      overflow: scroll;
+      overflow-x: hidden;
+      border: 1px solid rgba(245, 222, 179, 0.342);
+      border-radius: 5px;
+
+      li {
+        background: rgba(
+          255,
+          255,
+          255,
+          0.2
+        ); /* Light translucent background for items */
+        border-radius: 5px;
+        margin: 5px 0;
+        padding: 10px;
+        color: #fff;
+        display: flex;
+        flex-direction: column;
+        flex-wrap: wrap;
+        align-items: flex-start;
+        justify-content: flex-start;
+
+        strong {
+          color: rgba(128, 128, 0, 0.61);
+        }
+      }
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+
+      .cancel-btn,
+      .confirm-btn {
+        padding: 10px 20px;
+        border-radius: 5px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.3s ease;
+      }
+
+      .cancel-btn {
+        background: #ccc;
+        color: #333;
+
+        &:hover {
+          background: #b0b0b0;
+        }
+      }
+
+      .confirm-btn {
+        background: #ff4d4f;
+        color: #fff;
+
+        &:hover {
+          background: #ff1a1f;
         }
       }
     }

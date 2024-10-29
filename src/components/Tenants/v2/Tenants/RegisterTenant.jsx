@@ -167,17 +167,28 @@ const RegisterTenant = () => {
       });
       if (response.status) {
         setTenantData(response.data);
+        closeConfirmCreateTenant();
         setIsDepositPopupVisible(true);
         setLoading(false);
         toast.success('Success Tenant Creation');
       }
     } catch (error) {
+      closeConfirmCreateTenant();
       setError(error.response.data.message);
       setLoading(false);
       toast.error(error.response.data.message || 'Error Creating Tenant');
     } finally {
       setError('');
     }
+  };
+  const [createConfirmationPopup, setCreateConfirmationPopup] = useState(false);
+
+  const handleCreateTenant = (e) => {
+    e.preventDefault();
+    setCreateConfirmationPopup(true);
+  };
+  const closeConfirmCreateTenant = () => {
+    setCreateConfirmationPopup(false);
   };
 
   const handleDeposit = async (url, depositData, e) => {
@@ -190,6 +201,9 @@ const RegisterTenant = () => {
       });
       if (response.status) {
         console.log('responseData: ', response.data);
+        showSingleDeposit && showSingleDeposit
+          ? closeFundsConfirm()
+          : closeMultiFundsConfirm();
         const isCleared = response.data.tenant.deposits.isCleared;
         navigate(isCleared ? '/listAllTenants' : '/v2/incompleteDeposits');
         setLoading(false);
@@ -205,12 +219,39 @@ const RegisterTenant = () => {
     }
   };
 
+  const [fundsConfirmPopup, setFundsConfirmPopup] = useState(false);
+  const [multiFundsConfirmPopup, setMultiFundsConfirmPopup] = useState(false);
+
+  const fundConfirm = (e) => {
+    e.preventDefault();
+    setFundsConfirmPopup(true);
+  };
+  const closeFundsConfirm = () => {
+    setFundsConfirmPopup(false);
+  };
+
+  const multiFundConfirm = (e) => {
+    e.preventDefault();
+    setMultiFundsConfirmPopup(true);
+  };
+  const closeMultiFundsConfirm = () => {
+    setMultiFundsConfirmPopup(false);
+  };
+
+  const formattedPlacementDate = new Date(
+    formData.placementDate
+  ).toLocaleDateString('en-US', {
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
+  });
+
   return (
     <div className="register-tenant">
       {!tenantData && (
         <div className="registration-card">
           <h2>Tenant Registration</h2> <hr className="h" />
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleCreateTenant}>
             <label htmlFor="name">Name</label>
             <input
               type="text"
@@ -391,15 +432,7 @@ const RegisterTenant = () => {
             {showSingleDeposit ? (
               <div className="deposit-card single-deposit">
                 <h3>Single Deposit</h3>
-                <form
-                  onSubmit={(e) =>
-                    handleDeposit(
-                      '/v2/tenants/addSingleAmountDeposit',
-                      singleDepositData,
-                      e
-                    )
-                  }
-                >
+                <form onSubmit={fundConfirm}>
                   <label htmlFor="totalAmount">Total Amount</label>
                   <input
                     type="number"
@@ -433,15 +466,7 @@ const RegisterTenant = () => {
             ) : (
               <div className="deposit-card multiple-deposits">
                 <h3>Multiple Deposits</h3>
-                <form
-                  onSubmit={(e) =>
-                    handleDeposit(
-                      '/v2/tenants/addDeposits',
-                      multipleDepositData,
-                      e
-                    )
-                  }
-                >
+                <form onSubmit={multiFundConfirm}>
                   <label htmlFor="rentDeposit">Rent Deposit</label>
                   <input
                     type="number"
@@ -507,6 +532,181 @@ const RegisterTenant = () => {
             ariaLabel="loading"
             visible={true}
           />
+        </div>
+      )}
+
+      {createConfirmationPopup && (
+        <div className="confirm-popup-overlay">
+          <div className="confirm-popup">
+            <h3>Confirm Tenant Details</h3>
+            <ul>
+              <li>
+                <strong>Name:</strong> {formData.name}
+              </li>
+              <li>
+                <strong>Email:</strong> {formData.email}
+              </li>
+              <li>
+                <strong>National ID:</strong> {formData.nationalId}
+              </li>
+              <li>
+                <strong>Phone No.:</strong> {formData.phoneNo}
+              </li>
+              <li>
+                <strong>Placement Date:</strong> {formattedPlacementDate}
+              </li>
+              <li>
+                <strong>House No:</strong> {selectedHouse || 'Not Selected'}
+              </li>
+              <li>
+                <strong>Emergency Contact Name:</strong>{' '}
+                {formData.emergencyContactName}
+              </li>
+              <li>
+                <strong>Emergency Contact No.:</strong>{' '}
+                {formData.emergencyContactNumber}
+              </li>
+            </ul>
+            <div className="confirm-actions">
+              <button onClick={handleSubmit} className="confirm-button">
+                Confirm
+              </button>
+              <button
+                onClick={closeConfirmCreateTenant}
+                className="cancel-button"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* confirm single amount depo */}
+      {fundsConfirmPopup && (
+        <div className="single-confirmation-popup">
+          <div className="popup-content glass-card">
+            <h3>Confirm Deposit Details</h3>
+            <div className="popup-details">
+              <div className="detail-item">
+                <span className="label">Tenant:</span>
+                <span className="value">{tenantData.name}</span>
+              </div>
+              <div className="detail-item">
+                <span className="label">Amount:</span>
+                <span className="value">
+                  Ksh{' '}
+                  {new Intl.NumberFormat('en-KE', {
+                    style: 'currency',
+                    currency: 'KES',
+                  }).format(singleDepositData.totalAmount)}
+                </span>
+              </div>
+              <div className="detail-item">
+                <span className="label">Reference No:</span>
+                <span className="value">{singleDepositData.referenceNo}</span>
+              </div>
+              <div className="detail-item">
+                <span className="label">Deposit Date:</span>
+                <span className="value">
+                  {new Date(singleDepositData.depositDate).toLocaleDateString()}
+                </span>
+              </div>
+            </div>
+            <div className="popup-actions">
+              <button className="cancel-btn" onClick={closeFundsConfirm}>
+                Cancel
+              </button>
+              <button
+                className="confirm-btn"
+                onClick={(e) =>
+                  handleDeposit(
+                    '/v2/tenants/addSingleAmountDeposit',
+                    singleDepositData,
+                    e
+                  )
+                }
+              >
+                Confirm & Submit
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Confirm Multiple Deposits Popup */}
+      {multiFundsConfirmPopup && (
+        <div className="multiFunds-confirmation-popup">
+          <div className="popup-content glass-card">
+            <h3>Confirm Deposit Details</h3>
+            <div className="popup-details">
+              <div className="detail-item">
+                <span className="label">Tenant:</span>
+                <span className="value">{tenantData.name}</span>
+              </div>
+              <div className="detail-item">
+                <span className="label">Amount:</span>
+                <ul className="amount-list">
+                  <li>
+                    Rent Deposit:
+                    <span className="value">
+                      {new Intl.NumberFormat('en-KE', {
+                        style: 'currency',
+                        currency: 'KES',
+                      }).format(multipleDepositData.rentDeposit)}
+                    </span>
+                  </li>
+                  <li>
+                    Water Deposit:
+                    <span className="value">
+                      {new Intl.NumberFormat('en-KE', {
+                        style: 'currency',
+                        currency: 'KES',
+                      }).format(multipleDepositData.waterDeposit)}
+                    </span>
+                  </li>
+                  <li>
+                    Initial Rent Payment:
+                    <span className="value">
+                      {new Intl.NumberFormat('en-KE', {
+                        style: 'currency',
+                        currency: 'KES',
+                      }).format(multipleDepositData.initialRentPayment)}
+                    </span>
+                  </li>
+                </ul>
+              </div>
+              <div className="detail-item">
+                <span className="label">Reference No:</span>
+                <span className="value">{multipleDepositData.referenceNo}</span>
+              </div>
+              <div className="detail-item">
+                <span className="label">Deposit Date:</span>
+                <span className="value">
+                  {new Date(
+                    multipleDepositData.depositDate
+                  ).toLocaleDateString()}
+                </span>
+              </div>
+            </div>
+            <div className="popup-actions">
+              <button className="cancel-btn" onClick={closeMultiFundsConfirm}>
+                Cancel
+              </button>
+              <button
+                className="confirm-btn"
+                onClick={(e) =>
+                  handleDeposit(
+                    '/v2/tenants/addDeposits',
+                    multipleDepositData,
+                    e
+                  )
+                }
+              >
+                Confirm & Submit
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

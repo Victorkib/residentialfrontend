@@ -4,6 +4,7 @@ import { FaChevronDown } from 'react-icons/fa';
 import Pagination from 'react-js-pagination';
 import Popup from './Popup.jsx';
 import apiRequest from '../../../lib/apiRequest.js';
+import { InfinitySpin } from 'react-loader-spinner';
 
 const Payments = () => {
   const [groupedPayments, setGroupedPayments] = useState([]);
@@ -12,8 +13,11 @@ const Payments = () => {
   const [showPopup, setShowPopup] = useState(false);
   const itemsPerPage = 5;
 
+  const [loading, setLoading] = useState(false);
+
   useEffect(() => {
     const fetchGroupedPayments = async () => {
+      setLoading(true);
       try {
         const res = await apiRequest.get(
           '/v2/payments/getGroupedPaymentsByTenant'
@@ -26,6 +30,8 @@ const Payments = () => {
         }
       } catch (err) {
         console.error('Failed to fetch grouped payments:', err);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -37,6 +43,7 @@ const Payments = () => {
   };
 
   const handleViewPayments = async (tenantId) => {
+    setLoading(true);
     try {
       const res = await apiRequest.get(
         `/v2/payments/getPaymentsByTenantId/${tenantId}`
@@ -48,6 +55,8 @@ const Payments = () => {
       setShowPopup(true);
     } catch (err) {
       console.error('Failed to fetch tenant payments:', err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -99,6 +108,18 @@ const Payments = () => {
           />
         )}
       </div>
+      {loading && (
+        <div className="loader-overlay">
+          <InfinitySpin
+            height="100"
+            width="100"
+            radius="2"
+            color="#4fa94d"
+            ariaLabel="three-dots-loading"
+            visible={true}
+          />
+        </div>
+      )}
     </div>
   );
 };

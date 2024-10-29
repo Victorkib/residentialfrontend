@@ -87,9 +87,13 @@ const TenantPayments = () => {
       );
       console.log('unfinished: ', response.data);
       setOutstandingPayments(response.data);
+      if (response.status == 404) {
+        toast.error(response?.data?.message || 'No Outstanding Payments');
+      }
     } catch (error) {
-      if (error.response.data.unpaidPayments.lenght < 0) {
+      if (error?.response?.data?.unpaidPayments?.length < 0) {
         console.log('no outstanding payments');
+        toast.error('No Outstanding Payments');
       }
       // setError(error.response.data.message);
       console.log(error.response);
@@ -126,6 +130,9 @@ const TenantPayments = () => {
       setError('');
     } catch (error) {
       setError(
+        error.response?.data?.message || 'Error fetching fully paid payments'
+      );
+      toast.info(
         error.response?.data?.message || 'Error fetching fully paid payments'
       );
       throw new Error(
@@ -471,20 +478,21 @@ const TenantPayments = () => {
     setLoading(true);
     try {
       const response = await apiRequest.put(
-        `/v2/payments/ExtraAmountGivenInAmonth/${outstandingPayments[0]?._id}`,
+        `/v2/payments/ExtraAmountGivenInAmonth/${tenantId}`,
         moneyWithinMonthData
       );
       if (response.status) {
-        console.log('All good');
-        fetchUnpaidPayments(tenantId);
-        fetchFullyPaidPayments(tenantId);
-        await getMostRecentPaymentByTenantId(tenantId);
-        await getTenantDetails();
+        // console.log('All good');
         closeExtraAmountConfirmationPopup();
         setAddInternalAmountPopup(false);
         toast.success('Amount Added!');
 
         handleGenerateReceipt(moneyWithinMonthData);
+
+        await fetchUnpaidPayments(tenantId);
+        await fetchFullyPaidPayments(tenantId);
+        await getMostRecentPaymentByTenantId(tenantId);
+        await getTenantDetails();
         setExtraAmount('');
         setExtraAmountReferenceNo('');
         setExtraAmountGivenDate('');
@@ -551,6 +559,7 @@ const TenantPayments = () => {
     setShowUpdatePaymentModal(true);
   };
   const closeUpdatePopup = () => {
+    setSelectedPayment('');
     setShowUpdatePaymentModal(false);
   };
 
@@ -572,30 +581,40 @@ const TenantPayments = () => {
         {
           updatedRentDeficit: updatedRentDeficit
             ? updatedRentDeficit
-            : selectedPayment.rent.deficit,
+            : selectedPayment.rent.deficit > 0
+            ? selectedPayment.rent.deficit
+            : '',
           updatedWaterDeficit: updatedWaterDeficit
             ? updatedWaterDeficit
-            : selectedPayment.waterBill.deficit,
+            : selectedPayment.waterBill.deficit > 0
+            ? selectedPayment.waterBill.deficit
+            : '',
           updatedAccumulatedWaterBill: updatedAccumulatedWaterBill
             ? updatedAccumulatedWaterBill
-            : selectedPayment.waterBill.accumulatedAmount,
+            : selectedPayment.waterBill.accumulatedAmount > 0
+            ? selectedPayment.waterBill.accumulatedAmount
+            : '',
           updatedGarbageDeficit: updatedGarbageDeficit
             ? updatedGarbageDeficit
-            : selectedPayment.garbageFee.deficit,
+            : selectedPayment.garbageFee.deficit > 0
+            ? selectedPayment.garbageFee.deficit
+            : '',
           updatedReferenceNumber: updatedReferenceNumber
             ? updatedReferenceNumber
             : selectedPayment.referenceNumber,
           updatedExtraCharges: updatedExtraCharges
             ? updatedExtraCharges
-            : selectedPayment.extraCharges.deficit,
+            : selectedPayment.extraCharges.deficit > 0
+            ? selectedPayment.extraCharges.deficit
+            : '',
         }
       );
       if (response.status) {
         toast.success('Success');
         /**********/
-        fetchUnpaidPayments(tenantId);
-        fetchFullyPaidPayments(tenantId);
-        getMostRecentPaymentByTenantId(tenantId);
+        await fetchUnpaidPayments(tenantId);
+        await fetchFullyPaidPayments(tenantId);
+        await getMostRecentPaymentByTenantId(tenantId);
 
         //reset deficit update values
         setUpdatedRentDeficit('');
@@ -606,6 +625,7 @@ const TenantPayments = () => {
         setUpdatedReferenceNumber('');
         setError('');
         closeConfirmationPopup();
+        closeUpdatePopup();
         setShowUpdatePaymentModal(false);
       }
     } catch (error) {
@@ -870,8 +890,8 @@ const TenantPayments = () => {
 
   return (
     <div className="tenant-payments-container">
-      <ToastContainer />
       <>
+        <ToastContainer />
         <div className="h1">
           <h1>
             <span>{tenantDetails?.name + `'s`} </span> Payment Track
@@ -1014,13 +1034,59 @@ const TenantPayments = () => {
                         ) : (
                           ''
                         )}
+                        {payment?.waterBill?.paid ? (
+                          ''
+                        ) : (
+                          <div className="waterBill">
+                            {payment?.waterBill?.deficit > 0 ? (
+                              <p>
+                                <strong>Water Deficit:</strong>{' '}
+                                {payment?.waterBill?.deficit > 0
+                                  ? payment?.waterBill?.deficit
+                                  : 'Water Bill...'}
+                                {''}
+                              </p>
+                            ) : (
+                              <p>
+                                <strong>Water Bill:</strong>{' '}
+                                {payment?.waterBill?.deficit > 0
+                                  ? payment?.waterBill?.deficit
+                                  : 'Water Bill...'}
+                                {''}
+                              </p>
+                            )}
 
-                        <p>
-                          <strong>Water Bill:</strong>{' '}
-                          {payment?.waterBill?.deficit > 0
-                            ? payment?.waterBill?.deficit
-                            : 'Water Bill...'}
-                        </p>
+                            {payment?.waterBill?.accumulatedAmount > 0 ? (
+                              <p>
+                                {payment?.waterBill?.accumulatedAmount > 0 ? (
+                                  <span>
+                                    Accumulated Bill:{' '}
+                                    {payment?.waterBill?.accumulatedAmount}
+                                  </span>
+                                ) : (
+                                  ''
+                                )}
+                              </p>
+                            ) : (
+                              ''
+                            )}
+
+                            {payment?.waterBill?.amount > 0 ? (
+                              <p>
+                                {payment?.waterBill?.amount > 0 ? (
+                                  <span>
+                                    Already Paid: {payment?.waterBill?.amount}✅
+                                  </span>
+                                ) : (
+                                  ''
+                                )}
+                              </p>
+                            ) : (
+                              ''
+                            )}
+                          </div>
+                        )}
+
                         {payment?.garbageFee?.deficit ? (
                           <p>
                             <strong>Garbage Fee Deficit:</strong>{' '}
@@ -1101,6 +1167,7 @@ const TenantPayments = () => {
                     onClick={() => {
                       handleAddInternalAmount();
                     }}
+                    // disabled={outstandingPayments[0].waterBill.deficit > 0}
                   >
                     Given Extra Amount within {previousMonth}
                   </button>
@@ -1312,37 +1379,43 @@ const TenantPayments = () => {
                             ) : (
                               ''
                             )}
-                            {payment?.waterBill?.deficit > 0 ? (
+                            {payment?.waterBill?.paid ? (
                               ''
                             ) : (
-                              <div className="form-group water-bill-section">
-                                <label
-                                  onClick={toggleWaterBillDropdown}
-                                  className="water-bill-label"
-                                >
-                                  <span className="water-bill-icon">💧</span>{' '}
-                                  Water Bill{' '}
-                                  <span className="dropdown-toggle">
-                                    {waterBillDropdownOpen ? '⬆' : '⬇'}
-                                  </span>
-                                </label>
-                                {waterBillDropdownOpen && (
-                                  <div className="water-bill-dropdown">
-                                    <div className="form-group">
-                                      <label>Accumulated Water Bill:</label>
-                                      <input
-                                        type="number"
-                                        value={previousAccumulatedWaterBill}
-                                        onChange={(e) =>
-                                          setPreviousAccumulatedWaterBill(
-                                            e.target.value
-                                          )
-                                        }
-                                        name="accumulatedWaterBill"
-                                        required
-                                      />
-                                    </div>
-                                    {/* <div className="form-group">
+                              <>
+                                {payment?.waterBill?.deficit > 0 ? (
+                                  ''
+                                ) : (
+                                  <div className="form-group water-bill-section">
+                                    <label
+                                      onClick={toggleWaterBillDropdown}
+                                      className="water-bill-label"
+                                    >
+                                      <span className="water-bill-icon">
+                                        💧
+                                      </span>{' '}
+                                      Water Bill{' '}
+                                      <span className="dropdown-toggle">
+                                        {waterBillDropdownOpen ? '⬆' : '⬇'}
+                                      </span>
+                                    </label>
+                                    {waterBillDropdownOpen && (
+                                      <div className="water-bill-dropdown">
+                                        <div className="form-group">
+                                          <label>Accumulated Water Bill:</label>
+                                          <input
+                                            type="number"
+                                            value={previousAccumulatedWaterBill}
+                                            onChange={(e) =>
+                                              setPreviousAccumulatedWaterBill(
+                                                e.target.value
+                                              )
+                                            }
+                                            name="accumulatedWaterBill"
+                                            required
+                                          />
+                                        </div>
+                                        {/* <div className="form-group">
                                       <label>Paid Water Bill:</label>
                                       <input
                                         type="number"
@@ -1356,17 +1429,20 @@ const TenantPayments = () => {
                                         required
                                       />
                                     </div> */}
-                                    <button
-                                      type="button"
-                                      className="close-dropdown-btn"
-                                      onClick={toggleWaterBillDropdown}
-                                    >
-                                      ⬆
-                                    </button>
+                                        <button
+                                          type="button"
+                                          className="close-dropdown-btn"
+                                          onClick={toggleWaterBillDropdown}
+                                        >
+                                          ⬆
+                                        </button>
+                                      </div>
+                                    )}
                                   </div>
                                 )}
-                              </div>
+                              </>
                             )}
+
                             {payment?.garbageFee?.deficit > 0 ? (
                               <div className="form-group">
                                 <label>
@@ -1763,65 +1839,84 @@ const TenantPayments = () => {
                 ) : null}
 
                 {/* Water Deficit */}
-                {selectedPayment?.waterBill?.deficit > 0 ? (
-                  <>
-                    <div className="form-group">
-                      <label>
-                        Current Water Bill{' '}
-                        {selectedPayment?.waterBill?.deficit || ''}
-                      </label>
-                      <input
-                        type="number"
-                        value={updatedWaterDeficit}
-                        onChange={(e) => setUpdatedWaterDeficit(e.target.value)}
-                        placeholder="New deficit value"
-                      />
-                    </div>
-                  </>
-                ) : (
+                {selectedPayment?.waterBill?.paid ? (
                   ''
+                ) : (
+                  <>
+                    {selectedPayment?.waterBill?.deficit > 0 ? (
+                      <>
+                        <div className="form-group">
+                          <label>
+                            Current Water Bill{' '}
+                            {selectedPayment?.waterBill?.deficit || ''}
+                          </label>
+                          <input
+                            type="number"
+                            value={updatedWaterDeficit}
+                            onChange={(e) =>
+                              setUpdatedWaterDeficit(e.target.value)
+                            }
+                            placeholder="New deficit value"
+                          />
+                        </div>
+                      </>
+                    ) : (
+                      ''
+                    )}
+                  </>
                 )}
 
-                {selectedPayment?.waterBill?.deficit > 0 ? (
+                {selectedPayment?.waterBill?.paid ? (
                   ''
                 ) : (
                   <>
                     {' '}
-                    <div className="form-group water-bill-section">
-                      <label
-                        onClick={toggleWaterBillDropdown}
-                        className="water-bill-label"
-                      >
-                        <span className="water-bill-icon">💧</span> Water Bill{' '}
-                        <span className="dropdown-toggle">
-                          {waterBillDropdownOpen ? '⬆' : '⬇'}
-                        </span>
-                      </label>
-                      {waterBillDropdownOpen && (
-                        <div className="water-bill-dropdown">
-                          <div className="form-group">
-                            <label>Accumulated Water Bill:</label>
-                            <input
-                              type="number"
-                              value={updatedAccumulatedWaterBill}
-                              onChange={(e) =>
-                                setUpdatedAccumulatedWaterBill(e.target.value)
-                              }
-                              name="accumulatedWaterBill"
-                            />
-                          </div>
-                          <button
-                            type="button"
-                            className="close-dropdown-btn"
+                    {selectedPayment?.waterBill?.deficit > 0 ? (
+                      ''
+                    ) : (
+                      <>
+                        {' '}
+                        <div className="form-group water-bill-section">
+                          <label
                             onClick={toggleWaterBillDropdown}
+                            className="water-bill-label"
                           >
-                            ⬆
-                          </button>
+                            <span className="water-bill-icon">💧</span> Water
+                            Bill{' '}
+                            <span className="dropdown-toggle">
+                              {waterBillDropdownOpen ? '⬆' : '⬇'}
+                            </span>
+                          </label>
+                          {waterBillDropdownOpen && (
+                            <div className="water-bill-dropdown">
+                              <div className="form-group">
+                                <label>Accumulated Water Bill:</label>
+                                <input
+                                  type="number"
+                                  value={updatedAccumulatedWaterBill}
+                                  onChange={(e) =>
+                                    setUpdatedAccumulatedWaterBill(
+                                      e.target.value
+                                    )
+                                  }
+                                  name="accumulatedWaterBill"
+                                />
+                              </div>
+                              <button
+                                type="button"
+                                className="close-dropdown-btn"
+                                onClick={toggleWaterBillDropdown}
+                              >
+                                ⬆
+                              </button>
+                            </div>
+                          )}
                         </div>
-                      )}
-                    </div>
+                      </>
+                    )}
                   </>
                 )}
+
                 {/* New Water Bill Dropdown Section */}
 
                 {/* Garbage Deficit */}
@@ -1981,15 +2076,13 @@ const TenantPayments = () => {
         {error && <span>{error}</span>}
       </>
       {loading && (
-        <div className="loader-container">
+        <div className="loader-overlay">
           <TailSpin
             height="100"
             width="100"
             radius="2"
             color="#4fa94d"
             ariaLabel="three-dots-loading"
-            wrapperStyle={{}}
-            wrapperClass="loader"
             visible={true}
           />
         </div>
