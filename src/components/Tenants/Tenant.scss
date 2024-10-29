@@ -2,7 +2,7 @@
   display: flex;
   justify-content: center;
   background-image: linear-gradient(rgba(9, 9, 9, 0.8), rgba(9, 8, 8, 0.8)),
-    url('/tenantbg.webp');
+    url("/tenantbg.webp");
 
   align-items: center;
   height: 100%;
@@ -24,7 +24,7 @@
         rgba(248, 246, 246, 0.9),
         rgba(250, 248, 248, 0.8)
       ),
-      url('/housebg.jfif');
+      url("/housebg.jfif");
     background-repeat: no-repeat;
     background-size: cover;
     align-items: center;
@@ -63,6 +63,26 @@
         }
       }
 
+      .opd {
+        width: 100%;
+        height: 50px;
+        margin-bottom: 30px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid var(--primary-color);
+        background-color: transparent;
+        padding: 10px;
+      }
+      .OriginalPlacementDate {
+        font-weight: 1000;
+        color: black;
+      }
+      .originalPlacement {
+        color: var(--yellow);
+        margin-bottom: 30px;
+      }
       .selected-house {
         text-align: center;
         margin-bottom: 1.5rem;
@@ -177,7 +197,7 @@
         margin-top: 1rem;
       }
 
-      button[type='submit'] {
+      button[type="submit"] {
         width: 50%;
         padding: 0.5rem;
         border: none;

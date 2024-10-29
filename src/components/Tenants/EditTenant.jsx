@@ -42,6 +42,7 @@ function EditTenant() {
         );
         const { data } = response;
         // console.log('tenantData: ', data);
+        console.log('tenantData: ', data);
         setFormData(data);
         setError('');
       } catch (error) {
@@ -281,17 +282,30 @@ function EditTenant() {
               </div>
             </div>
             <div className="forminput">
-              <label htmlFor="emergencyContactName">
-                Emergency Contact Name<span>*</span>
+              <label htmlFor="placementDate">
+                Placement Date<span>*</span>
               </label>
               <input
-                type="text"
-                name="emergencyContactName"
-                id="emergencyContactName"
-                value={formData.emergencyContactName}
+                type="date"
+                name="placementDate"
+                id="placementDate"
+                value={formData.placementDate}
                 onChange={handleChange}
               />
             </div>
+
+            <div className="opd">
+              <label
+                htmlFor="originalPlacementDate"
+                className="OriginalPlacementDate"
+              >
+                Original Placement date :{' '}
+                <span className="originalPlacement">
+                  {new Date(formData.placementDate).toLocaleDateString()}
+                </span>{' '}
+              </label>
+            </div>
+
             <div className="forminput">
               <label htmlFor="emergencyContactNumber">
                 Emergency Contact Number<span>*</span>
