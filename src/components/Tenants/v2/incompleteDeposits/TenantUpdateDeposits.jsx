@@ -258,7 +258,11 @@ const TenantUpdateDeposit = () => {
         <div className="card">
           <h2>{tenant?.name}</h2>
           <p>
-            <strong>House No:</strong> {tenant?.houseDetails?.houseNo}
+            <strong>House No:</strong>{' '}
+            {tenant?.houseDetails?.houseNo +
+              ' ' +
+              'Floor:' +
+              tenant?.houseDetails?.floorNo}
           </p>
           {tenant?.deposits?.rentDepositDeficit ? (
             <p>

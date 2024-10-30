@@ -58,7 +58,7 @@ const TenantPayments = () => {
       setNotes([...notes, response.data]);
       setTitle('');
       setDescription('');
-      setPopupOpen(false);
+      await fetchNotes();
       toast.success('Note added successfully');
     } catch (error) {
       toast.error(error?.resonse?.data?.message || 'error fetching notes');
@@ -80,7 +80,7 @@ const TenantPayments = () => {
       setEditingNoteId(null);
       setTitle('');
       setDescription('');
-      setPopupOpen(false);
+      await fetchNotes();
       toast.success('Note updated successfully');
     } catch (error) {
       toast.error(error?.resonse?.data?.message || 'error fetching notes');
@@ -94,10 +94,11 @@ const TenantPayments = () => {
     setLoading(true);
     try {
       const response = await apiRequest.delete(`/v2/notes/deleteNote/${id}`);
-      setNotes(notes.filter((note) => note._id !== id));
-      toast.success('Note deleted successfully');
-
-      console.log(response);
+      if (response.status) {
+        setNotes(notes.filter((note) => note._id !== id));
+        await fetchNotes();
+        toast.success('Note deleted successfully');
+      }
     } catch (error) {
       toast.error(error?.resonse?.data?.message || 'error fetching notes');
     } finally {
@@ -271,7 +272,7 @@ const TenantPayments = () => {
   const [previousMonth, setPreviousMonth] = useState('');
   const [previousYear, setPreviousYear] = useState('');
   const [mostRecentPayment, setMostRecentPayments] = useState({});
-  // console.log(mostRecentPayment);
+  console.log('mostRecentPayment: ', mostRecentPayment);
   const getMostRecentPaymentByTenantId = async (tenantId) => {
     try {
       const response = await apiRequest.get(
@@ -644,17 +645,20 @@ const TenantPayments = () => {
     0 // Initial value of the sum
   );
 
+  const lastPaymentDate =
+    mostRecentPayment?.referenceNoHistory[
+      mostRecentPayment.referenceNoHistory.length - 1
+    ]?.date;
+
   // Function to handle overpay transfer
   const handleOverpayTransfer = () => {
     if (!isOverpayTransferred) {
       setNewMonthlyAmount(mostRecentPayment?.overpay || 0); // Transfer overpay to monthly amount
       setReferenceNumber(mostRecentPayment?.referenceNumber || 'usedOverPay'); // Transfer overpay to monthly amount
       setNewPaymentDate(
-        mostRecentPayment?.referenceNoHistory[0]?.date
-          ? moment(mostRecentPayment.referenceNoHistory[0].date).format(
-              'MMMM D, YYYY'
-            ) // Change to your desired format
-          : moment(new Date(Date.now())).format('MMMM D, YYYY') // Format the current date
+        lastPaymentDate
+          ? moment(lastPaymentDate).format('MMMM D, YYYY') // Desired format
+          : moment(new Date()).format('MMMM D, YYYY') // Format the current date if no date found
       );
 
       setIsOverpayTransferred(true); // Mark overpay as transferred
@@ -1034,33 +1038,39 @@ const TenantPayments = () => {
 
             {popupOpen && (
               <div className="popup">
-                <div className="notes-container">
-                  <h3>Existing Notes</h3>
-                  {currentNotes.map((note) => (
-                    <div key={note._id} className="note">
-                      <h4>{note.title}</h4>
-                      <p>{note.description}</p>
-                      <button onClick={() => openEditPopup(note)}>Edit</button>
-                      <button onClick={() => deleteNote(note._id)}>
-                        Delete
-                      </button>
-                    </div>
-                  ))}
+                {currentNotes.length > 0 ? (
+                  <div className="notes-container">
+                    <h3>Existing Notes</h3>
+                    {currentNotes.map((note) => (
+                      <div key={note._id} className="note">
+                        <h4>{note.title}</h4>
+                        <p>{note.description}</p>
+                        <button onClick={() => openEditPopup(note)}>
+                          Edit
+                        </button>
+                        <button onClick={() => deleteNote(note._id)}>
+                          Delete
+                        </button>
+                      </div>
+                    ))}
 
-                  <ReactPaginate
-                    previousLabel={'<'}
-                    nextLabel={'>'}
-                    pageCount={pageCount}
-                    onPageChange={handlePageClick}
-                    containerClassName={'pagination'}
-                    activeClassName={'active'}
-                    previousClassName={'page-item'}
-                    nextClassName={'page-item'}
-                    pageClassName={'page-item'}
-                    breakClassName={'page-item'}
-                    breakLabel={'...'}
-                  />
-                </div>
+                    <ReactPaginate
+                      previousLabel={'<'}
+                      nextLabel={'>'}
+                      pageCount={pageCount}
+                      onPageChange={handlePageClick}
+                      containerClassName={'pagination'}
+                      activeClassName={'active'}
+                      previousClassName={'page-item'}
+                      nextClassName={'page-item'}
+                      pageClassName={'page-item'}
+                      breakClassName={'page-item'}
+                      breakLabel={'...'}
+                    />
+                  </div>
+                ) : (
+                  ''
+                )}
 
                 <div className="add-edit-section">
                   <h3>{editingNoteId ? 'Edit Note' : 'Add Note'}</h3>

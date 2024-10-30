@@ -553,7 +553,7 @@ const RegisterHouse = () => {
 
       <ToastContainer />
       {loading && (
-        <div className="loader">
+        <div className="loader-overlay">
           <ThreeDots
             className="threeDots"
             height="100"
