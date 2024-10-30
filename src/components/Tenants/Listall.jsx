@@ -10,6 +10,7 @@ import { FaDownload } from 'react-icons/fa6';
 import { toast, ToastContainer } from 'react-toastify';
 import TenantDataPopup from './v2/TenantDataPopup/TenantDataPopup';
 import jsPDF from 'jspdf'; // Import jsPDF
+import Pagination from 'react-js-pagination';
 
 const Listall = () => {
   const fallbackTenants = [
@@ -224,10 +225,27 @@ const Listall = () => {
     };
   };
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
   return (
     <div className="summary2">
       <div className="tenantslist">
         <h2 className="title">Tenants List</h2>
+        <Pagination
+          activePage={currentPage}
+          itemsCountPerPage={itemsPerPage}
+          totalItemsCount={tenants?.length}
+          pageRangeDisplayed={5}
+          onChange={handlePageChange}
+          innerClass="pagination" // This applies SCSS styling
+          itemClass="page-item"
+          linkClass="page-link"
+        />
         <button className="btn" onClick={handleDowloadBtnClicked}>
           <span className="downloadSpan">
             Print Tenants <FaDownload />
@@ -247,49 +265,54 @@ const Listall = () => {
             </thead>
             <tbody>
               {tenants &&
-                tenants.map((tenant) => (
-                  <tr key={tenant._id}>
-                    <td>{tenant.name}</td>
-                    <td>{tenant.email}</td>
-                    <td>
-                      {tenant?.houseDetails?.houseNo
-                        ? tenant.houseDetails?.houseNo
-                        : ''}
-                    </td>
-                    <td>{tenant.toBeCleared ? 'yes' : 'No'}</td>
-                    <td className="actions">
-                      <Link
-                        to={`/tenantProfile/${tenant._id}`}
-                        className="edit-btn"
-                      >
-                        More Details
-                      </Link>
-                      <button onClick={() => handleDownloadTenant(tenant)}>
-                        <FaDownload />
-                      </button>
-                      <button
-                        onClick={() => {
-                          handleTenantClearance(tenant);
-                        }}
-                        className="edit-btn"
-                      >
-                        Clear Tenant
-                      </button>
-                      <button
-                        onClick={() => handleOpenModal(tenant._id)}
-                        className="delete-btn"
-                      >
-                        <FaTrashAlt />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                tenants
+                  ?.slice(
+                    (currentPage - 1) * itemsPerPage,
+                    currentPage * itemsPerPage
+                  )
+                  ?.map((tenant) => (
+                    <tr key={tenant._id}>
+                      <td>{tenant.name}</td>
+                      <td>{tenant.email}</td>
+                      <td>
+                        {tenant?.houseDetails?.houseNo
+                          ? tenant.houseDetails?.houseNo
+                          : ''}
+                      </td>
+                      <td>{tenant.toBeCleared ? 'yes' : 'No'}</td>
+                      <td className="actions">
+                        <Link
+                          to={`/tenantProfile/${tenant._id}`}
+                          className="edit-btn"
+                        >
+                          More Details
+                        </Link>
+                        <button onClick={() => handleDownloadTenant(tenant)}>
+                          <FaDownload />
+                        </button>
+                        <button
+                          onClick={() => {
+                            handleTenantClearance(tenant);
+                          }}
+                          className="edit-btn"
+                        >
+                          Clear Tenant
+                        </button>
+                        <button
+                          onClick={() => handleOpenModal(tenant._id)}
+                          className="delete-btn"
+                        >
+                          <FaTrashAlt />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
             </tbody>
           </table>
         </div>
       </div>
       {loading && (
-        <div className="loader">
+        <div className="loader-overlay">
           <ThreeDots
             height="80"
             width="80"

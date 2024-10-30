@@ -1,10 +1,10 @@
-import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import apiRequest from "../../lib/apiRequest";
-import { toast, ToastContainer } from "react-toastify";
-import { ThreeDots } from "react-loader-spinner";
-import "react-toastify/dist/ReactToastify.css";
-import "./Tenant.scss";
+import { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import apiRequest from '../../lib/apiRequest';
+import { toast, ToastContainer } from 'react-toastify';
+import { ThreeDots } from 'react-loader-spinner';
+import 'react-toastify/dist/ReactToastify.css';
+import './Tenant.scss';
 
 function EditTenant() {
   const { _id } = useParams();
@@ -12,26 +12,26 @@ function EditTenant() {
 
   // Updated form data structure with houseDetails
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    nationalId: "",
-    phoneNo: "",
-    placementDate: "",
-    houseDeposit: "",
-    waterDeposit: "",
-    apartmentId: "",
+    name: '',
+    email: '',
+    nationalId: '',
+    phoneNo: '',
+    placementDate: '',
+    houseDeposit: '',
+    waterDeposit: '',
+    apartmentId: '',
     houseDetails: {
-      houseNo: "",
-      floorNo: "",
+      houseNo: '',
+      floorNo: '',
     },
-    rentPayable: "",
-    amountPaid: "",
-    emergencyContactNumber: "",
-    emergencyContactName: "",
+    rentPayable: '',
+    amountPaid: '',
+    emergencyContactNumber: '',
+    emergencyContactName: '',
   });
 
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const fetchTenant = async () => {
@@ -41,12 +41,13 @@ function EditTenant() {
           `/v2/tenants/getSingleTenant/${_id}`
         );
         const { data } = response;
-        console.log("tenantData: ", data);
+        // console.log('tenantData: ', data);
+        console.log('tenantData: ', data);
         setFormData(data);
-        setError("");
+        setError('');
       } catch (error) {
-        console.error("Error fetching tenant:", error);
-        setError("Error fetching tenant data. Please try again.");
+        console.error('Error fetching tenant:', error);
+        setError('Error fetching tenant data. Please try again.');
       } finally {
         setLoading(false);
       }
@@ -59,7 +60,7 @@ function EditTenant() {
     const { name, value } = e.target;
 
     // Special handling for houseDetails
-    if (name === "houseNo") {
+    if (name === 'houseNo') {
       setFormData((prevFormData) => ({
         ...prevFormData,
         houseDetails: {
@@ -67,7 +68,7 @@ function EditTenant() {
           houseNo: value,
         },
       }));
-    } else if (name === "floorNo") {
+    } else if (name === 'floorNo') {
       setFormData((prevFormData) => ({
         ...prevFormData,
         houseDetails: {
@@ -85,7 +86,7 @@ function EditTenant() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
+    setError('');
     setLoading(true);
 
     try {
@@ -100,16 +101,16 @@ function EditTenant() {
       );
 
       if (res.status) {
-        toast.success("Tenant details updated successfully!");
+        toast.success('Tenant details updated successfully!');
         navigate(`/tenantProfile/${_id}`);
       }
     } catch (err) {
-      console.error("Error updating tenant:", err);
+      console.error('Error updating tenant:', err);
       setError(
         err?.response?.data?.message ||
-          "Error updating tenant. Please try again."
+          'Error updating tenant. Please try again.'
       );
-      toast.error(err?.response?.data?.message || "Error updating tenant.");
+      toast.error(err?.response?.data?.message || 'Error updating tenant.');
     } finally {
       setLoading(false);
     }
@@ -125,10 +126,10 @@ function EditTenant() {
   const [organizedData, setOrganizedData] = useState({});
 
   const getFloorName = (floorNumber) => {
-    if (floorNumber === 0) return "Ground Floor";
+    if (floorNumber === 0) return 'Ground Floor';
 
     const ordinalSuffix = (n) => {
-      const s = ["th", "st", "nd", "rd"];
+      const s = ['th', 'st', 'nd', 'rd'];
       const v = n % 100;
       return s[(v - 20) % 10] || s[v] || s[0];
     };
@@ -141,7 +142,7 @@ function EditTenant() {
     const fetchHouses = async () => {
       setLoading(true);
       try {
-        const response = await apiRequest.get("/houses/getAllHouses");
+        const response = await apiRequest.get('/houses/getAllHouses');
         const houseData = response.data;
         setHouses(houseData);
 
@@ -163,8 +164,8 @@ function EditTenant() {
         setOrganizedData(organizedHouses);
         setLoading(false);
       } catch (error) {
-        console.error("Error fetching houses:", error);
-        toast.error(error.response.data.message || "Error Fetching Houses");
+        console.error('Error fetching houses:', error);
+        toast.error(error.response.data.message || 'Error Fetching Houses');
         setLoading(false);
       }
     };
@@ -263,10 +264,10 @@ function EditTenant() {
                 id="houseNo"
                 value={
                   selectedFloor
-                    ? "Floor " + selectedFloor + " " + selectedHouse
-                    : "Floor " +
+                    ? 'Floor ' + selectedFloor + ' ' + selectedHouse
+                    : 'Floor ' +
                       formData?.houseDetails?.floorNo +
-                      " " +
+                      ' ' +
                       formData?.houseDetails?.houseNo
                 }
                 onChange={handleChange}
@@ -277,7 +278,7 @@ function EditTenant() {
                 className="house-selection"
                 onClick={() => setIsHousePopupVisible(true)}
               >
-                {selectedHouse ? "New House↑" : "Change House"}
+                {selectedHouse ? 'New House↑' : 'Change House'}
               </div>
             </div>
             <div className="forminput">
@@ -298,10 +299,10 @@ function EditTenant() {
                 htmlFor="originalPlacementDate"
                 className="OriginalPlacementDate"
               >
-                Original Placement date :{" "}
+                Original Placement date :{' '}
                 <span className="originalPlacement">
                   {new Date(formData.placementDate).toLocaleDateString()}
-                </span>{" "}
+                </span>{' '}
               </label>
             </div>
 
@@ -331,7 +332,7 @@ function EditTenant() {
                     visible={true}
                   />
                 ) : (
-                  "Update"
+                  'Update'
                 )}
               </button>
             </div>
@@ -355,8 +356,8 @@ function EditTenant() {
                 key={apartment?._id}
                 className={`apartment-option ${
                   selectedApartment && selectedApartment?._id === apartment._id
-                    ? "selected"
-                    : ""
+                    ? 'selected'
+                    : ''
                 }`}
                 onClick={() => handleApartmentSelection(apartment)}
               >
@@ -378,8 +379,8 @@ function EditTenant() {
                         key={floorNumber}
                         className={`floor-option ${
                           selectedFloor === Number(floorNumber)
-                            ? "selected"
-                            : ""
+                            ? 'selected'
+                            : ''
                         }`}
                         onClick={() =>
                           handleFloorSelection(Number(floorNumber))
@@ -402,12 +403,12 @@ function EditTenant() {
                           key={house?._id}
                           className={`house-option ${
                             selectedHouse === `${house?.houseName}`
-                              ? "selected"
-                              : ""
-                          } ${house?.isOccupied ? "occupied" : ""}`}
+                              ? 'selected'
+                              : ''
+                          } ${house?.isOccupied ? 'occupied' : ''}`}
                           onClick={() => handleHouseSelection(house)}
                         >
-                          {house?.houseName} {house?.isOccupied && "(Occupied)"}
+                          {house?.houseName} {house?.isOccupied && '(Occupied)'}
                         </div>
                       ))}
                     </div>

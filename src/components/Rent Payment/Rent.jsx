@@ -6,13 +6,16 @@ import apiRequest from '../../lib/apiRequest';
 import { useDispatch, useSelector } from 'react-redux';
 import { setTenants } from '../../features/Tenants/TenantsSlice';
 import { TailSpin } from 'react-loader-spinner';
+import Pagination from 'react-js-pagination';
 
 const Rent = () => {
   const navigate = useNavigate();
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [showModal, setShowModal] = useState(false); // State for modal visibility
-  const [tenantToDelete, setTenantToDelete] = useState(null); // State for selected tenant
+  const [showModal, setShowModal] = useState(false);
+  const [tenantToDelete, setTenantToDelete] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1); // State for current page
+  const itemsPerPage = 5; // Items per page for pagination
   const dispatch = useDispatch();
   const tenants = useSelector((store) => store.tenantsData.tenants);
 
@@ -89,7 +92,6 @@ const Rent = () => {
       setLoading(true);
       try {
         const res = await apiRequest.get('/v2/tenants/getToBeClearedFalse');
-        console.log('allTenantsRes: ', res.data);
         if (res.status) {
           if (res?.data?.length === 0) {
             dispatch(setTenants(fallbackTenants));
@@ -116,7 +118,7 @@ const Rent = () => {
       const res = await apiRequest.delete(`/v2/tenants/deleteTenant/${_id}`);
       if (res.status === 200) {
         dispatch(setTenants(tenants.filter((tenant) => tenant._id !== _id)));
-        setShowModal(false); // Close modal on successful deletion
+        setShowModal(false);
       } else {
         console.error('Failed to delete tenant');
       }
@@ -137,20 +139,19 @@ const Rent = () => {
     setTenantToDelete(null);
   };
 
-  // const getStatus = (balance, monthInQuestionPay) => {
-  //   if (balance <= 0) {
-  //     return <span> {monthInQuestionPay} Cleared ✅</span>;
-  //   } else {
-  //     return <span>Not Cleared ❌</span>;
-  //   }
-  // };
-
   const handleSingleTenantClick = (tenant) => {
     navigate(`/v2/tenantPaymentsV2/${tenant._id}`, {
-      state: {
-        tenantDetails: tenant,
-      },
+      state: { tenantDetails: tenant },
     });
+  };
+
+  // Pagination: Calculate current tenants based on currentPage
+  const indexOfLastTenant = currentPage * itemsPerPage;
+  const indexOfFirstTenant = indexOfLastTenant - itemsPerPage;
+  const currentTenants = tenants.slice(indexOfFirstTenant, indexOfLastTenant);
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
   };
 
   return (
@@ -158,64 +159,65 @@ const Rent = () => {
       <div className="tenantslist">
         <h2 className="title">Tenants List</h2>
         {error && <span>{error}</span>}
-
+        <Pagination
+          activePage={currentPage}
+          itemsCountPerPage={itemsPerPage}
+          totalItemsCount={tenants.length}
+          pageRangeDisplayed={5}
+          onChange={handlePageChange}
+          innerClass="pagination"
+          itemClass="page-item"
+          linkClass="page-link"
+          activeLinkClass="active"
+        />
+        <br />
         <div className="table-container">
           <table className="tenant-table">
             <thead>
               <tr>
                 <th>Tenant{`'`}s Name</th>
                 <th>House No.</th>
-                {/* <th>All Payments</th> */}
-                {/* <th>Month</th> */}
-                {/* <th>{} Status</th> */}
                 <th>Actions</th>
               </tr>
             </thead>
             <tbody>
-              {tenants &&
-                tenants.map((tenant) => (
-                  <tr key={tenant._id}>
-                    <td>{tenant.name}</td>
-                    <td>
-                      {tenant?.houseDetails
-                        ? tenant?.houseDetails?.houseNo
-                        : ''}
-                    </td>
-                    {/* <td>{tenant.totalAmount}</td> */}
-                    {/* <td>{tenant.balance}</td>
-                      <td>
-                        {getStatus(tenant.balance, tenant.monthInQuestionPay)}
-                      </td> */}
-                    <td className="actions">
-                      <p
-                        onClick={() => {
-                          handleSingleTenantClick(tenant);
-                        }}
-                        className="edit-btn"
-                      >
-                        Add-Payment
-                      </p>
-                      <Link
-                        to={`/tenantPaymentList/${tenant._id}`}
-                        className="edit-btn"
-                      >
-                        Payments
-                      </Link>
-                      <button
-                        onClick={() => handleOpenModal(tenant._id)} // Open modal instead of directly deleting
-                        className="delete-btn"
-                      >
-                        <FaTrashAlt />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+              {currentTenants.map((tenant) => (
+                <tr key={tenant._id}>
+                  <td>{tenant.name}</td>
+                  <td>
+                    {tenant.houseDetails ? tenant.houseDetails.houseNo : ''}
+                  </td>
+                  <td className="actions">
+                    <p
+                      onClick={() => handleSingleTenantClick(tenant)}
+                      className="edit-btn"
+                    >
+                      Add-Payment
+                    </p>
+                    <Link
+                      to={`/tenantPaymentList/${tenant._id}`}
+                      className="edit-btn"
+                    >
+                      Payments
+                    </Link>
+                    <button
+                      onClick={() => handleOpenModal(tenant._id)}
+                      className="delete-btn"
+                    >
+                      <FaTrashAlt />
+                    </button>
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
+
+        {/* Pagination Component */}
       </div>
+
       {loading && (
-        <div className="loader">
+        <div className="loader-overlay">
           <TailSpin
             height="100"
             width="100"

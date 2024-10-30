@@ -29,7 +29,7 @@
   align-items: center;
   justify-content: center;
   background: rgba(0, 0, 0, 0.5);
-  z-index: 1000;
+  z-index: 900;
 }
 
 .modal-content {
@@ -74,6 +74,35 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.5); /* Semi-transparent background */
-  z-index: 1100; /* Ensure loader is above modal */
+  background: rgba(37, 32, 32, 0.705); /* Semi-transparent background */
+  z-index: 1400; /* Ensure loader is above modal */
+}
+
+.table-container {
+  margin-bottom: 20px;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 15px;
+}
+.pagination-item {
+  padding: 8px 12px;
+  margin: 0 4px;
+  border-radius: 4px;
+  background-color: #f1f1f1;
+  color: #333;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.pagination-item:hover {
+  background-color: #4fa94d;
+  color: white;
+}
+
+.pagination-item.active {
+  background-color: #4fa94d;
+  color: white;
 }
