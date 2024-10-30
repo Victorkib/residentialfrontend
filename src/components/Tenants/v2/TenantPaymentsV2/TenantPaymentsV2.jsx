@@ -50,6 +50,9 @@ const TenantPayments = () => {
   const addNote = async () => {
     setLoading(true);
     try {
+      if (!title && !description) {
+        throw new Error('All fields must be filled!');
+      }
       const response = await apiRequest.post('/v2/notes/postNote', {
         title,
         description,
@@ -61,7 +64,9 @@ const TenantPayments = () => {
       await fetchNotes();
       toast.success('Note added successfully');
     } catch (error) {
-      toast.error(error?.resonse?.data?.message || 'error fetching notes');
+      toast.error(
+        error?.resonse?.data?.message || error.message || 'error fetching notes'
+      );
     } finally {
       setLoading(false);
     }
@@ -96,6 +101,7 @@ const TenantPayments = () => {
       const response = await apiRequest.delete(`/v2/notes/deleteNote/${id}`);
       if (response.status) {
         setNotes(notes.filter((note) => note._id !== id));
+        closeDeleteNotePopup();
         await fetchNotes();
         toast.success('Note deleted successfully');
       }
@@ -104,6 +110,17 @@ const TenantPayments = () => {
     } finally {
       setLoading(false);
     }
+  };
+  const [selectedNote, setSelectedNote] = useState('');
+  const [deleteNotePopup, setDeleteNotePopup] = useState(false);
+
+  const deleteNoteBtnClick = (note) => {
+    setSelectedNote(note);
+    setDeleteNotePopup(true);
+  };
+  const closeDeleteNotePopup = () => {
+    setSelectedNote('');
+    setDeleteNotePopup(false);
   };
 
   const handleAddOrUpdate = () => {
@@ -1037,7 +1054,7 @@ const TenantPayments = () => {
             </button>
 
             {popupOpen && (
-              <div className="popup">
+              <div className="note-popup">
                 {currentNotes.length > 0 ? (
                   <div className="notes-container">
                     <h3>Existing Notes</h3>
@@ -1048,7 +1065,7 @@ const TenantPayments = () => {
                         <button onClick={() => openEditPopup(note)}>
                           Edit
                         </button>
-                        <button onClick={() => deleteNote(note._id)}>
+                        <button onClick={() => deleteNoteBtnClick(note)}>
                           Delete
                         </button>
                       </div>
@@ -2199,6 +2216,24 @@ const TenantPayments = () => {
                 <button
                   className="confirm-btn"
                   onClick={handleConfirmAddPayment}
+                >
+                  Yes, Proceed
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+        {deleteNotePopup && (
+          <div className="confirmation-modal">
+            <div className="modal-content">
+              <p>Are you sure you want to Delete This note?</p>
+              <div className="modal-actions">
+                <button className="cancel-btn" onClick={closeDeleteNotePopup}>
+                  Cancel
+                </button>
+                <button
+                  className="confirm-btn"
+                  onClick={() => deleteNote(selectedNote._id)}
                 >
                   Yes, Proceed
                 </button>
