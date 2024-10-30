@@ -645,14 +645,14 @@ const TenantPayments = () => {
     0 // Initial value of the sum
   );
 
-  const lastPaymentDate =
-    mostRecentPayment?.referenceNoHistory[
-      mostRecentPayment.referenceNoHistory.length - 1
-    ]?.date;
-
   // Function to handle overpay transfer
   const handleOverpayTransfer = () => {
     if (!isOverpayTransferred) {
+      const lastPaymentDate =
+        mostRecentPayment?.referenceNoHistory[
+          mostRecentPayment?.referenceNoHistory?.length - 1
+        ]?.date;
+
       setNewMonthlyAmount(mostRecentPayment?.overpay || 0); // Transfer overpay to monthly amount
       setReferenceNumber(mostRecentPayment?.referenceNumber || 'usedOverPay'); // Transfer overpay to monthly amount
       setNewPaymentDate(

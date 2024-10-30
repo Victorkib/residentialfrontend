@@ -112,9 +112,8 @@ const TenantPaymentList = () => {
   };
   return (
     <div className="tenant-payment-list">
-      {error && <span className="error-message">{error}</span>}
-      <h2>{tenant?.name} Payment History</h2>{' '}
-      <div className="pagination">
+      <p className="nameList">{tenant?.name} Payment History</p>{' '}
+      <div className="paginationList">
         <Pagination
           activePage={activePage}
           itemsCountPerPage={itemsPerPage}
@@ -184,6 +183,7 @@ const TenantPaymentList = () => {
           ))}
         </tbody>
       </table>
+      {error && <span className="error-message">{error}</span>}
       {showPopup && selectedPayment && (
         <MiniPaymentsPopup
           payment={selectedPayment}
