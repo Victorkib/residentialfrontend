@@ -8,15 +8,140 @@ import { toast, ToastContainer } from "react-toastify";
 import Invoice from "../../../Rent Payment/Payment/Invoice/Invoice";
 import moment from "moment";
 import jsPDF from "jspdf";
+import { FaNoteSticky } from "react-icons/fa6";
+import ReactPaginate from "react-paginate";
 
 const TenantPayments = () => {
+  const { tenantId } = useParams();
+  const [loading, setLoading] = useState(false);
+
+  // /////////////////////////////Lengalei-start////////////
+
+  const [notes, setNotes] = useState([]);
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [editingNoteId, setEditingNoteId] = useState(null);
+  const [popupOpen, setPopupOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(0);
+
+  const notesPerPage = 1;
+
+  // Fetch all notes
+  useEffect(() => {
+    fetchNotes();
+  }, []);
+
+  const fetchNotes = async () => {
+    setLoading(true);
+    try {
+      const response = await apiRequest.get(
+        `/v2/notes/getAllNotes/${tenantId}`
+      );
+      setNotes(response.data);
+    } catch (error) {
+      // console.error('Error fetching notes:', error);
+      toast.error(error?.resonse?.data?.message || "error fetching notes");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Add a new note
+  const addNote = async () => {
+    setLoading(true);
+    try {
+      const response = await apiRequest.post("/v2/notes/postNote", {
+        title,
+        description,
+        tenantId,
+      });
+      setNotes([...notes, response.data]);
+      setTitle("");
+      setDescription("");
+      setPopupOpen(false);
+      toast.success("Note added successfully");
+    } catch (error) {
+      toast.error(error?.resonse?.data?.message || "error fetching notes");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Update a note
+  const updateNote = async (id) => {
+    setLoading(true);
+    try {
+      const response = await apiRequest.put(`/v2/notes/updateNote/${id}`, {
+        title,
+        description,
+        tenantId,
+      });
+      setNotes(notes.map((note) => (note._id === id ? response.data : note)));
+      setEditingNoteId(null);
+      setTitle("");
+      setDescription("");
+      setPopupOpen(false);
+      toast.success("Note updated successfully");
+    } catch (error) {
+      toast.error(error?.resonse?.data?.message || "error fetching notes");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Delete a note
+  const deleteNote = async (id) => {
+    setLoading(true);
+    try {
+      const response = await apiRequest.delete(`/v2/notes/deleteNote/${id}`);
+      setNotes(notes.filter((note) => note._id !== id));
+      toast.success("Note deleted successfully");
+
+      console.log(response);
+    } catch (error) {
+      toast.error(error?.resonse?.data?.message || "error fetching notes");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAddOrUpdate = () => {
+    if (editingNoteId) {
+      updateNote(editingNoteId);
+    } else {
+      addNote();
+    }
+  };
+
+  const openEditPopup = (note) => {
+    setEditingNoteId(note._id);
+    setTitle(note.title);
+    setDescription(note.description);
+    setPopupOpen(true);
+  };
+
+  const openAddPopup = () => {
+    setEditingNoteId(null);
+    setTitle("");
+    setDescription("");
+    setPopupOpen(true);
+  };
+
+  const pageCount = Math.ceil(notes.length / notesPerPage);
+  const handlePageClick = (data) => setCurrentPage(data.selected);
+
+  // Slice notes to show only current page items
+  const currentNotes = notes.slice(
+    currentPage * notesPerPage,
+    currentPage * notesPerPage + notesPerPage
+  );
+
+  // ///////////////////////Lengalei-end///////////////
   const location = useLocation();
   const tenantDetails = location.state?.tenantDetails;
 
-  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const { tenantId } = useParams();
   const [selectedTab, setSelectedTab] = useState("complete"); // Toggle between Complete and Outstanding
   const [showPopup, setShowPopup] = useState(false); // Popup for updating default values
   const [showPaymentPopup, setShowPaymentPopup] = useState(false); // Popup for outstanding payments
@@ -872,11 +997,78 @@ const TenantPayments = () => {
     <div className="tenant-payments-container">
       <ToastContainer />
       <>
-        <div className="h1">
-          <h1>
-            <span>{tenantDetails?.name + `'s`} </span> Payment Track
-          </h1>
+        <div className="tenantPaymentHeader">
+          <div className="h1">
+            <h1>
+              <span>{tenantDetails?.name + `'s`} </span> Payment Track
+            </h1>
+          </div>
+          {/* /////////////////////////////////Lengalei's code begins//////////////////////////////////////////// */}
+
+          <div>
+            <button onClick={openAddPopup} className="sticky-note-button">
+              <FaNoteSticky className="stickynote" />
+              {notes.length > 0 && (
+                <span className="note-count">{notes.length}</span>
+              )}
+            </button>
+
+            {popupOpen && (
+              <div className="popup">
+                <div className="notes-container">
+                  <h3>Existing Notes</h3>
+                  {currentNotes.map((note) => (
+                    <div key={note._id} className="note">
+                      <h4>{note.title}</h4>
+                      <p>{note.description}</p>
+                      <button onClick={() => openEditPopup(note)}>Edit</button>
+                      <button onClick={() => deleteNote(note._id)}>
+                        Delete
+                      </button>
+                    </div>
+                  ))}
+
+                  <ReactPaginate
+                    previousLabel={"<"}
+                    nextLabel={">"}
+                    pageCount={pageCount}
+                    onPageChange={handlePageClick}
+                    containerClassName={"pagination"}
+                    activeClassName={"active"}
+                    previousClassName={"page-item"}
+                    nextClassName={"page-item"}
+                    pageClassName={"page-item"}
+                    breakClassName={"page-item"}
+                    breakLabel={"..."}
+                  />
+                </div>
+
+                <div className="add-edit-section">
+                  <h3>{editingNoteId ? "Edit Note" : "Add Note"}</h3>
+                  <input
+                    type="text"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    placeholder="Title"
+                  />
+                  <textarea
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    placeholder="Description"
+                  />
+                  <div className="noteButtons">
+                    <button onClick={handleAddOrUpdate}>
+                      {editingNoteId ? "Update Note" : "Add Note"}
+                    </button>
+                    <button onClick={() => setPopupOpen(false)}>Close</button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
+
+        {/* /////////////////////////////////Lengalei's code ends//////////////////// */}
         <div className="payments-cards">
           {/* Left Card */}
           <div className={`card left-card `}>
