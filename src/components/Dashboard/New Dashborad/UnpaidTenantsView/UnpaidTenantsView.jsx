@@ -132,7 +132,7 @@ function UnpaidTenantsView() {
           activePage={currentPage}
           itemsCountPerPage={tenantsPerPage}
           totalItemsCount={unpaidTenants?.length}
-          pageRangeDisplayed={5}
+          pageRangeDisplayed={3}
           onChange={(pageNumber) => setCurrentPage(pageNumber)}
           innerClass="pagination"
           itemClass="page-item"
