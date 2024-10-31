@@ -47,7 +47,7 @@ const MapComponent = ({ location }) => {
           const { lat, lon } = data[0]; // Get the first result's coordinates
           setPosition([lat, lon]); // Set the new position
         } else {
-          toast.warn('Location not found, defaulting to Nairobi, Kenya'); // Toast warning
+          toast.info('Location not found, defaulting to Nairobi, Kenya'); // Toast warning
           setPosition([-1.2864, 36.8172]); // Default to Nairobi
           setError(true); // Set error state
         }
