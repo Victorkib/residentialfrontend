@@ -71,7 +71,7 @@
     font-size: 1rem; // Button text size
     margin-top: 20px; // Spacing above button
     display: block; // Center the button below the table
-    width: 10%; // Full width for the button
+    width: max-content; // Full width for the button
 
     &:hover {
       background-color: #0056b3; // Darker shade on hover

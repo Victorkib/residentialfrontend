@@ -6,6 +6,21 @@
   background-color: #333333;
 }
 
+.holderTitle {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-around;
+  width: 95%;
+  margin: 0 auto;
+}
+
+.title {
+  text-transform: capitalize;
+  color: #ffef9f;
+  margin: 0;
+  padding: 0;
+}
+
 .form {
   width: 45%;
   display: flex;
@@ -82,27 +97,98 @@
   margin-bottom: 20px;
 }
 
-.pagination {
+.paginationRent {
   display: flex;
   justify-content: center;
-  margin-top: 15px;
+  margin: 20px 0;
+  list-style: none;
+  padding: 0;
 }
-.pagination-item {
-  padding: 8px 12px;
-  margin: 0 4px;
-  border-radius: 4px;
-  background-color: #f1f1f1;
-  color: #333;
+.page-item {
+  margin: 0 5px;
+}
+.page-item:active {
   font-weight: bold;
-  cursor: pointer;
-  transition: all 0.3s ease;
 }
-.pagination-item:hover {
-  background-color: #4fa94d;
+.page-link {
+  background-color: #007bff44;
+  color: white;
+  border: none;
+  pointer-events: none;
+}
+.page-link {
+  display: inline-block;
+  padding: 10px 15px;
+  color: #007bff;
+  text-decoration: none;
+  border: 1px solid #007bff;
+  border-radius: 5px;
+  transition: background-color 0.3s, color 0.3s;
+}
+.page-link :hover {
+  background-color: #0056b3;
   color: white;
 }
 
-.pagination-item.active {
+/* Search input styling */
+.search-container {
+  display: flex;
+  align-items: center;
+  /* width: 100%; */
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.search-input {
+  padding: 8px;
+  width: 200px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.search-button {
+  padding: 8px 12px;
+  border: none;
   background-color: #4fa94d;
   color: white;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.search-button:hover {
+  background-color: #3e8b3e;
+}
+
+/* Highlight row */
+.highlighted {
+  animation: heartbeat 0.6s ease-in-out 2;
+  background-color: #ffef9f;
+}
+
+@keyframes heartbeat {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+.highlight {
+  animation: heartbeat 1s ease-in-out 0s infinite alternate;
+}
+
+@keyframes heartbeat {
+  0% {
+    transform: scale(1);
+    background-color: #ffeb3b; /* Highlight color */
+  }
+  50% {
+    transform: scale(1.02);
+    background-color: #ffd740; /* Slightly darker highlight */
+  }
+  100% {
+    transform: scale(1);
+    background-color: #ffeb3b;
+  }
 }

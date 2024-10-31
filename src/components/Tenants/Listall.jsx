@@ -232,10 +232,64 @@ const Listall = () => {
     setCurrentPage(pageNumber);
   };
 
+  // Add this function to handle search input
+  const [searchTerm, setSearchTerm] = useState('');
+  const [locatedTenantId, setLocatedTenantId] = useState(null);
+  const [isHeartbeatActive, setIsHeartbeatActive] = useState(false); // Track animation state
+
+  const handleSearchChange = (e) => {
+    const term = e.target.value;
+    setSearchTerm(term);
+
+    // Clear locatedTenantId when search input is empty
+    if (term === '') {
+      setLocatedTenantId(null);
+      setIsHeartbeatActive(false); // Clear any heartbeat animation if search is cleared
+      return;
+    }
+
+    // Find the first tenant that matches the search term
+    const foundTenant = tenants.find((tenant) =>
+      tenant.name.toLowerCase().includes(term.toLowerCase())
+    );
+
+    // Set locatedTenantId if a match is found; otherwise, clear it
+    if (foundTenant) {
+      setLocatedTenantId(foundTenant._id);
+      setIsHeartbeatActive(true); // Activate the animation
+
+      // Clear animation after a few seconds
+      setTimeout(() => {
+        setIsHeartbeatActive(false);
+      }, 2000); // 2000ms = 2 seconds
+    } else {
+      setLocatedTenantId(null);
+    }
+  };
+
+  // Filter tenants based on search term
+  const filteredTenants = tenants?.filter((tenant) =>
+    tenant.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <div className="summary2">
       <div className="tenantslist">
-        <h2 className="title">Tenants List</h2>
+        <div className="holderTitleListAll">
+          <h2 className="title">Tenants List</h2>
+          <div className="search-containerr">
+            {' '}
+            <button className="search-button">Type Name to search➞</button>
+            <input
+              type="text"
+              placeholder="Search Tenant by Name"
+              value={searchTerm}
+              onChange={handleSearchChange}
+              className="search-bar"
+            />
+          </div>
+        </div>
+
         <Pagination
           activePage={currentPage}
           itemsCountPerPage={itemsPerPage}
@@ -264,49 +318,53 @@ const Listall = () => {
               </tr>
             </thead>
             <tbody>
-              {tenants &&
-                tenants
-                  ?.slice(
-                    (currentPage - 1) * itemsPerPage,
-                    currentPage * itemsPerPage
-                  )
-                  ?.map((tenant) => (
-                    <tr key={tenant._id}>
-                      <td>{tenant.name}</td>
-                      <td>{tenant.email}</td>
-                      <td>
-                        {tenant?.houseDetails?.houseNo
-                          ? tenant.houseDetails?.houseNo
-                          : ''}
-                      </td>
-                      <td>{tenant.toBeCleared ? 'yes' : 'No'}</td>
-                      <td className="actions">
-                        <Link
-                          to={`/tenantProfile/${tenant._id}`}
-                          className="edit-btn"
-                        >
-                          More Details
-                        </Link>
-                        <button onClick={() => handleDownloadTenant(tenant)}>
-                          <FaDownload />
-                        </button>
-                        <button
-                          onClick={() => {
-                            handleTenantClearance(tenant);
-                          }}
-                          className="edit-btn"
-                        >
-                          Clear Tenant
-                        </button>
-                        <button
-                          onClick={() => handleOpenModal(tenant._id)}
-                          className="delete-btn"
-                        >
-                          <FaTrashAlt />
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
+              {filteredTenants
+                ?.slice(
+                  (currentPage - 1) * itemsPerPage,
+                  currentPage * itemsPerPage
+                )
+                ?.map((tenant) => (
+                  <tr
+                    key={tenant._id}
+                    className={
+                      tenant._id === locatedTenantId && isHeartbeatActive
+                        ? 'heartbeat'
+                        : ''
+                    }
+                  >
+                    <td>{tenant.name}</td>
+                    <td>{tenant.email}</td>
+                    <td>
+                      {tenant?.houseDetails?.houseNo
+                        ? tenant.houseDetails?.houseNo
+                        : ''}
+                    </td>
+                    <td>{tenant.toBeCleared ? 'Yes' : 'No'}</td>
+                    <td className="actions">
+                      <Link
+                        to={`/tenantProfile/${tenant._id}`}
+                        className="edit-btn"
+                      >
+                        More Details
+                      </Link>
+                      <button onClick={() => handleDownloadTenant(tenant)}>
+                        <FaDownload />
+                      </button>
+                      <button
+                        onClick={() => handleTenantClearance(tenant)}
+                        className="edit-btn"
+                      >
+                        Clear Tenant
+                      </button>
+                      <button
+                        onClick={() => handleOpenModal(tenant._id)}
+                        className="delete-btn"
+                      >
+                        <FaTrashAlt />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
             </tbody>
           </table>
         </div>

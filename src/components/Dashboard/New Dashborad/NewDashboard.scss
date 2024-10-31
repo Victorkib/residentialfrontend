@@ -1,6 +1,9 @@
 .NewDashboard {
   width: 100%;
-  height: 100vh;
+  height: 100%;
+  padding: 20px;
+  overflow: scroll;
+  overflow-x: hidden;
   background-image: url('/bghm.jfif');
   background-size: cover;
   background-repeat: no-repeat;
@@ -13,10 +16,10 @@
   align-items: center;
   justify-content: center;
   flex-wrap: wrap;
-  height: auto;
+  height: max-content;
   gap: 10px;
-  padding: 20px;
-  padding-top: 50px;
+  margin-top: 20px;
+  margin-bottom: 10px;
   // border: 1px solid crimson;
 
   .summaryCard {
@@ -72,6 +75,13 @@
       padding: 10px;
     }
   }
+}
+
+.UnpaidTenantsView {
+  height: 60%;
+  overflow: scroll;
+  overflow-x: hidden;
+  position: relative;
 }
 
 // doghnaut chart
@@ -200,7 +210,7 @@
 
 .slider-container {
   width: 250px;
-  height: 250px;
+  height: auto;
   overflow: hidden;
   margin: 0 auto;
 }
@@ -230,6 +240,7 @@
 .slick-dots li button:before {
   color: white; /* Dot color */
   font-size: 12px; /* Dot size */
+  background-color: #e74c3c;
 }
 
 .slick-dots {

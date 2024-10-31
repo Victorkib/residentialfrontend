@@ -289,7 +289,7 @@ const TenantPayments = () => {
   const [previousMonth, setPreviousMonth] = useState('');
   const [previousYear, setPreviousYear] = useState('');
   const [mostRecentPayment, setMostRecentPayments] = useState({});
-  console.log('mostRecentPayment: ', mostRecentPayment);
+  // console.log('mostRecentPayment: ', mostRecentPayment);
   const getMostRecentPaymentByTenantId = async (tenantId) => {
     try {
       const response = await apiRequest.get(
@@ -505,10 +505,12 @@ const TenantPayments = () => {
         {
           rentDefault: rentDefault
             ? rentDefault
-            : tenantDetails.houseDetails.rent,
+            : tenantDetails.houseDetails.rent ||
+              fetchedTenantDetails?.houseDetails?.rent,
           garbageDefault: garbageDefault
             ? garbageDefault
-            : tenantDetails.houseDetails.garbageFee,
+            : tenantDetails.houseDetails.garbageFee ||
+              fetchedTenantDetails.houseDetails.garbageFee,
         }
       );
       if (response.status) {
@@ -901,21 +903,36 @@ const TenantPayments = () => {
 
       // Add tenant details
       doc.setFontSize(12);
-      doc.text(`Tenant Name: ${tenantDetails?.name || 'Tenant'}`, 14, 70);
-      doc.text(`Phone No: ${tenantDetails?.phoneNo || '+254'}`, 14, 75);
+      doc.text(
+        `Tenant Name: ${
+          tenantDetails?.name || fetchedTenantDetails?.name || 'Tenant'
+        }`,
+        14,
+        70
+      );
+      doc.text(
+        `Phone No: ${
+          tenantDetails?.phoneNo || fetchedTenantDetails?.phoneNo || '+254'
+        }`,
+        14,
+        75
+      );
       doc.text(
         `Apartment: ${
-          tenantDetails?.apartmentId?.name || 'Sleek Abode Apartments'
+          tenantDetails?.apartmentId?.name ||
+          fetchedTenantDetails?.apartmentId?.name ||
+          'Sleek Abode Apartments'
         }`,
         14,
         80
       );
       doc.text(
         `House: ${
-          'Floor' +
-          tenantDetails?.houseDetails?.floorNo +
-          ', ' +
-          tenantDetails?.houseDetails?.houseNo
+          'Floor' + tenantDetails?.houseDetails?.floorNo ||
+          fetchedTenantDetails?.houseDetails?.floorNo +
+            ', ' +
+            tenantDetails?.houseDetails?.houseNo ||
+          fetchedTenantDetails?.houseDetails?.houseNo
         }`,
         14,
         85
@@ -1040,7 +1057,10 @@ const TenantPayments = () => {
         <div className="tenantPaymentHeader">
           <div className="h1">
             <h1>
-              <span>{tenantDetails?.name + `'s`} </span> Payment Track
+              <span>
+                {tenantDetails?.name || fetchedTenantDetails?.name + `'s`}{' '}
+              </span>{' '}
+              Payment Track
             </h1>
           </div>
           {/* /////////////////////////////////Lengalei's code begins//////////////////////////////////////////// */}
@@ -1804,7 +1824,7 @@ const TenantPayments = () => {
           <div className="popup-overlay">
             <div className="popup-content">
               <h2>
-                Update {tenantDetails?.name}
+                Update {tenantDetails?.name || fetchedTenantDetails?.name}
                 {`'s`} Default Values
               </h2>
               <form onSubmit={handleUpdateDefaults}>
@@ -1858,7 +1878,7 @@ const TenantPayments = () => {
         {AddInternalAmountPopup && (
           <div className="popup-overlay">
             <div className="popup-content">
-              <h2>{tenantDetails?.name}</h2>
+              <h2>{tenantDetails?.name || fetchedTenantDetails.name}</h2>
               <h2>
                 Extra {extraAmount || 0} given within {previousMonth}
               </h2>

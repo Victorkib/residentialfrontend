@@ -154,10 +154,68 @@ const Rent = () => {
     setCurrentPage(pageNumber);
   };
 
+  const [searchTerm, setSearchTerm] = useState(''); // To store search input
+  const [highlightedTenant, setHighlightedTenant] = useState(null); // To store the tenant being highlighted
+
+  // Effect to clear highlight after a few seconds
+  useEffect(() => {
+    if (highlightedTenant) {
+      const timer = setTimeout(() => setHighlightedTenant(null), 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [highlightedTenant]);
+
+  const handleSearch = (e) => {
+    const term = e.target.value;
+    setSearchTerm(term);
+
+    if (term === '') return; // Reset search if input is empty
+
+    const tenant = tenants.find((t) =>
+      t.name.toLowerCase().includes(term.toLowerCase())
+    );
+
+    if (tenant) {
+      // Find the page the tenant is on
+      const tenantIndex = tenants.indexOf(tenant);
+      const page = Math.floor(tenantIndex / itemsPerPage) + 1;
+
+      // Set page if tenant is on a different page
+      if (currentPage !== page) {
+        setCurrentPage(page);
+      }
+
+      // Highlight the tenant after pagination change
+      setTimeout(() => {
+        setHighlightedTenant(tenant._id);
+        const element = document.getElementById(`tenant-${tenant._id}`);
+        element?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 100);
+    }
+  };
+
   return (
     <div className="summary2">
       <div className="tenantslist">
-        <h2 className="title">Tenants List</h2>
+        <div className="holderTitle">
+          <h2 className="title">Tenants List</h2>
+          <div className="search-container">
+            <button
+              className="search-button"
+              onClick={() => handleSearch({ target: { value: searchTerm } })}
+            >
+              Type Name to search➞
+            </button>
+            <input
+              type="text"
+              placeholder="Search tenant by name"
+              value={searchTerm}
+              onChange={handleSearch}
+              className="search-input"
+            />
+          </div>
+        </div>
+
         {error && <span>{error}</span>}
         <Pagination
           activePage={currentPage}
@@ -165,7 +223,7 @@ const Rent = () => {
           totalItemsCount={tenants.length}
           pageRangeDisplayed={5}
           onChange={handlePageChange}
-          innerClass="pagination"
+          innerClass="paginationRent"
           itemClass="page-item"
           linkClass="page-link"
           activeLinkClass="active"
@@ -182,11 +240,15 @@ const Rent = () => {
             </thead>
             <tbody>
               {currentTenants.map((tenant) => (
-                <tr key={tenant._id}>
+                <tr
+                  key={tenant._id}
+                  id={`tenant-${tenant._id}`}
+                  className={
+                    highlightedTenant === tenant._id ? 'highlight' : ''
+                  }
+                >
                   <td>{tenant.name}</td>
-                  <td>
-                    {tenant.houseDetails ? tenant.houseDetails.houseNo : ''}
-                  </td>
+                  <td>{tenant.houseNo}</td>
                   <td className="actions">
                     <p
                       onClick={() => handleSingleTenantClick(tenant)}
