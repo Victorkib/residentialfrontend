@@ -114,7 +114,11 @@ function UnpaidTenantsView() {
                 onClick={() => setSelectedTenant(tenant)}
               >
                 <h4>{tenant?.tenantName}</h4>
-                <p>Amount Due: Ksh:{tenant?.amountDue}</p>
+                {tenant?.amountDue > 0 ? (
+                  <p>Amount Due: Ksh:{tenant?.amountDue}</p>
+                ) : (
+                  <p>Pending Payment...</p>
+                )}
               </div>
             ))}
           </div>
@@ -154,9 +158,15 @@ function UnpaidTenantsView() {
                   <p>
                     <strong>Name:</strong> {selectedTenant?.tenantName}
                   </p>
-                  <p>
-                    <strong>Amount Due:</strong> Ksh:{selectedTenant?.amountDue}
-                  </p>
+                  {selectedTenant?.amountDue > 0 ? (
+                    <p>
+                      <strong>Amount Due:</strong> Ksh:
+                      {selectedTenant?.amountDue}
+                    </p>
+                  ) : (
+                    ''
+                  )}
+
                   <p>
                     <strong>House:</strong>{' '}
                     {selectedTenant?.houseName +
