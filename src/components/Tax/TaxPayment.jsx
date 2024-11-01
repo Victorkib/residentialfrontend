@@ -28,6 +28,7 @@ const TaxPayment = () => {
   // Fetch the years data on component mount
   useEffect(() => {
     const fetchYearsData = async () => {
+      setLoading(true);
       try {
         const response = await apiRequest.get('/v2/payments/allRents');
         if (response.status === 200) {
@@ -37,28 +38,33 @@ const TaxPayment = () => {
         }
       } catch (error) {
         console.error('Error fetching years data:', error);
+        toast.error(
+          error?.response?.data?.message || 'Error fetching Years Data!'
+        );
+      } finally {
+        setLoading(false);
       }
     };
 
-    fetchYearsData();
-  }, []);
-
-  // Fetch KRA filed data
-  useEffect(() => {
+    // Fetch KRA filed data
     const fetchAllKra = async () => {
+      setLoading(true);
       try {
         const response = await apiRequest.get('/kra/allKra');
         if (response.status === 200) {
-          setFiledKraMonths(response.data || []); // Assuming 'filedMonths' contains the KRA filed data
-        } else {
-          console.error('Failed to fetch KRA data');
+          setFiledKraMonths(response.data || []);
         }
       } catch (error) {
-        toast.error(error.response.data.message);
+        toast.error(
+          error?.response?.data?.message || 'Failed to fetch KRA data'
+        );
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchAllKra();
+    fetchYearsData();
   }, []);
 
   useEffect(() => {
@@ -69,8 +75,14 @@ const TaxPayment = () => {
         const indexOfLastMonth = currentPage * monthsPerPage;
         const indexOfFirstMonth = indexOfLastMonth - monthsPerPage;
         setCurrentMonths(
-          yearData.months.slice(indexOfFirstMonth, indexOfLastMonth)
+          yearData.months
+            .slice(indexOfFirstMonth, indexOfLastMonth)
+            .sort(
+              (a, b) =>
+                monthOrder.indexOf(a.month) - monthOrder.indexOf(b.month)
+            )
         );
+
         setTotalYearRent(yearData.totalRent);
       }
     }
@@ -184,6 +196,21 @@ const TaxPayment = () => {
     (yearsData.find((data) => data.year === selectedYear)?.months.length || 0) /
       monthsPerPage
   );
+
+  const monthOrder = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+  ];
 
   return (
     <div className="taxPaying">
