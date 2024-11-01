@@ -50,6 +50,7 @@ function TenantProfile() {
     setDeleteConfirmationPopup(true);
   };
   const handleCloseDeletePopup = () => {
+    setConfirmInput('');
     setDeleteConfirmationPopup(false);
   };
 
@@ -58,6 +59,7 @@ function TenantProfile() {
     try {
       const res = await apiRequest.delete(`/v2/tenants/deleteTenant/${_id}`);
       if (res.status) {
+        setConfirmInput('');
         handleCloseDeletePopup();
         toast.success('Tenant deleted successfully');
         setTimeout(() => {
@@ -155,6 +157,12 @@ function TenantProfile() {
   // Function to handle closing the popup
   const closePopupDepoHistory = () => {
     setShowPopup(false);
+  };
+
+  const [confirmInput, setConfirmInput] = useState('');
+
+  const handleConfirmChange = (e) => {
+    setConfirmInput(e.target.value);
   };
   return (
     <div className="TenantProfile">
@@ -359,17 +367,44 @@ function TenantProfile() {
       </div>
 
       {deleteConfirmationPopup && (
-        <div className="confirmation-popup-overlay">
-          <div className="confirmation-popup">
-            <h3>Are you sure you want to delete this Tenant?</h3>
-            <p>{tenant?.name}</p>
-            {error && <p>{error}</p>}
-            <div className="confirmation-actions">
-              <button className="submit-btn" onClick={handleDeleteTenant}>
-                Yes, Delete
-              </button>
+        <div className="confirmation-modal">
+          <div className="modal-content">
+            <h2>Confirm Tenant Deletion</h2>
+            <p className="warning">
+              <strong>Warning:</strong> This action is{' '}
+              <strong>irreversible</strong> . By proceeding, you will
+              permanently delete all data associated with{' '}
+              <strong>{tenant.name}</strong>, including:
+            </p>
+            <ul className="delete-consequences">
+              <li>All payments made by this tenant.</li>
+              <li>All notes recorded for this tenant.</li>
+              <li>All invoices issued to this tenant.</li>
+              <li>
+                The house currently occupied by this tenant will be marked as
+                vacant.
+              </li>
+            </ul>
+            <p>
+              To confirm, please type: <strong>delete {tenant.name}</strong>
+            </p>
+            <input
+              type="text"
+              value={confirmInput}
+              onChange={handleConfirmChange}
+              placeholder={`Type "delete ${tenant.name}" to confirm`}
+              className="confirm-input"
+            />
+            <div className="modal-actions">
               <button className="cancel-btn" onClick={handleCloseDeletePopup}>
                 Cancel
+              </button>
+              <button
+                className="confirm-btn"
+                onClick={() => handleDeleteTenant()}
+                disabled={confirmInput !== `delete ${tenant.name}`}
+              >
+                Yes, Delete Tenant
               </button>
             </div>
           </div>

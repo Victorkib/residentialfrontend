@@ -133,7 +133,7 @@ const TenantPaymentList = () => {
       </div>
       <button className="btn" onClick={handleDowloadBtnClicked}>
         <span className="downloadSpan">
-          Print Tenants <FaFileDownload />
+          Print Paymnets <FaFileDownload />
         </span>
       </button>
       <table>

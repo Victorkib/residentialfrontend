@@ -81,7 +81,7 @@ const Listall = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false); // State for modal visibility
-  const [tenantToDelete, setTenantToDelete] = useState(null); // State for selected tenant
+  const [tenantToDelete, setTenantToDelete] = useState(''); // State for selected tenant
   const dispatch = useDispatch();
   const tenants = useSelector((store) => store.tenantsData.tenants);
   console.log('tenants: ', tenants);
@@ -131,19 +131,21 @@ const Listall = () => {
     }
   };
 
-  const handleOpenModal = (_id) => {
-    setTenantToDelete(_id);
+  const handleOpenModal = (tenant) => {
+    setTenantToDelete(tenant);
     setShowModal(true);
   };
 
   const handleCloseModal = () => {
     setShowModal(false);
-    setTenantToDelete(null);
+    setConfirmInput('');
+    setTenantToDelete('');
   };
 
   const handleConfirmDelete = () => {
     if (tenantToDelete) {
-      handleDelete(tenantToDelete);
+      handleDelete(tenantToDelete._id);
+      setConfirmInput('');
       handleCloseModal();
     }
   };
@@ -272,6 +274,12 @@ const Listall = () => {
     tenant.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const [confirmInput, setConfirmInput] = useState('');
+
+  const handleConfirmChange = (e) => {
+    setConfirmInput(e.target.value);
+  };
+
   return (
     <div className="summary2">
       <div className="tenantslist">
@@ -357,7 +365,7 @@ const Listall = () => {
                         Clear Tenant
                       </button>
                       <button
-                        onClick={() => handleOpenModal(tenant._id)}
+                        onClick={() => handleOpenModal(tenant)}
                         className="delete-btn"
                       >
                         <FaTrashAlt />
@@ -381,16 +389,47 @@ const Listall = () => {
           />
         </div>
       )}
+
       {showModal && (
         <div className="confirmation-modal">
           <div className="modal-content">
-            <p>Are you sure you want to delete this tenant?</p>
+            <h2>Confirm Tenant Deletion</h2>
+            <p className="warning">
+              <strong>Warning:</strong> This action is{' '}
+              <strong>irreversible</strong> . By proceeding, you will
+              permanently delete all data associated with{' '}
+              <strong>{tenantToDelete.name}</strong>, including:
+            </p>
+            <ul className="delete-consequences">
+              <li>All payments made by this tenant.</li>
+              <li>All notes recorded for this tenant.</li>
+              <li>All invoices issued to this tenant.</li>
+              <li>
+                The house currently occupied by this tenant will be marked as
+                vacant.
+              </li>
+            </ul>
+            <p>
+              To confirm, please type:{' '}
+              <strong>delete {tenantToDelete.name}</strong>
+            </p>
+            <input
+              type="text"
+              value={confirmInput}
+              onChange={handleConfirmChange}
+              placeholder={`Type "delete ${tenantToDelete.name}" to confirm`}
+              className="confirm-input"
+            />
             <div className="modal-actions">
               <button className="cancel-btn" onClick={handleCloseModal}>
                 Cancel
               </button>
-              <button className="confirm-btn" onClick={handleConfirmDelete}>
-                Yes, Delete
+              <button
+                className="confirm-btn"
+                onClick={() => handleConfirmDelete()}
+                disabled={confirmInput !== `delete ${tenantToDelete.name}`}
+              >
+                Yes, Delete Tenant
               </button>
             </div>
           </div>

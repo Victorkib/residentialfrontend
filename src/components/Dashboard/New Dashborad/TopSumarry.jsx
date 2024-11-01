@@ -38,6 +38,12 @@ function TopSumarry() {
     fetchTenants();
     fetchHouses();
   }, []);
+
+  const formattedPayments = new Intl.NumberFormat('en-KE', {
+    style: 'currency',
+    currency: 'KES',
+  }).format(payments);
+
   return (
     <div className="topSummary">
       <div className="summaryCard">
@@ -68,7 +74,7 @@ function TopSumarry() {
         <div className="currentTotal">
           <div>
             {' '}
-            <h3>{payments}</h3>
+            <h3>{formattedPayments}</h3>
           </div>
 
           <div className="glassy"></div>

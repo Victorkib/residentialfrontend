@@ -13,7 +13,7 @@ const Rent = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
-  const [tenantToDelete, setTenantToDelete] = useState(null);
+  const [tenantToDelete, setTenantToDelete] = useState('');
   const [currentPage, setCurrentPage] = useState(1); // State for current page
   const itemsPerPage = 5; // Items per page for pagination
   const dispatch = useDispatch();
@@ -118,6 +118,7 @@ const Rent = () => {
       const res = await apiRequest.delete(`/v2/tenants/deleteTenant/${_id}`);
       if (res.status === 200) {
         dispatch(setTenants(tenants.filter((tenant) => tenant._id !== _id)));
+        setConfirmInput('');
         setShowModal(false);
       } else {
         console.error('Failed to delete tenant');
@@ -129,14 +130,15 @@ const Rent = () => {
     }
   };
 
-  const handleOpenModal = (_id) => {
-    setTenantToDelete(_id);
+  const handleOpenModal = (tenant) => {
+    setTenantToDelete(tenant);
     setShowModal(true);
   };
 
   const handleCloseModal = () => {
     setShowModal(false);
-    setTenantToDelete(null);
+    setConfirmInput('');
+    setTenantToDelete('');
   };
 
   const handleSingleTenantClick = (tenant) => {
@@ -192,6 +194,12 @@ const Rent = () => {
         element?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }, 100);
     }
+  };
+
+  const [confirmInput, setConfirmInput] = useState('');
+
+  const handleConfirmChange = (e) => {
+    setConfirmInput(e.target.value);
   };
 
   return (
@@ -263,7 +271,7 @@ const Rent = () => {
                       Payments
                     </Link>
                     <button
-                      onClick={() => handleOpenModal(tenant._id)}
+                      onClick={() => handleOpenModal(tenant)}
                       className="delete-btn"
                     >
                       <FaTrashAlt />
@@ -277,7 +285,6 @@ const Rent = () => {
 
         {/* Pagination Component */}
       </div>
-
       {loading && (
         <div className="loader-overlay">
           <TailSpin
@@ -292,16 +299,43 @@ const Rent = () => {
       {showModal && (
         <div className="confirmation-modal">
           <div className="modal-content">
-            <p>Are you sure you want to delete this tenant?</p>
+            <h2>Confirm Tenant Deletion</h2>
+            <p className="warning">
+              <strong>Warning:</strong> This action is{' '}
+              <strong>irreversible</strong> . By proceeding, you will
+              permanently delete all data associated with{' '}
+              <strong>{tenantToDelete.name}</strong>, including:
+            </p>
+            <ul className="delete-consequences">
+              <li>All payments made by this tenant.</li>
+              <li>All notes recorded for this tenant.</li>
+              <li>All invoices issued to this tenant.</li>
+              <li>
+                The house currently occupied by this tenant will be marked as
+                vacant.
+              </li>
+            </ul>
+            <p>
+              To confirm, please type:{' '}
+              <strong>delete {tenantToDelete.name}</strong>
+            </p>
+            <input
+              type="text"
+              value={confirmInput}
+              onChange={handleConfirmChange}
+              placeholder={`Type "delete ${tenantToDelete.name}" to confirm`}
+              className="confirm-input"
+            />
             <div className="modal-actions">
               <button className="cancel-btn" onClick={handleCloseModal}>
                 Cancel
               </button>
               <button
                 className="confirm-btn"
-                onClick={() => tenantToDelete && handleDelete(tenantToDelete)}
+                onClick={() => handleDelete(tenantToDelete._id)}
+                disabled={confirmInput !== `delete ${tenantToDelete.name}`}
               >
-                Yes, Delete
+                Yes, Delete Tenant
               </button>
             </div>
           </div>
