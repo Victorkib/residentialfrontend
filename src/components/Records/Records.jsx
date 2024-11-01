@@ -3,7 +3,6 @@ import './Records.scss';
 import apiRequest from '../../lib/apiRequest';
 import { Bars } from 'react-loader-spinner'; // Importing the spinner component from react-loader-spinner
 import jsPDF from 'jspdf'; // Importing jsPDF for PDF generation
-import html2canvas from 'html2canvas'; // Importing html2canvas for rendering HTML to canvas
 
 const Records = () => {
   const [selectedRecord, setSelectedRecord] = useState(null);

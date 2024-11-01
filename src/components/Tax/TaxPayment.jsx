@@ -317,8 +317,6 @@ const TaxPayment = () => {
             radius="2"
             color="#4fa94d"
             ariaLabel="three-dots-loading"
-            wrapperStyle={{}}
-            wrapperClass="loader"
             visible={true}
           />
         </div>
