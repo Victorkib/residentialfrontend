@@ -86,8 +86,9 @@ function TopSumarry() {
       <div className="summaryCard">
         <div className="currentTotal c2">
           <div>
-            <h3>{tenants.length > 0 ? tenants.length : '0'}</h3>
+            <h3>{tenants.length > 0 ? tenants.length + 1 : '0'}</h3>
           </div>
+
           <div className="glassy"></div>
         </div>
         <div className="details">
