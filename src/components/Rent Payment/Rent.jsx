@@ -256,7 +256,12 @@ const Rent = () => {
                   }
                 >
                   <td>{tenant.name}</td>
-                  <td>{tenant.houseNo}</td>
+                  <td>
+                    {'Floor: ' +
+                      tenant.houseDetails.floorNo +
+                      ' ' +
+                      tenant.houseDetails.houseNo}
+                  </td>
                   <td className="actions">
                     <p
                       onClick={() => handleSingleTenantClick(tenant)}
