@@ -514,14 +514,14 @@ const TenantPayments = () => {
         }
       );
       if (response.status) {
-        console.log(response.data);
-      }
-      setRentDefault('');
-      setGarbageDefault('');
-      setShowPopup(false);
+        await getTenantDetails();
+        setRentDefault('');
+        setGarbageDefault('');
+        setShowPopup(false);
 
-      setError('');
-      toast.success(`Success Updating Defaults`);
+        setError('');
+        toast.success(`Success Updating Defaults`);
+      }
     } catch (error) {
       setError(error.response.data.message);
       toast.error(
