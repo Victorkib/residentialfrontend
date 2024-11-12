@@ -173,9 +173,20 @@ const Rent = () => {
 
     if (term === '') return; // Reset search if input is empty
 
-    const tenant = tenants.find((t) =>
-      t.name.toLowerCase().includes(term.toLowerCase())
-    );
+    const tenant = tenants.find((t) => {
+      // Create a composite string for the house format
+      const houseComposite = `Floor ${t.houseDetails.floorNo} ${t.houseDetails.houseNo}`;
+
+      return (
+        t.name.toLowerCase().includes(term.toLowerCase()) ||
+        t.phoneNo?.toString().includes(term) ||
+        (t.houseDetails.houseName &&
+          t.houseDetails.houseName
+            .toLowerCase()
+            .includes(term.toLowerCase())) ||
+        houseComposite.toLowerCase().includes(term.toLowerCase())
+      );
+    });
 
     if (tenant) {
       // Find the page the tenant is on
@@ -242,6 +253,7 @@ const Rent = () => {
             <thead>
               <tr>
                 <th>Tenant{`'`}s Name</th>
+                <th>Phone No.</th>
                 <th>House No.</th>
                 <th>Actions</th>
               </tr>
@@ -256,6 +268,7 @@ const Rent = () => {
                   }
                 >
                   <td>{tenant.name}</td>
+                  <td>{tenant.phoneNo}</td>
                   <td>
                     {'Floor: ' +
                       tenant.houseDetails.floorNo +

@@ -230,48 +230,53 @@ const Listall = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
 
-  const handlePageChange = (pageNumber) => {
-    setCurrentPage(pageNumber);
-  };
-
-  // Add this function to handle search input
   const [searchTerm, setSearchTerm] = useState('');
-  const [locatedTenantId, setLocatedTenantId] = useState(null);
-  const [isHeartbeatActive, setIsHeartbeatActive] = useState(false); // Track animation state
+  const [highlightedTenantId, setHighlightedTenantId] = useState(null);
 
   const handleSearchChange = (e) => {
     const term = e.target.value;
     setSearchTerm(term);
 
-    // Clear locatedTenantId when search input is empty
     if (term === '') {
-      setLocatedTenantId(null);
-      setIsHeartbeatActive(false); // Clear any heartbeat animation if search is cleared
+      setHighlightedTenantId(null); // Reset if search is empty
       return;
     }
 
-    // Find the first tenant that matches the search term
-    const foundTenant = tenants.find((tenant) =>
-      tenant.name.toLowerCase().includes(term.toLowerCase())
-    );
+    const foundTenant = tenants.find((t) => {
+      const houseComposite = `Floor ${t.houseDetails.floorNo} ${t.houseDetails.houseNo}`;
+      return (
+        t.name.toLowerCase().includes(term.toLowerCase()) ||
+        t.phoneNo?.toString().includes(term) ||
+        (t.houseDetails.houseName &&
+          t.houseDetails.houseName
+            .toLowerCase()
+            .includes(term.toLowerCase())) ||
+        houseComposite.toLowerCase().includes(term.toLowerCase())
+      );
+    });
 
-    // Set locatedTenantId if a match is found; otherwise, clear it
     if (foundTenant) {
-      setLocatedTenantId(foundTenant._id);
-      setIsHeartbeatActive(true); // Activate the animation
+      const tenantIndex = tenants.indexOf(foundTenant);
+      const page = Math.floor(tenantIndex / itemsPerPage) + 1;
 
-      // Clear animation after a few seconds
+      setCurrentPage(page);
+
       setTimeout(() => {
-        setIsHeartbeatActive(false);
-      }, 2000); // 2000ms = 2 seconds
-    } else {
-      setLocatedTenantId(null);
+        setHighlightedTenantId(foundTenant._id);
+        const element = document.getElementById(`tenant-${foundTenant._id}`);
+        element?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 100);
     }
   };
 
-  // Filter tenants based on search term
-  const filteredTenants = tenants?.filter((tenant) =>
-    tenant.name.toLowerCase().includes(searchTerm.toLowerCase())
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+    setHighlightedTenantId(null);
+  };
+
+  const filteredTenants = tenants.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
   );
 
   const [confirmInput, setConfirmInput] = useState('');
@@ -319,6 +324,7 @@ const Listall = () => {
             <thead>
               <tr>
                 <th>Name</th>
+                <th>phoneNo</th>
                 <th>Email</th>
                 <th>House No</th>
                 <th>To Be Cleared</th>
@@ -335,12 +341,11 @@ const Listall = () => {
                   <tr
                     key={tenant._id}
                     className={
-                      tenant._id === locatedTenantId && isHeartbeatActive
-                        ? 'heartbeat'
-                        : ''
+                      tenant._id === highlightedTenantId ? 'heartbeat' : ''
                     }
                   >
                     <td>{tenant.name}</td>
+                    <td>{tenant.phoneNo}</td>
                     <td>{tenant.email}</td>
                     <td>
                       {tenant?.houseDetails?.houseNo
