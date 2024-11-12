@@ -232,17 +232,18 @@ const Listall = () => {
 
   const [searchTerm, setSearchTerm] = useState('');
   const [highlightedTenantId, setHighlightedTenantId] = useState(null);
-
   const handleSearchChange = (e) => {
     const term = e.target.value;
     setSearchTerm(term);
 
     if (term === '') {
-      setHighlightedTenantId(null); // Reset if search is empty
+      setCurrentPage(1); // Reset to first page when search is empty
+      setHighlightedTenantId(null);
       return;
     }
 
-    const foundTenant = tenants.find((t) => {
+    // Filter tenants based on the search term
+    const filteredResults = tenants.filter((t) => {
       const houseComposite = `Floor ${t.houseDetails.floorNo} ${t.houseDetails.houseNo}`;
       return (
         t.name.toLowerCase().includes(term.toLowerCase()) ||
@@ -255,17 +256,27 @@ const Listall = () => {
       );
     });
 
-    if (foundTenant) {
-      const tenantIndex = tenants.indexOf(foundTenant);
-      const page = Math.floor(tenantIndex / itemsPerPage) + 1;
+    // If there are filtered results, find the first one and calculate its page
+    if (filteredResults.length > 0) {
+      const foundTenant = filteredResults[0]; // Get the first found tenant
+      const tenantIndex = filteredResults.indexOf(foundTenant); // Use filtered results
+      const page = Math.floor(tenantIndex / itemsPerPage) + 1; // Calculate page based on filtered results
 
-      setCurrentPage(page);
+      setCurrentPage(page); // Set current page to the correct page of the found tenant
 
+      // Set highlighted tenant ID and reset after a delay
+      setHighlightedTenantId(foundTenant._id);
       setTimeout(() => {
-        setHighlightedTenantId(foundTenant._id);
+        setHighlightedTenantId(null); // Clear highlight after 3 seconds
+      }, 3000); // Adjust duration as needed (3000 ms = 3 seconds)
+
+      // Scroll to the highlighted tenant after a short delay
+      setTimeout(() => {
         const element = document.getElementById(`tenant-${foundTenant._id}`);
         element?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }, 100);
+    } else {
+      setHighlightedTenantId(null); // No tenant found
     }
   };
 
@@ -274,7 +285,21 @@ const Listall = () => {
     setHighlightedTenantId(null);
   };
 
-  const filteredTenants = tenants.slice(
+  const filteredTenants = tenants.filter((tenant) => {
+    const houseComposite = `Floor ${tenant.houseDetails.floorNo} ${tenant.houseDetails.houseNo}`;
+    return (
+      tenant.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      tenant.phoneNo?.toString().includes(searchTerm) ||
+      (tenant.houseDetails.houseName &&
+        tenant.houseDetails.houseName
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase())) ||
+      houseComposite.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  });
+
+  // Now slice the filtered tenants for pagination
+  const paginatedTenants = filteredTenants.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
@@ -306,10 +331,10 @@ const Listall = () => {
         <Pagination
           activePage={currentPage}
           itemsCountPerPage={itemsPerPage}
-          totalItemsCount={tenants?.length}
+          totalItemsCount={filteredTenants.length} // Ensure this is the filtered count
           pageRangeDisplayed={5}
           onChange={handlePageChange}
-          innerClass="pagination" // This applies SCSS styling
+          innerClass="pagination"
           itemClass="page-item"
           linkClass="page-link"
         />
@@ -332,52 +357,48 @@ const Listall = () => {
               </tr>
             </thead>
             <tbody>
-              {filteredTenants
-                ?.slice(
-                  (currentPage - 1) * itemsPerPage,
-                  currentPage * itemsPerPage
-                )
-                ?.map((tenant) => (
-                  <tr
-                    key={tenant._id}
-                    className={
-                      tenant._id === highlightedTenantId ? 'heartbeat' : ''
-                    }
-                  >
-                    <td>{tenant.name}</td>
-                    <td>{tenant.phoneNo}</td>
-                    <td>{tenant.email}</td>
-                    <td>
-                      {tenant?.houseDetails?.houseNo
-                        ? tenant.houseDetails?.houseNo
-                        : ''}
-                    </td>
-                    <td>{tenant.toBeCleared ? 'Yes' : 'No'}</td>
-                    <td className="actions">
-                      <Link
-                        to={`/tenantProfile/${tenant._id}`}
-                        className="edit-btn"
-                      >
-                        More Details
-                      </Link>
-                      <button onClick={() => handleDownloadTenant(tenant)}>
-                        <FaDownload />
-                      </button>
-                      <button
-                        onClick={() => handleTenantClearance(tenant)}
-                        className="edit-btn"
-                      >
-                        Clear Tenant
-                      </button>
-                      <button
-                        onClick={() => handleOpenModal(tenant)}
-                        className="delete-btn"
-                      >
-                        <FaTrashAlt />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+              {paginatedTenants.map((tenant) => (
+                <tr
+                  key={tenant._id}
+                  id={`tenant-${tenant._id}`}
+                  className={
+                    tenant._id === highlightedTenantId ? 'heartbeat' : ''
+                  }
+                >
+                  <td>{tenant.name}</td>
+                  <td>{tenant.phoneNo}</td>
+                  <td>{tenant.email}</td>
+                  <td>
+                    {'Floor' +
+                      tenant?.houseDetails?.floorNo +
+                      tenant?.houseDetails?.houseNo || ''}
+                  </td>
+                  <td>{tenant.toBeCleared ? 'Yes' : 'No'}</td>
+                  <td className="actions">
+                    <Link
+                      to={`/tenantProfile/${tenant._id}`}
+                      className="edit-btn"
+                    >
+                      More Details
+                    </Link>
+                    <button onClick={() => handleDownloadTenant(tenant)}>
+                      <FaDownload />
+                    </button>
+                    <button
+                      onClick={() => handleTenantClearance(tenant)}
+                      className="edit-btn"
+                    >
+                      Clear Tenant
+                    </button>
+                    <button
+                      onClick={() => handleOpenModal(tenant)}
+                      className="delete-btn"
+                    >
+                      <FaTrashAlt />
+                    </button>
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
