@@ -1,0 +1,269 @@
+.tenant-cards-page-addWater {
+  padding: 20px;
+  background-color: #f9f9f9;
+
+  background-image: linear-gradient(
+      rgba(142, 139, 139, 0.3),
+      rgba(201, 197, 197, 0.3)
+    ),
+    url('/glassWater.jpg');
+  background-position: center;
+  background-repeat: repeat;
+  background-size: cover;
+  height: 100%;
+
+  h2 {
+    text-align: center;
+    color: antiquewhite;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+  }
+
+  .tenant-cards-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+  }
+
+  .tenant-card {
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 300px;
+    padding: 20px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+    &:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+    }
+
+    h3 {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #1a1a1a;
+      margin-bottom: 0.5rem;
+    }
+
+    p {
+      font-size: 1rem;
+      color: #666666;
+      margin: 0.3rem 0;
+    }
+
+    .action-btn {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-align: center;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.2s ease, color 0.2s ease;
+
+      &:hover {
+        background-color: #01796f;
+        color: #ffffff;
+      }
+    }
+
+    .addWaterBtns {
+      display: flex;
+      width: 100%;
+      gap: 2px;
+      .water-bill-btn {
+        background-color: #56cfe1;
+        color: #ffffff;
+      }
+
+      .rent-btn {
+        background-color: #72efdd;
+        color: #ffffff;
+      }
+
+      .payment-btn {
+        background-color: #ff6b6b;
+        color: #ffffff;
+      }
+    }
+  }
+
+  .loader-overlay-addWater {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1300;
+  }
+
+  .pagination {
+    display: flex;
+    justify-content: center;
+    margin: 1.5rem 0;
+
+    li {
+      list-style: none;
+      margin: 0 5px;
+
+      a {
+        display: inline-block;
+        padding: 8px 12px;
+        background: #f0f0f0;
+        color: #333;
+        border-radius: 5px;
+        cursor: pointer;
+
+        &:hover {
+          background: #ddd;
+        }
+      }
+
+      &.active a {
+        background: teal;
+        color: white;
+      }
+    }
+  }
+
+  .tenant-cards-popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+
+    .tenant-cards-popup-wrapper {
+      display: flex;
+      gap: 20px;
+
+      .tenant-cards-popup-left {
+        background: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        width: max-content;
+        height: max-content;
+
+        &.blurred {
+          filter: blur(1px);
+        }
+        &.not-allowed {
+          cursor: not-allowed; /* Apply the not-allowed cursor */
+        }
+        h3 {
+          font-size: 18px;
+        }
+
+        form {
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+
+          input,
+          select {
+            padding: 8px;
+            border: 1px solid #ccc;
+            color: #1a1a1a;
+            border-radius: 4px;
+          }
+
+          .addWaterTitle {
+            display: flex;
+            gap: 4px;
+            width: 100%;
+            margin-bottom: 15px;
+
+            .submit-btn {
+              background-color: #4fa94d;
+              color: #fff;
+              padding: 10px;
+              border: none;
+              width: 50%;
+              border-radius: 4px;
+              cursor: pointer;
+
+              &:hover {
+                background-color: #45a140;
+              }
+            }
+            .close-btn-addWater {
+              background-color: #d9534f;
+              color: #fff;
+              padding: 2px;
+              border: none;
+              width: 50%;
+              border-radius: 4px;
+              cursor: pointer;
+
+              &:hover {
+                background-color: #7a0b07;
+              }
+            }
+          }
+
+          input:disabled,
+          select:disabled,
+          button:disabled {
+            cursor: not-allowed;
+            opacity: 0.5;
+          }
+        }
+      }
+
+      .tenant-cards-popup-right {
+        background: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        width: max-content;
+        height: max-content;
+
+        h3 {
+          font-size: 18px;
+          margin-bottom: 10px;
+        }
+
+        p {
+          font-size: 14px;
+          margin-bottom: 20px;
+        }
+
+        .confirm-btn,
+        .cancel-btn {
+          padding: 10px;
+          border: none;
+          border-radius: 4px;
+          cursor: pointer;
+          color: #fff;
+          width: 100px;
+
+          &.confirm-btn {
+            background-color: #4fa94d;
+            margin-right: 10px;
+
+            &:hover {
+              background-color: #45a140;
+            }
+          }
+
+          &.cancel-btn {
+            background-color: #d9534f;
+
+            &:hover {
+              background-color: #c9302c;
+            }
+          }
+        }
+      }
+    }
+  }
+}

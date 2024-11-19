@@ -87,8 +87,9 @@
 // doghnaut chart
 .sum {
   display: flex;
-
-  height: 70vh;
+  height: auto;
+  align-items: flex-start;
+  justify-content: flex-start;
 
   .chart-container {
     background-color: #fff;

@@ -42,6 +42,7 @@ import NewDashboard from './components/Dashboard/New Dashborad/NewDashboard.jsx'
 import { useEffect, useState } from 'react';
 import { checkTokenValidity } from './utils/checkAuth.js';
 import TokenExpiredPopup from './components/JwtExpirePopup/TokenExpiredPopup.jsx';
+import TenantCardsPage from './components/Rent Payment/TenantCardsPage/TenantCardsPage.jsx';
 
 function App() {
   //jwt verification
@@ -91,6 +92,7 @@ function App() {
           <Route path="/invoices" element={<InvoiceTable />} />
           {/* Tenant Payment */}
           <Route path="/rentpayment" element={<Rent />} />
+          <Route path="/tenantCardsPage" element={<TenantCardsPage />} />
           <Route
             path="/tenantPayment/:tenantId"
             element={<TenantPaymentForm />}

@@ -1,0 +1,135 @@
+.unpaid-tenants-list {
+  padding: 20px;
+  max-width: 1200px;
+  margin: auto;
+  text-align: center;
+  //   border: 1px solid crimson;
+
+  .unpaid-tenants-title {
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+  }
+
+  .tenants-cards {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    gap: 20px;
+    padding: 10px;
+
+    .tenant-card {
+      background: rgba(255, 255, 255, 0.2); // Glassy effect
+      backdrop-filter: blur(10px);
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      width: 200px;
+      padding: 20px;
+      cursor: pointer;
+      transition: transform 0.3s, box-shadow 0.3s;
+
+      h3 {
+        font-size: 1.2rem;
+        color: #222;
+        margin-bottom: 10px;
+      }
+
+      p {
+        font-size: 0.9rem;
+        color: #555;
+      }
+
+      &:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+      }
+    }
+  }
+
+  // Modal styling
+  .custom-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000; // Ensure the modal is on top
+    backdrop-filter: blur(1px); // Glass effect
+    background: rgba(255, 255, 255, 0.2); // Semi-transparent background
+
+    .modal-content {
+      background: rgba(
+        255,
+        255,
+        255,
+        0.9
+      ); // White with some transparency for the card effect
+      border-radius: 12px; // Rounded corners
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); // Shadow for depth
+      padding: 20px;
+      max-width: 400px;
+      width: 100%;
+      text-align: left; // Align text to the left for readability
+
+      h3 {
+        margin: 0 0 15px;
+        font-size: 1.8rem;
+        color: #333; // Dark color for the title
+        text-align: center; // Center the title for emphasis
+      }
+
+      .tenant-details {
+        margin-bottom: 20px; // Space below details
+        p {
+          margin: 8px 0;
+          font-size: 1rem;
+          color: #555; // Slightly lighter color for content
+          strong {
+            color: #333; // Dark color for labels
+          }
+        }
+      }
+
+      .modal-buttons {
+        display: flex;
+        flex-direction: column; // Stack buttons vertically
+        gap: 10px; // Space between buttons
+
+        button {
+          background-color: #007bff; // Primary button color
+          color: white;
+          border: none;
+          border-radius: 5px;
+          padding: 12px;
+          cursor: pointer;
+          transition: background-color 0.3s, transform 0.2s; // Transition effects
+
+          &:hover {
+            background-color: #0056b3; // Darker on hover
+            transform: translateY(-2px); // Lift effect on hover
+          }
+
+          &.cancel-button {
+            background-color: #dc3545; // Danger color for cancel
+          }
+
+          &.cancel-button:hover {
+            background-color: #c82333; // Darker on hover
+          }
+        }
+      }
+    }
+
+    .modal-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5); // Semi-transparent overlay
+      z-index: -1; // Place behind the modal content
+    }
+  }
+}
