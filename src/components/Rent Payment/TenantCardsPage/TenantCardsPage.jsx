@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import ReactPaginate from 'react-js-pagination';
+import Pagination from 'react-js-pagination';
 import { Oval } from 'react-loader-spinner';
 import { useDispatch, useSelector } from 'react-redux';
 import './TenantCardsPage.scss';
@@ -49,10 +49,12 @@ const TenantCardsPage = () => {
     }
   };
 
-  const fetchPayments = async () => {
+  const fetchPayments = async (tenant) => {
     try {
       const response = await apiRequest.get(
-        `/v2/payments/unpaidPayments/${selectedTenant?._id}`
+        `/v2/payments/unpaidPayments/${
+          selectedTenant ? selectedTenant._id : tenant._id
+        }`
       );
       // Store full payment data (including month and year)
       const payments = response.data.map((payment) => ({
@@ -62,7 +64,7 @@ const TenantCardsPage = () => {
       setPaymentMonths(payments);
     } catch (error) {
       console.error('Error fetching unpaid payments:', error);
-      toast.error(
+      toast.info(
         error?.response?.data?.message || 'Error fetching unpaid payments'
       );
     }
@@ -81,17 +83,21 @@ const TenantCardsPage = () => {
   };
 
   const handlePageChange = (pageNumber) => {
-    setActivePage(pageNumber);
+    setActivePage(pageNumber); // This should trigger a re-render
   };
 
-  const openWaterBillPopup = (tenant) => {
+  const openWaterBillPopup = async (tenant) => {
     setSelectedTenant(tenant);
-    setShowWaterBillPopup(true);
+    if (tenant) {
+      await fetchPayments(tenant);
+      setShowWaterBillPopup(true);
+    }
   };
 
   const closeWaterBillPopup = () => {
     setShowWaterBillPopup(false);
     setSelectedTenant(null);
+    setPaymentMonths([]);
     setShowConfirmationPopup(false);
   };
 
@@ -120,7 +126,10 @@ const TenantCardsPage = () => {
     }
   };
 
-  const tenantsPerPage = 3;
+  // Ensure this is already defined
+  const tenantsPerPage = 3; // Number of tenants per page
+
+  // Calculate the current tenants based on active page
   const currentTenants = tenants.slice(
     (activePage - 1) * tenantsPerPage,
     activePage * tenantsPerPage
@@ -173,15 +182,23 @@ const TenantCardsPage = () => {
         </div>
       )}
       <ToastContainer />
-      <ReactPaginate
-        activeClassName="active"
-        previousLabel="Prev"
-        nextLabel="Next"
-        breakLabel="..."
-        pageCount={Math.ceil(tenants.length / tenantsPerPage)}
-        onPageChange={(page) => handlePageChange(page.selected + 1)}
+
+      <Pagination
+        activePage={activePage}
+        itemsCountPerPage={tenantsPerPage}
+        totalItemsCount={tenants.length}
+        pageRangeDisplayed={5}
+        onChange={handlePageChange}
+        itemClass="page-item"
+        linkClass="page-link"
+        activeClass="active"
+        innerClass="pagination"
+        disabledClass="disabled"
+        prevPageText="Prev"
+        nextPageText="Next"
       />
-      {showWaterBillPopup && selectedTenant && (
+
+      {showWaterBillPopup && selectedTenant && paymentMonths.length > 0 && (
         <div
           className="tenant-cards-popup-overlay"
           onClick={closeWaterBillPopup}

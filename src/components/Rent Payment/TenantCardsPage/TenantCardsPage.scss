@@ -129,6 +129,43 @@
     }
   }
 
+  .pagination {
+    display: flex;
+    list-style: none;
+    justify-content: center;
+    padding: 0;
+  }
+
+  .pagination li {
+    margin: 0 5px;
+    cursor: pointer;
+  }
+
+  .pagination li a {
+    text-decoration: none;
+    color: #007bff;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+  }
+
+  .pagination li a:hover {
+    background-color: #007bff;
+    color: white;
+  }
+
+  .pagination .active a {
+    background-color: #007bff;
+    color: white;
+    font-weight: bold;
+  }
+
+  .pagination .disabled a {
+    cursor: not-allowed;
+    color: #ccc;
+  }
+
   .tenant-cards-popup-overlay {
     position: fixed;
     top: 0;
