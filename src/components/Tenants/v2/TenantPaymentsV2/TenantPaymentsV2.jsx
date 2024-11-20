@@ -546,14 +546,14 @@ const TenantPayments = () => {
       setError(error.response.data.message);
     }
   };
-  const handlePaymentClick = (payment) => {
-    setSelectedPayment(payment);
-    // Initialize Water Bill States with existing data if available
-    setAccumulatedWaterBill(payment?.waterBill?.accumulated || 0);
-    setPaidWaterBill(payment?.waterBill?.paid || 0);
-    setWaterBillDropdownOpen(false); // Ensure dropdown is closed initially
-    setShowPaymentPopup(true); // Show the payment popup
-  };
+  // const handlePaymentClick = (payment) => {
+  //   setSelectedPayment(payment);
+  //   // Initialize Water Bill States with existing data if available
+  //   setAccumulatedWaterBill(payment?.waterBill?.accumulated || 0);
+  //   setPaidWaterBill(payment?.waterBill?.paid || 0);
+  //   setWaterBillDropdownOpen(false); // Ensure dropdown is closed initially
+  //   setShowPaymentPopup(true); // Show the payment popup
+  // };
 
   const handlePaymentUpdate = async (e) => {
     e.preventDefault();
@@ -1062,6 +1062,17 @@ const TenantPayments = () => {
               </span>{' '}
               Payment Track
             </h1>
+            <h1>
+              {' '}
+              <span>
+                {'Floor: ' +
+                  tenantDetails?.houseDetails.floorNo +
+                  tenantDetails?.houseDetails.houseNo ||
+                  'Floor: ' +
+                    fetchedTenantDetails?.houseDetails.floorNo +
+                    tenantDetails?.houseDetails.houseNo}
+              </span>{' '}
+            </h1>
           </div>
           {/* /////////////////////////////////Lengalei's code begins//////////////////////////////////////////// */}
 
@@ -1257,7 +1268,8 @@ const TenantPayments = () => {
                 <div className="mini-cards">
                   {outstandingPayments?.map((payment, index) => (
                     <div key={index} className="mini-card outstanding">
-                      <div onClick={() => handlePaymentClick(payment)}>
+                      {/* onClick={() => handlePaymentClick(payment)} */}
+                      <div>
                         <p>
                           <strong>Month:</strong>{' '}
                           <span className="monthOuts">{payment?.month}</span>
