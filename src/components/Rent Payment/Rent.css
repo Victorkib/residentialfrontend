@@ -163,6 +163,9 @@
 .table-container {
   margin-bottom: 20px;
 }
+.rentListTbody td {
+  color: #fff !important;
+}
 
 .paginationRent {
   display: flex;

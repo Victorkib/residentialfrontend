@@ -91,7 +91,7 @@ const Rent = () => {
       setError('');
       setLoading(true);
       try {
-        const res = await apiRequest.get('/v2/tenants/getToBeClearedFalse');
+        const res = await apiRequest.get('/v2/tenants/getTenantsForColors');
         if (res.status) {
           if (res?.data?.length === 0) {
             dispatch(setTenants(fallbackTenants));
@@ -213,6 +213,53 @@ const Rent = () => {
     setConfirmInput(e.target.value);
   };
 
+  //colors implementation
+  const calculateRowStyle = (pendingPayments) => {
+    if (!pendingPayments || pendingPayments.length === 0) {
+      return { backgroundColor: 'rgb(37, 197, 37)' }; // No pending payments
+    }
+
+    // Calculate total global deficit
+    const totalDeficit = pendingPayments.reduce(
+      (sum, payment) => sum + (payment.globalDeficit || 0),
+      0
+    );
+
+    if (totalDeficit > 150) {
+      return { backgroundColor: '#b30000' }; // Total deficit > 150 (red)
+    } else if (totalDeficit >= 0 && totalDeficit <= 150) {
+      return { backgroundColor: 'rgb(230, 153, 11)' }; // Total deficit <= 150 and > 0(orange)
+    }
+
+    return { backgroundColor: 'rgb(37, 197, 37)' }; // Fallback(green)
+  };
+
+  const sortTenants = (tenants) => {
+    return tenants.sort((a, b) => {
+      const aHasPending = a.pendingPayments && a.pendingPayments.length > 0;
+      const bHasPending = b.pendingPayments && b.pendingPayments.length > 0;
+
+      if (aHasPending && !bHasPending) return -1;
+      if (!aHasPending && bHasPending) return 1;
+
+      // Both have pendingPayments or neither has pendingPayments
+      const aTotalDeficit = a.pendingPayments
+        ? a.pendingPayments.reduce(
+            (sum, payment) => sum + (payment.globalDeficit || 0),
+            0
+          )
+        : 0;
+      const bTotalDeficit = b.pendingPayments
+        ? b.pendingPayments.reduce(
+            (sum, payment) => sum + (payment.globalDeficit || 0),
+            0
+          )
+        : 0;
+
+      return bTotalDeficit - aTotalDeficit; // Sort by total deficit descending
+    });
+  };
+
   return (
     <div className="summary2">
       <div className="tenantslist">
@@ -258,11 +305,12 @@ const Rent = () => {
                 <th>Actions</th>
               </tr>
             </thead>
-            <tbody>
-              {currentTenants.map((tenant) => (
+            <tbody className="rentListTbody">
+              {sortTenants(currentTenants).map((tenant) => (
                 <tr
                   key={tenant._id}
                   id={`tenant-${tenant._id}`}
+                  style={calculateRowStyle(tenant.pendingPayments)} // Apply computed style
                   className={
                     highlightedTenant === tenant._id ? 'highlight' : ''
                   }
