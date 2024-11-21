@@ -11,7 +11,7 @@ const UnpaidTenantsList = () => {
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedTenant, setSelectedTenant] = useState(null);
-  const itemsPerPage = 5;
+  const itemsPerPage = 3;
   const navigate = useNavigate();
 
   useEffect(() => {
