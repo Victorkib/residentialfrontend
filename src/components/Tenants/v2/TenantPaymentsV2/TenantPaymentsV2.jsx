@@ -1,15 +1,16 @@
-import { useEffect, useState } from "react";
-import "./TenantPaymentsV2.scss";
-import apiRequest from "../../../../lib/apiRequest";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useEffect, useState } from 'react';
+import './TenantPaymentsV2.scss';
+import apiRequest from '../../../../lib/apiRequest';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
-import { TailSpin } from "react-loader-spinner";
-import { toast, ToastContainer } from "react-toastify";
-import Invoice from "../../../Rent Payment/Payment/Invoice/Invoice";
-import moment from "moment";
-import jsPDF from "jspdf";
-import { FaNoteSticky } from "react-icons/fa6";
-import ReactPaginate from "react-paginate";
+import { TailSpin } from 'react-loader-spinner';
+import { toast, ToastContainer } from 'react-toastify';
+import Invoice from '../../../Rent Payment/Payment/Invoice/Invoice';
+import moment from 'moment';
+import jsPDF from 'jspdf';
+import { FaNoteSticky } from 'react-icons/fa6';
+import ReactPaginate from 'react-paginate';
+import Pagination from 'react-js-pagination';
 
 const TenantPayments = () => {
   const { tenantId } = useParams();
@@ -18,8 +19,8 @@ const TenantPayments = () => {
   // /////////////////////////////Lengalei-start////////////
 
   const [notes, setNotes] = useState([]);
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
   const [editingNoteId, setEditingNoteId] = useState(null);
   const [popupOpen, setPopupOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
@@ -40,7 +41,7 @@ const TenantPayments = () => {
       setNotes(response.data);
     } catch (error) {
       // console.error('Error fetching notes:', error);
-      toast.error(error?.resonse?.data?.message || "error fetching notes");
+      toast.error(error?.resonse?.data?.message || 'error fetching notes');
     } finally {
       setLoading(false);
     }
@@ -51,21 +52,21 @@ const TenantPayments = () => {
     setLoading(true);
     try {
       if (!title && !description) {
-        throw new Error("All fields must be filled!");
+        throw new Error('All fields must be filled!');
       }
-      const response = await apiRequest.post("/v2/notes/postNote", {
+      const response = await apiRequest.post('/v2/notes/postNote', {
         title,
         description,
         tenantId,
       });
       setNotes([...notes, response.data]);
-      setTitle("");
-      setDescription("");
+      setTitle('');
+      setDescription('');
       await fetchNotes();
-      toast.success("Note added successfully");
+      toast.success('Note added successfully');
     } catch (error) {
       toast.error(
-        error?.resonse?.data?.message || error.message || "error fetching notes"
+        error?.resonse?.data?.message || error.message || 'error fetching notes'
       );
     } finally {
       setLoading(false);
@@ -83,12 +84,12 @@ const TenantPayments = () => {
       });
       setNotes(notes.map((note) => (note._id === id ? response.data : note)));
       setEditingNoteId(null);
-      setTitle("");
-      setDescription("");
+      setTitle('');
+      setDescription('');
       await fetchNotes();
-      toast.success("Note updated successfully");
+      toast.success('Note updated successfully');
     } catch (error) {
-      toast.error(error?.resonse?.data?.message || "error fetching notes");
+      toast.error(error?.resonse?.data?.message || 'error fetching notes');
     } finally {
       setLoading(false);
     }
@@ -103,15 +104,15 @@ const TenantPayments = () => {
         setNotes(notes.filter((note) => note._id !== id));
         closeDeleteNotePopup();
         await fetchNotes();
-        toast.success("Note deleted successfully");
+        toast.success('Note deleted successfully');
       }
     } catch (error) {
-      toast.error(error?.resonse?.data?.message || "error fetching notes");
+      toast.error(error?.resonse?.data?.message || 'error fetching notes');
     } finally {
       setLoading(false);
     }
   };
-  const [selectedNote, setSelectedNote] = useState("");
+  const [selectedNote, setSelectedNote] = useState('');
   const [deleteNotePopup, setDeleteNotePopup] = useState(false);
 
   const deleteNoteBtnClick = (note) => {
@@ -119,7 +120,7 @@ const TenantPayments = () => {
     setDeleteNotePopup(true);
   };
   const closeDeleteNotePopup = () => {
-    setSelectedNote("");
+    setSelectedNote('');
     setDeleteNotePopup(false);
   };
 
@@ -140,8 +141,8 @@ const TenantPayments = () => {
 
   const openAddPopup = () => {
     setEditingNoteId(null);
-    setTitle("");
-    setDescription("");
+    setTitle('');
+    setDescription('');
     setPopupOpen(true);
   };
 
@@ -160,34 +161,34 @@ const TenantPayments = () => {
 
   const navigate = useNavigate();
 
-  const [selectedTab, setSelectedTab] = useState("complete"); // Toggle between Complete and Outstanding
+  const [selectedTab, setSelectedTab] = useState('complete'); // Toggle between Complete and Outstanding
   const [showPopup, setShowPopup] = useState(false); // Popup for updating default values
   const [showPaymentPopup, setShowPaymentPopup] = useState(false); // Popup for outstanding payments
 
   const [completePayments, setCompletePayments] = useState([]);
   const [outstandingPayments, setOutstandingPayments] = useState([]);
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
   const [selectedPayment, setSelectedPayment] = useState(null); // Selected outstanding payment
 
-  const [selectedYear, setSelectedYear] = useState(""); // Selected year
+  const [selectedYear, setSelectedYear] = useState(''); // Selected year
   const [years, setYears] = useState([]); // Available years
   const [filteredPayments, setFilteredPayments] = useState([]); // Payments filtered by year
 
-  const [currentMonth, setCurrentMonth] = useState("");
-  const [currentYear, setCurrentyear] = useState("");
-  const [nextMonth, setNextMonth] = useState("");
+  const [currentMonth, setCurrentMonth] = useState('');
+  const [currentYear, setCurrentyear] = useState('');
+  const [nextMonth, setNextMonth] = useState('');
 
   // New States for Water Bill Dropdown
   const [waterBillDropdownOpen, setWaterBillDropdownOpen] = useState(false); // Toggle dropdown
-  const [accumulatedWaterBill, setAccumulatedWaterBill] = useState(""); // Accumulated Water Bill
-  const [paidWaterBill, setPaidWaterBill] = useState(""); // Paid Water Bill
+  const [accumulatedWaterBill, setAccumulatedWaterBill] = useState(''); // Accumulated Water Bill
+  const [paidWaterBill, setPaidWaterBill] = useState(''); // Paid Water Bill
 
   //
   const [extraChargesDropdownOpen, setExtraChargesDropdownOpen] =
     useState(false); // Toggle dropdown
   const [selectedExtraCharge, setSelectedExtraCharge] = useState({
-    expectedAmount: "",
-    description: "",
+    expectedAmount: '',
+    description: '',
   }); // Selected extra charge
 
   const [
@@ -198,8 +199,8 @@ const TenantPayments = () => {
     previousMonthSelectedExtraCharge,
     setPreviousMonthSelectedExtraCharge,
   ] = useState({
-    expectedAmount: "",
-    description: "",
+    expectedAmount: '',
+    description: '',
   }); // Selected extra charge
 
   const [displayRefNoHistory, setDisplayRefNoHistory] = useState(
@@ -220,7 +221,7 @@ const TenantPayments = () => {
     setPreviousMonthExtraChargesDropdownOpen((prevState) => !prevState);
   };
 
-  const [fetchedTenantDetails, setTenantDetails] = useState("");
+  const [fetchedTenantDetails, setTenantDetails] = useState('');
   // Separate function to fetch unpaid payments
   const fetchUnpaidPayments = async (tenantId) => {
     setLoading(true);
@@ -228,15 +229,15 @@ const TenantPayments = () => {
       const response = await apiRequest.get(
         `/v2/payments/unpaidPayments/${tenantId}`
       );
-      console.log("unfinished: ", response.data);
+      console.log('unfinished: ', response.data);
       setOutstandingPayments(response.data);
       if (response.status == 404) {
-        toast.error(response?.data?.message || "No Outstanding Payments");
+        toast.error(response?.data?.message || 'No Outstanding Payments');
       }
     } catch (error) {
       if (error?.response?.data?.unpaidPayments?.length < 0) {
-        console.log("no outstanding payments");
-        toast.error("No Outstanding Payments");
+        console.log('no outstanding payments');
+        toast.error('No Outstanding Payments');
       }
       // setError(error.response.data.message);
       console.log(error.response);
@@ -247,18 +248,18 @@ const TenantPayments = () => {
 
   // Separate function to fetch fully paid payments
   const months = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
   ];
 
   const fetchFullyPaidPayments = async (tenantId) => {
@@ -270,24 +271,24 @@ const TenantPayments = () => {
       );
       // console.log(response.data);
       setCompletePayments(response.data);
-      setError("");
+      setError('');
     } catch (error) {
       setError(
-        error.response?.data?.message || "Error fetching fully paid payments"
+        error.response?.data?.message || 'Error fetching fully paid payments'
       );
       toast.info(
-        error.response?.data?.message || "Error fetching fully paid payments"
+        error.response?.data?.message || 'Error fetching fully paid payments'
       );
       throw new Error(
-        error.response?.data?.message || "Error fetching fully paid payments"
+        error.response?.data?.message || 'Error fetching fully paid payments'
       );
     } finally {
       setLoading(false);
     }
   };
 
-  const [previousMonth, setPreviousMonth] = useState("");
-  const [previousYear, setPreviousYear] = useState("");
+  const [previousMonth, setPreviousMonth] = useState('');
+  const [previousYear, setPreviousYear] = useState('');
   const [mostRecentPayment, setMostRecentPayments] = useState({});
   // console.log('mostRecentPayment: ', mostRecentPayment);
   const getMostRecentPaymentByTenantId = async (tenantId) => {
@@ -326,7 +327,7 @@ const TenantPayments = () => {
           .reduce((max, current) => (current > max ? current : max), -1);
 
         const currentMonthName = months[mostRecentMonth];
-        console.log("currentMonthName: ", currentMonthName);
+        console.log('currentMonthName: ', currentMonthName);
 
         // Step 5: Determine the next month
         // const nextMonthIndex = (mostRecentMonth + 1) % 12;
@@ -337,7 +338,7 @@ const TenantPayments = () => {
           mostRecentYear
         );
 
-        setError("");
+        setError('');
         setCurrentMonth(currentMonthName);
         setNextMonth(findNextYear.nextMonthName);
         // console.log('month: ', findNextYear.nextMonthName);
@@ -350,23 +351,23 @@ const TenantPayments = () => {
   };
 
   // eslint-disable-next-line no-unused-vars
-  const [nextYear, setNextYear] = useState("");
+  const [nextYear, setNextYear] = useState('');
 
   // Helper function to determine the next year based on current month
   const determineYearForNextMonth = (currentMonth, currentYear) => {
     const months = [
-      "January",
-      "February",
-      "March",
-      "April",
-      "May",
-      "June",
-      "July",
-      "August",
-      "September",
-      "October",
-      "November",
-      "December",
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December',
     ];
 
     // Find index of the current month
@@ -418,9 +419,9 @@ const TenantPayments = () => {
     setSelectedTab(tab);
   };
 
-  const [newMonthlyAmount, setNewMonthlyAmount] = useState("");
-  const [referenceNumber, setReferenceNumber] = useState("");
-  const [newPaymentDate, setNewPaymentDate] = useState("");
+  const [newMonthlyAmount, setNewMonthlyAmount] = useState('');
+  const [referenceNumber, setReferenceNumber] = useState('');
+  const [newPaymentDate, setNewPaymentDate] = useState('');
 
   // const [rentDeficit, setRentDeficit] = useState('');
   // const [waterDeficit, setWaterDeficit] = useState('');
@@ -429,12 +430,13 @@ const TenantPayments = () => {
   // const [previousOtherChargesDeficit, setPreviousOtherChargesDeficit] =
   //   useState('');
   const [previousAccumulatedWaterBill, setPreviousAccumulatedWaterBill] =
-    useState("");
+    useState('');
 
   const handleAddPayment = async (e) => {
     e.preventDefault();
     // setLoading(true);
-    handleShowModal();
+    await fetchAndShowReferenceDetails(referenceNumber);
+    // handleShowModal();
   };
 
   // State to track if overpay is transferred to monthly amount
@@ -458,7 +460,7 @@ const TenantPayments = () => {
 
     try {
       const response = await apiRequest.post(
-        "/v2/payments/monthlyPayProcessing",
+        '/v2/payments/monthlyPayProcessing',
         dataToSend
       );
 
@@ -469,31 +471,31 @@ const TenantPayments = () => {
         await getTenantDetails();
         // handleOverpayTransfer();
         setIsOverpayTransferred(false);
-        setError("");
+        setError('');
         toast.success(`Success`);
 
         handleGenerateReceipt(dataToSend);
         // Reset form fields
-        setNewMonthlyAmount("");
-        setReferenceNumber("");
-        setNewPaymentDate("");
-        setSelectedExtraCharge({ expectedAmount: "", description: "" });
+        setNewMonthlyAmount('');
+        setReferenceNumber('');
+        setNewPaymentDate('');
+        setSelectedExtraCharge({ expectedAmount: '', description: '' });
         setPreviousMonthSelectedExtraCharge({
-          expectedAmount: "",
-          description: "",
+          expectedAmount: '',
+          description: '',
         });
-        setPreviousAccumulatedWaterBill("");
+        setPreviousAccumulatedWaterBill('');
       }
     } catch (error) {
-      console.log("Error occurred:", error);
+      console.log('Error occurred:', error);
       setError(error?.response?.data?.message);
-      toast.error(error.response?.data?.message || "Failed to clear tenant");
+      toast.error(error.response?.data?.message || 'Failed to clear tenant');
     } finally {
       setLoading(false);
     }
   };
-  const [rentDefault, setRentDefault] = useState("");
-  const [garbageDefault, setGarbageDefault] = useState("");
+  const [rentDefault, setRentDefault] = useState('');
+  const [garbageDefault, setGarbageDefault] = useState('');
 
   const handleUpdateDefaults = async (e) => {
     e.preventDefault();
@@ -515,17 +517,17 @@ const TenantPayments = () => {
       );
       if (response.status) {
         await getTenantDetails();
-        setRentDefault("");
-        setGarbageDefault("");
+        setRentDefault('');
+        setGarbageDefault('');
         setShowPopup(false);
 
-        setError("");
+        setError('');
         toast.success(`Success Updating Defaults`);
       }
     } catch (error) {
       setError(error.response.data.message);
       toast.error(
-        error.response?.data?.message || "Failed to update tenant Defaults"
+        error.response?.data?.message || 'Failed to update tenant Defaults'
       );
     } finally {
       setLoading(false);
@@ -565,11 +567,11 @@ const TenantPayments = () => {
       const response = await apiRequest.put(
         `/v2/payments/updatePayment/${selectedPayment._id}`,
         {
-          rentDeficit: formData.get("rentDeficit"),
-          garbageDeficit: formData.get("garbageDeficit"),
-          waterDeficit: formData.get("waterDeficit"),
-          referenceNumber: formData.get("referenceNumber"),
-          date: formData.get("date"),
+          rentDeficit: formData.get('rentDeficit'),
+          garbageDeficit: formData.get('garbageDeficit'),
+          waterDeficit: formData.get('waterDeficit'),
+          referenceNumber: formData.get('referenceNumber'),
+          date: formData.get('date'),
           month: selectedPayment.month,
           year: selectedPayment.year,
           accumulatedWaterBill: accumulatedWaterBill, // Send accumulated water bill
@@ -583,14 +585,14 @@ const TenantPayments = () => {
         // fetchUnpaidPayments(tenantId);
         // fetchFullyPaidPayments(tenantId);
         // await getMostRecentPaymentByTenantId(tenantId);
-        setError("");
+        setError('');
       }
       setShowPaymentPopup(false);
       // Optionally, refresh the outstanding payments
       fetchUnpaidPayments(tenantId);
     } catch (error) {
       setError(error.response.data.message);
-      toast.error(error.response.data.message || "Failed to update payment");
+      toast.error(error.response.data.message || 'Failed to update payment');
     } finally {
       setLoading(false);
     }
@@ -607,9 +609,9 @@ const TenantPayments = () => {
     setAddInternalAmountPopup(true);
   };
 
-  const [extraAmount, setExtraAmount] = useState("");
-  const [extraAmountReferenceNo, setExtraAmountReferenceNo] = useState("");
-  const [extraAmountGivenDate, setExtraAmountGivenDate] = useState("");
+  const [extraAmount, setExtraAmount] = useState('');
+  const [extraAmountReferenceNo, setExtraAmountReferenceNo] = useState('');
+  const [extraAmountGivenDate, setExtraAmountGivenDate] = useState('');
 
   const moneyWithinMonthData = {
     currentYear,
@@ -630,7 +632,7 @@ const TenantPayments = () => {
         // console.log('All good');
         closeExtraAmountConfirmationPopup();
         setAddInternalAmountPopup(false);
-        toast.success("Amount Added!");
+        toast.success('Amount Added!');
 
         handleGenerateReceipt(moneyWithinMonthData);
 
@@ -638,13 +640,13 @@ const TenantPayments = () => {
         await fetchFullyPaidPayments(tenantId);
         await getMostRecentPaymentByTenantId(tenantId);
         await getTenantDetails();
-        setExtraAmount("");
-        setExtraAmountReferenceNo("");
-        setExtraAmountGivenDate("");
+        setExtraAmount('');
+        setExtraAmountReferenceNo('');
+        setExtraAmountGivenDate('');
       }
     } catch (error) {
       setError(error.response.data.message);
-      toast.error(error.response.data.message || "Failed to Add payment");
+      toast.error(error.response.data.message || 'Failed to Add payment');
     } finally {
       setLoading(false);
     }
@@ -673,18 +675,18 @@ const TenantPayments = () => {
         ]?.date;
 
       setNewMonthlyAmount(mostRecentPayment?.overpay || 0); // Transfer overpay to monthly amount
-      setReferenceNumber(mostRecentPayment?.referenceNumber || "usedOverPay"); // Transfer overpay to monthly amount
+      setReferenceNumber(mostRecentPayment?.referenceNumber || 'usedOverPay'); // Transfer overpay to monthly amount
       setNewPaymentDate(
         lastPaymentDate
-          ? moment(lastPaymentDate).format("MMMM D, YYYY") // Desired format
-          : moment(new Date()).format("MMMM D, YYYY") // Format the current date if no date found
+          ? moment(lastPaymentDate).format('MMMM D, YYYY') // Desired format
+          : moment(new Date()).format('MMMM D, YYYY') // Format the current date if no date found
       );
 
       setIsOverpayTransferred(true); // Mark overpay as transferred
     } else {
-      setNewMonthlyAmount(""); // Reset the monthly amount
-      setReferenceNumber("");
-      setNewPaymentDate("");
+      setNewMonthlyAmount(''); // Reset the monthly amount
+      setReferenceNumber('');
+      setNewPaymentDate('');
       setIsOverpayTransferred(false); // Mark overpay as not transferred
     }
   };
@@ -707,17 +709,17 @@ const TenantPayments = () => {
     setShowUpdatePaymentModal(true);
   };
   const closeUpdatePopup = () => {
-    setSelectedPayment("");
+    setSelectedPayment('');
     setShowUpdatePaymentModal(false);
   };
 
-  const [updatedRentDeficit, setUpdatedRentDeficit] = useState("");
-  const [updatedWaterDeficit, setUpdatedWaterDeficit] = useState("");
+  const [updatedRentDeficit, setUpdatedRentDeficit] = useState('');
+  const [updatedWaterDeficit, setUpdatedWaterDeficit] = useState('');
   const [updatedAccumulatedWaterBill, setUpdatedAccumulatedWaterBill] =
-    useState("");
-  const [updatedGarbageDeficit, setUpdatedGarbageDeficit] = useState("");
-  const [updatedExtraCharges, setUpdatedExtraCharges] = useState("");
-  const [updatedReferenceNumber, setUpdatedReferenceNumber] = useState("");
+    useState('');
+  const [updatedGarbageDeficit, setUpdatedGarbageDeficit] = useState('');
+  const [updatedExtraCharges, setUpdatedExtraCharges] = useState('');
+  const [updatedReferenceNumber, setUpdatedReferenceNumber] = useState('');
 
   //handle deficit updates
   const handleDeficitsUpdate = async (e) => {
@@ -731,22 +733,22 @@ const TenantPayments = () => {
             ? updatedRentDeficit
             : selectedPayment.rent.deficit > 0
             ? selectedPayment.rent.deficit
-            : "",
+            : '',
           updatedWaterDeficit: updatedWaterDeficit
             ? updatedWaterDeficit
             : selectedPayment.waterBill.deficit > 0
             ? selectedPayment.waterBill.deficit
-            : "",
+            : '',
           updatedAccumulatedWaterBill: updatedAccumulatedWaterBill
             ? updatedAccumulatedWaterBill
             : selectedPayment.waterBill.accumulatedAmount > 0
             ? selectedPayment.waterBill.accumulatedAmount
-            : "",
+            : '',
           updatedGarbageDeficit: updatedGarbageDeficit
             ? updatedGarbageDeficit
             : selectedPayment.garbageFee.deficit > 0
             ? selectedPayment.garbageFee.deficit
-            : "",
+            : '',
           updatedReferenceNumber: updatedReferenceNumber
             ? updatedReferenceNumber
             : selectedPayment.referenceNumber,
@@ -754,24 +756,24 @@ const TenantPayments = () => {
             ? updatedExtraCharges
             : selectedPayment.extraCharges.deficit > 0
             ? selectedPayment.extraCharges.deficit
-            : "",
+            : '',
         }
       );
       if (response.status) {
-        toast.success("Success");
+        toast.success('Success');
         /**********/
         await fetchUnpaidPayments(tenantId);
         await fetchFullyPaidPayments(tenantId);
         await getMostRecentPaymentByTenantId(tenantId);
 
         //reset deficit update values
-        setUpdatedRentDeficit("");
-        setUpdatedWaterDeficit("");
-        setUpdatedAccumulatedWaterBill("");
-        setUpdatedGarbageDeficit("");
-        setUpdatedExtraCharges("");
-        setUpdatedReferenceNumber("");
-        setError("");
+        setUpdatedRentDeficit('');
+        setUpdatedWaterDeficit('');
+        setUpdatedAccumulatedWaterBill('');
+        setUpdatedGarbageDeficit('');
+        setUpdatedExtraCharges('');
+        setUpdatedReferenceNumber('');
+        setError('');
         closeConfirmationPopup();
         closeUpdatePopup();
         setShowUpdatePaymentModal(false);
@@ -779,7 +781,7 @@ const TenantPayments = () => {
     } catch (error) {
       console.log(error.response.data.message);
       setError(error.response.data.message);
-      toast.error(error.response?.data?.message || "Failed to Update Deficits");
+      toast.error(error.response?.data?.message || 'Failed to Update Deficits');
     }
   };
 
@@ -793,7 +795,7 @@ const TenantPayments = () => {
     setIsUpdatingDeficitPopup(false);
   };
 
-  const [invoiceSelectedPayment, setInvoiceSelectedPayment] = useState("");
+  const [invoiceSelectedPayment, setInvoiceSelectedPayment] = useState('');
   console.log(invoiceSelectedPayment);
   const [isInvoiceVisible, setIsInvoiceVisible] = useState(false);
 
@@ -824,23 +826,23 @@ const TenantPayments = () => {
     HouseNo: invoiceSelectedPayment?.tenant?.houseDetails?.houseNo,
     items: [
       invoiceSelectedPayment.rent?.deficit > 0 && {
-        name: "Monthly Rent Transaction",
-        description: "Rent Deficit",
+        name: 'Monthly Rent Transaction',
+        description: 'Rent Deficit',
         price: invoiceSelectedPayment.rent.deficit,
       },
       invoiceSelectedPayment.waterBill?.deficit > 0 && {
-        name: "Monthly Water Transaction",
-        description: "Water Deficit",
+        name: 'Monthly Water Transaction',
+        description: 'Water Deficit',
         price: invoiceSelectedPayment.waterBill.deficit,
       },
       invoiceSelectedPayment.garbageFee?.deficit > 0 && {
-        name: "Monthly Garbage Transaction",
-        description: "Garbage Deficit",
+        name: 'Monthly Garbage Transaction',
+        description: 'Garbage Deficit',
         price: invoiceSelectedPayment.garbageFee.deficit,
       },
       invoiceSelectedPayment.extraCharges?.deficit > 0 && {
-        name: "Monthly Extra Charges Transaction",
-        description: "ExtraCharges Deficit",
+        name: 'Monthly Extra Charges Transaction',
+        description: 'ExtraCharges Deficit',
         price: invoiceSelectedPayment.extraCharges.deficit,
       },
     ].filter(Boolean),
@@ -871,7 +873,7 @@ const TenantPayments = () => {
 
     // Load the logo image to get its dimensions
     const logo = new Image();
-    logo.src = "/homelogo.png"; // Path to the logo
+    logo.src = '/homelogo.png'; // Path to the logo
 
     logo.onload = function () {
       // Get original dimensions
@@ -887,32 +889,32 @@ const TenantPayments = () => {
       const newHeight = desiredWidth / aspectRatio; // Calculate height based on aspect ratio
 
       // Add letterhead
-      doc.addImage(logo, "PNG", 10, 10, newWidth, newHeight);
+      doc.addImage(logo, 'PNG', 10, 10, newWidth, newHeight);
       doc.setFontSize(16);
-      doc.text("Sleek Abode Apartments", 70, 20);
+      doc.text('Sleek Abode Apartments', 70, 20);
       doc.setFontSize(12);
-      doc.text("Kimbo, Ruiru.", 70, 30);
-      doc.text("Contact: sleekabodemanagement@gmail.com", 70, 35);
-      doc.text("Phone: (+254) 788-413-323", 70, 40);
+      doc.text('Kimbo, Ruiru.', 70, 30);
+      doc.text('Contact: sleekabodemanagement@gmail.com', 70, 35);
+      doc.text('Phone: (+254) 788-413-323', 70, 40);
 
       doc.setLineWidth(1);
       doc.line(10, 45, 200, 45);
 
       doc.setFontSize(20);
-      doc.text("Payment Receipt", 14, 60);
+      doc.text('Payment Receipt', 14, 60);
 
       // Add tenant details
       doc.setFontSize(12);
       doc.text(
         `Tenant Name: ${
-          tenantDetails?.name || fetchedTenantDetails?.name || "Tenant"
+          tenantDetails?.name || fetchedTenantDetails?.name || 'Tenant'
         }`,
         14,
         70
       );
       doc.text(
         `Phone No: ${
-          tenantDetails?.phoneNo || fetchedTenantDetails?.phoneNo || "+254"
+          tenantDetails?.phoneNo || fetchedTenantDetails?.phoneNo || '+254'
         }`,
         14,
         75
@@ -921,16 +923,16 @@ const TenantPayments = () => {
         `Apartment: ${
           tenantDetails?.apartmentId?.name ||
           fetchedTenantDetails?.apartmentId?.name ||
-          "Sleek Abode Apartments"
+          'Sleek Abode Apartments'
         }`,
         14,
         80
       );
       doc.text(
         `House: ${
-          "Floor" + tenantDetails?.houseDetails?.floorNo ||
+          'Floor' + tenantDetails?.houseDetails?.floorNo ||
           fetchedTenantDetails?.houseDetails?.floorNo +
-            ", " +
+            ', ' +
             tenantDetails?.houseDetails?.houseNo ||
           fetchedTenantDetails?.houseDetails?.houseNo
         }`,
@@ -941,16 +943,16 @@ const TenantPayments = () => {
       // Payment summary table
       const details = [
         [
-          "Payment Reference No",
+          'Payment Reference No',
           dataToSend?.referenceNumber ||
             dataToSend?.extraAmountReferenceNo ||
-            "ReferenceNo",
+            'ReferenceNo',
         ],
         [
-          "Payment Amount",
-          new Intl.NumberFormat("en-KE", {
-            style: "currency",
-            currency: "KES",
+          'Payment Amount',
+          new Intl.NumberFormat('en-KE', {
+            style: 'currency',
+            currency: 'KES',
           }).format(
             dataToSend?.newMonthlyAmount ||
               mostRecentPayment?.overpay ||
@@ -959,19 +961,19 @@ const TenantPayments = () => {
           ),
         ],
         [
-          "Payment Date",
+          'Payment Date',
           moment(
             dataToSend?.newPaymentDate ||
               dataToSend?.extraAmountGivenDate ||
               new Date()
-          ).format("MMM DD YYYY"),
+          ).format('MMM DD YYYY'),
         ],
       ];
       doc.autoTable({
-        head: [["Description", "Details"]],
+        head: [['Description', 'Details']],
         body: details,
         startY: 90, // Adjust starting Y position as needed
-        theme: "grid",
+        theme: 'grid',
         styles: { fontSize: 12 },
       });
 
@@ -980,47 +982,47 @@ const TenantPayments = () => {
         `receipt_${
           dataToSend?.referenceNumber ||
           dataToSend?.extraAmountReferenceNo ||
-          "PaymentReceipt"
+          'PaymentReceipt'
         }.pdf`
       );
     };
   };
   const deficitUpdates = [
     {
-      label: "Updated Rent Deficit",
+      label: 'Updated Rent Deficit',
       value: updatedRentDeficit
         ? updatedRentDeficit
         : selectedPayment?.rent?.deficit,
     },
     {
-      label: "Updated Water Deficit",
+      label: 'Updated Water Deficit',
       value: updatedWaterDeficit
         ? updatedWaterDeficit
         : selectedPayment?.waterBill?.deficit,
     },
     {
-      label: "Updated Accumulated Water Bill",
+      label: 'Updated Accumulated Water Bill',
       value: updatedAccumulatedWaterBill
         ? updatedAccumulatedWaterBill
         : selectedPayment?.waterBill?.accumulatedAmount,
     },
     {
-      label: "Updated Garbage Deficit",
+      label: 'Updated Garbage Deficit',
       value: updatedGarbageDeficit
         ? updatedGarbageDeficit
         : selectedPayment?.garbageFee?.deficit,
     },
     {
-      label: "Updated Reference Number",
+      label: 'Updated Reference Number',
       value: updatedReferenceNumber
         ? updatedReferenceNumber.toUpperCase()
         : selectedPayment?.referenceNumber
         ? selectedPayment.referenceNumber.toUpperCase()
-        : "",
+        : '',
     },
 
     {
-      label: "Updated Extra Charges",
+      label: 'Updated Extra Charges',
       value: updatedExtraCharges
         ? updatedExtraCharges
         : selectedPayment?.extraCharges?.deficit,
@@ -1029,16 +1031,16 @@ const TenantPayments = () => {
 
   // Function to get the ordinal suffix
   const getOrdinalSuffix = (day) => {
-    if (day > 3 && day < 21) return "th"; // Special case for 11th to 13th
+    if (day > 3 && day < 21) return 'th'; // Special case for 11th to 13th
     switch (day % 10) {
       case 1:
-        return "st";
+        return 'st';
       case 2:
-        return "nd";
+        return 'nd';
       case 3:
-        return "rd";
+        return 'rd';
       default:
-        return "th";
+        return 'th';
     }
   };
 
@@ -1046,10 +1048,48 @@ const TenantPayments = () => {
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     const day = date.getDate();
-    const month = date.toLocaleString("default", { month: "long" });
+    const month = date.toLocaleString('default', { month: 'long' });
     const year = date.getFullYear();
     return `${day}${getOrdinalSuffix(day)} ${month} ${year}`;
   };
+
+  const [currentPageReferenceNo, setCurrentPageReferenceNo] = useState(1);
+  const [itemsPerPageReferenceNo] = useState(3); // Adjust items per page as needed
+  const [paymentDetailsListReferenceNo, setPaymentDetailsListReferenceNo] =
+    useState([]);
+
+  const fetchAndShowReferenceDetails = async (referenceNumber) => {
+    setLoading(true);
+    try {
+      const response = await apiRequest.get(
+        `/v2/payments/reference/${referenceNumber}`
+      );
+
+      if (response.status) {
+        setPaymentDetailsListReferenceNo(response.data.data);
+      } else {
+        setPaymentDetailsListReferenceNo([]);
+      }
+
+      handleShowModal();
+    } catch (error) {
+      console.error('Error fetching reference details:', error);
+      toast.info(error.response.data.message || 'Error checking Reference No!');
+      setPaymentDetailsListReferenceNo([]);
+      handleShowModal();
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handlePageChangeReferenceNo = (itemsPerPageReferenceNo) => {
+    setCurrentPageReferenceNo(itemsPerPageReferenceNo);
+  };
+
+  const currentData = paymentDetailsListReferenceNo.slice(
+    (currentPageReferenceNo - 1) * itemsPerPageReferenceNo,
+    currentPageReferenceNo * itemsPerPageReferenceNo
+  );
 
   return (
     <div className="tenant-payments-container">
@@ -1058,8 +1098,8 @@ const TenantPayments = () => {
           <div className="h1">
             <h1>
               <span>
-                {tenantDetails?.name || fetchedTenantDetails?.name + `'s`}{" "}
-              </span>{" "}
+                {tenantDetails?.name || fetchedTenantDetails?.name + `'s`}{' '}
+              </span>{' '}
               <span>
                 {tenantDetails?.houseDetails.houseNo ||
                   tenantDetails?.houseDetails.houseNo}
@@ -1098,25 +1138,25 @@ const TenantPayments = () => {
                     ))}
 
                     <ReactPaginate
-                      previousLabel={"<"}
-                      nextLabel={">"}
+                      previousLabel={'<'}
+                      nextLabel={'>'}
                       pageCount={pageCount}
                       onPageChange={handlePageClick}
-                      containerClassName={"pagination"}
-                      activeClassName={"active"}
-                      previousClassName={"page-item"}
-                      nextClassName={"page-item"}
-                      pageClassName={"page-item"}
-                      breakClassName={"page-item"}
-                      breakLabel={"..."}
+                      containerClassName={'pagination'}
+                      activeClassName={'active'}
+                      previousClassName={'page-item'}
+                      nextClassName={'page-item'}
+                      pageClassName={'page-item'}
+                      breakClassName={'page-item'}
+                      breakLabel={'...'}
                     />
                   </div>
                 ) : (
-                  ""
+                  ''
                 )}
 
                 <div className="add-edit-section">
-                  <h3>{editingNoteId ? "Edit Note" : "Add Note"}</h3>
+                  <h3>{editingNoteId ? 'Edit Note' : 'Add Note'}</h3>
                   <input
                     type="text"
                     value={title}
@@ -1130,7 +1170,7 @@ const TenantPayments = () => {
                   />
                   <div className="noteButtons">
                     <button onClick={handleAddOrUpdate}>
-                      {editingNoteId ? "Update Note" : "Add Note"}
+                      {editingNoteId ? 'Update Note' : 'Add Note'}
                     </button>
                     <button onClick={() => setPopupOpen(false)}>Close</button>
                   </div>
@@ -1148,9 +1188,9 @@ const TenantPayments = () => {
               <div className="outstandingWithGlobalDeficit">
                 <button
                   className={`tab-button ${
-                    selectedTab === "complete" ? "active" : ""
+                    selectedTab === 'complete' ? 'active' : ''
                   }`}
-                  onClick={() => toggleTab("complete")}
+                  onClick={() => toggleTab('complete')}
                 >
                   Complete Payments
                 </button>
@@ -1161,9 +1201,9 @@ const TenantPayments = () => {
                 <div className="outstandingWithGlobalDeficit">
                   <button
                     className={`tab-button ${
-                      selectedTab === "outstanding" ? "active" : ""
+                      selectedTab === 'outstanding' ? 'active' : ''
                     }`}
-                    onClick={() => toggleTab("outstanding")}
+                    onClick={() => toggleTab('outstanding')}
                   >
                     Pending Payments
                   </button>
@@ -1174,11 +1214,11 @@ const TenantPayments = () => {
                   )}
                 </div>
               ) : (
-                ""
+                ''
               )}
             </div>
             <div className="card-body">
-              {selectedTab === "complete" ? (
+              {selectedTab === 'complete' ? (
                 <>
                   <div className="year-selector">
                     <label>Select Year: </label>
@@ -1203,11 +1243,11 @@ const TenantPayments = () => {
                       return (
                         <div key={index} className="mini-card">
                           <p>
-                            <strong>Month:</strong>{" "}
+                            <strong>Month:</strong>{' '}
                             {payment?.month || currentMonth}, {payment?.year}
                           </p>
                           <p>
-                            <strong>Total Amount Received:</strong>{" "}
+                            <strong>Total Amount Received:</strong>{' '}
                             {payment?.totalAmountPaid}
                           </p>
                           <p
@@ -1217,7 +1257,7 @@ const TenantPayments = () => {
                           >
                             <strong>Reference No History:</strong>
                             <span className="dropdown-toggle">
-                              {displayRefNoHistory[index] ? "⬆️" : "⬇️"}
+                              {displayRefNoHistory[index] ? '⬆️' : '⬇️'}
                             </span>
                             {displayRefNoHistory[index] && ( // Display only for the selected card
                               <>
@@ -1229,19 +1269,19 @@ const TenantPayments = () => {
                                         backgroundColor:
                                           index ===
                                           payment.referenceNoHistory.length - 1 // Check if it's the last item
-                                            ? "green" // Color for the last item
-                                            : "red", // Color for all prior items
-                                        color: "white",
-                                        padding: "10px",
-                                        marginBottom: "10px",
-                                        borderRadius: "5px",
+                                            ? 'green' // Color for the last item
+                                            : 'red', // Color for all prior items
+                                        color: 'white',
+                                        padding: '10px',
+                                        marginBottom: '10px',
+                                        borderRadius: '5px',
                                       }}
                                     >
                                       <p>Amount Used: {ref.amount}</p>
                                       <p>RefNo Used: {ref.referenceNoUsed}</p>
                                       <p>
-                                        Received payment on:{" "}
-                                        {formatDate(ref.date)}{" "}
+                                        Received payment on:{' '}
+                                        {formatDate(ref.date)}{' '}
                                         {/* Use the formatDate function here */}
                                       </p>
                                     </div>
@@ -1251,8 +1291,8 @@ const TenantPayments = () => {
                             )}
                           </p>
                           <p>
-                            <strong>Cleared Status:</strong>{" "}
-                            {cleared ? "True" : "False"}
+                            <strong>Cleared Status:</strong>{' '}
+                            {cleared ? 'True' : 'False'}
                           </p>
                         </div>
                       );
@@ -1266,7 +1306,7 @@ const TenantPayments = () => {
                       {/* onClick={() => handlePaymentClick(payment)} */}
                       <div>
                         <p>
-                          <strong>Month:</strong>{" "}
+                          <strong>Month:</strong>{' '}
                           <span className="monthOuts">{payment?.month}</span>
                         </p>
                         {payment?.rent?.deficit ? (
@@ -1274,30 +1314,30 @@ const TenantPayments = () => {
                             <strong>Rent Deficit:</strong>
                             {payment?.rent?.deficit > 0
                               ? payment?.rent?.deficit
-                              : "None"}
+                              : 'None'}
                           </p>
                         ) : (
-                          ""
+                          ''
                         )}
                         {payment?.waterBill?.paid ? (
-                          ""
+                          ''
                         ) : (
                           <div className="waterBill">
                             {payment?.waterBill?.deficit > 0 ? (
                               <p>
-                                <strong>Water Deficit:</strong>{" "}
+                                <strong>Water Deficit:</strong>{' '}
                                 {payment?.waterBill?.deficit > 0
                                   ? payment?.waterBill?.deficit
-                                  : "Water Bill..."}
-                                {""}
+                                  : 'Water Bill...'}
+                                {''}
                               </p>
                             ) : (
                               <p>
-                                <strong>Water Bill:</strong>{" "}
+                                <strong>Water Bill:</strong>{' '}
                                 {payment?.waterBill?.deficit > 0
                                   ? payment?.waterBill?.deficit
-                                  : "Water Bill..."}
-                                {""}
+                                  : 'Water Bill...'}
+                                {''}
                               </p>
                             )}
 
@@ -1305,15 +1345,15 @@ const TenantPayments = () => {
                               <p>
                                 {payment?.waterBill?.accumulatedAmount > 0 ? (
                                   <span>
-                                    Accumulated Bill:{" "}
+                                    Accumulated Bill:{' '}
                                     {payment?.waterBill?.accumulatedAmount}
                                   </span>
                                 ) : (
-                                  ""
+                                  ''
                                 )}
                               </p>
                             ) : (
-                              ""
+                              ''
                             )}
 
                             {payment?.waterBill?.amount > 0 ? (
@@ -1323,53 +1363,53 @@ const TenantPayments = () => {
                                     Already Paid: {payment?.waterBill?.amount}✅
                                   </span>
                                 ) : (
-                                  ""
+                                  ''
                                 )}
                               </p>
                             ) : (
-                              ""
+                              ''
                             )}
                           </div>
                         )}
 
                         {payment?.garbageFee?.deficit ? (
                           <p>
-                            <strong>Garbage Fee Deficit:</strong>{" "}
+                            <strong>Garbage Fee Deficit:</strong>{' '}
                             {payment?.garbageFee?.deficit > 0
                               ? payment?.garbageFee?.deficit
-                              : "None"}
+                              : 'None'}
                           </p>
                         ) : (
-                          ""
+                          ''
                         )}
                         {payment?.extraCharges?.deficit > 0 ? (
                           <p>
-                            <strong>extraCharges Deficit:</strong>{" "}
+                            <strong>extraCharges Deficit:</strong>{' '}
                             {payment?.extraCharges?.deficit > 0
                               ? payment?.extraCharges?.deficit
-                              : "None"}
+                              : 'None'}
                           </p>
                         ) : (
-                          ""
+                          ''
                         )}
                         {payment?.globalDeficit ? (
                           <p>
-                            <strong>{payment?.month} Total Deficit:</strong>{" "}
+                            <strong>{payment?.month} Total Deficit:</strong>{' '}
                             {payment?.globalDeficit > 0
                               ? payment?.globalDeficit
-                              : "..."}
+                              : '...'}
                           </p>
                         ) : (
-                          ""
+                          ''
                         )}
 
                         {payment?.overpay ? (
                           <p>
-                            <strong>Current Excess To use:</strong>{" "}
-                            {payment?.overpay > 0 ? payment?.overpay : "None"}
+                            <strong>Current Excess To use:</strong>{' '}
+                            {payment?.overpay > 0 ? payment?.overpay : 'None'}
                           </p>
                         ) : (
-                          ""
+                          ''
                         )}
                       </div>
                       <p
@@ -1377,11 +1417,11 @@ const TenantPayments = () => {
                           handleUpdateArrowClick();
                         }}
                       >
-                        {displayUpdatebtn ? "⬆" : "⬇"}
+                        {displayUpdatebtn ? '⬆' : '⬇'}
                         <br />
                         {displayUpdatebtn && (
                           <>
-                            {" "}
+                            {' '}
                             <button
                               className="confirm-btn"
                               onClick={() => displayUpdatePopup(payment)}
@@ -1402,8 +1442,8 @@ const TenantPayments = () => {
                 </div>
               )}
             </div>
-            {selectedTab === "complete" ? (
-              ""
+            {selectedTab === 'complete' ? (
+              ''
             ) : (
               <>
                 {hasOutstandingPayments ? (
@@ -1417,7 +1457,7 @@ const TenantPayments = () => {
                     Given Extra Amount within {previousMonth}
                   </button>
                 ) : (
-                  ""
+                  ''
                 )}
               </>
             )}
@@ -1439,7 +1479,7 @@ const TenantPayments = () => {
               <form onSubmit={handleAddPayment}>
                 {/* Section 1: Monthly Payment Info */}
                 <div className="section section-1">
-                  <h3>{nextMonth + ", " + currentYear} Payment Info</h3>
+                  <h3>{nextMonth + ', ' + currentYear} Payment Info</h3>
                   <div>
                     {mostRecentPayment?.overpay !== undefined && (
                       <div className="overpay-section">
@@ -1450,8 +1490,8 @@ const TenantPayments = () => {
                               className="overpay-toggle"
                               onClick={handleOverpayTransfer}
                               style={{
-                                cursor: "pointer",
-                                marginLeft: "10px",
+                                cursor: 'pointer',
+                                marginLeft: '10px',
                               }}
                             >
                               ⬆
@@ -1459,16 +1499,16 @@ const TenantPayments = () => {
                           </p>
                         ) : (
                           <p>
-                            <strong>Current Overpay:</strong>{" "}
+                            <strong>Current Overpay:</strong>{' '}
                             {mostRecentPayment?.overpay > 0
                               ? mostRecentPayment?.overpay
-                              : "None"}
+                              : 'None'}
                             <span
                               className="overpay-toggle"
                               onClick={handleOverpayTransfer}
                               style={{
-                                cursor: "pointer",
-                                marginLeft: "10px",
+                                cursor: 'pointer',
+                                marginLeft: '10px',
                               }}
                             >
                               ⬇
@@ -1506,7 +1546,7 @@ const TenantPayments = () => {
                       <label>New Payment Date:</label>
                     )}
                     <input
-                      type={isOverpayTransferred ? "text" : "date"}
+                      type={isOverpayTransferred ? 'text' : 'date'}
                       value={newPaymentDate}
                       onChange={(e) => setNewPaymentDate(e.target.value)}
                       readOnly={isOverpayTransferred}
@@ -1521,10 +1561,10 @@ const TenantPayments = () => {
                     >
                       <span>
                         {selectedExtraCharge.description ||
-                          "Select Extra Charge"}
+                          'Select Extra Charge'}
                       </span>
                       <span className="dropdown-toggle">
-                        {extraChargesDropdownOpen ? "⬆️" : "⬇️"}
+                        {extraChargesDropdownOpen ? '⬆️' : '⬇️'}
                       </span>
                     </label>
                     {extraChargesDropdownOpen && (
@@ -1559,7 +1599,7 @@ const TenantPayments = () => {
                           <label>Description:</label>
                           <input
                             type="text"
-                            value={selectedExtraCharge.description ?? "None"}
+                            value={selectedExtraCharge.description ?? 'None'}
                             onChange={(e) =>
                               setSelectedExtraCharge((prevState) => ({
                                 ...prevState,
@@ -1589,12 +1629,12 @@ const TenantPayments = () => {
                         <div key={payment._id}>
                           <>
                             <label>
-                              {payment?.month + "," + payment?.year}
+                              {payment?.month + ',' + payment?.year}
                             </label>
                             {payment?.rent?.deficit > 0 ? (
                               <div className="form-group">
                                 <label>
-                                  Rent Deficit:{payment?.rent?.deficit}{" "}
+                                  Rent Deficit:{payment?.rent?.deficit}{' '}
                                 </label>
                                 {/* <input
                                 type="number"
@@ -1604,7 +1644,7 @@ const TenantPayments = () => {
                               /> */}
                               </div>
                             ) : (
-                              ""
+                              ''
                             )}
                             {payment?.waterBill?.deficit > 0 ? (
                               <div className="form-group">
@@ -1622,14 +1662,14 @@ const TenantPayments = () => {
                               /> */}
                               </div>
                             ) : (
-                              ""
+                              ''
                             )}
                             {payment?.waterBill?.paid ? (
-                              ""
+                              ''
                             ) : (
                               <>
                                 {payment?.waterBill?.deficit > 0 ? (
-                                  ""
+                                  ''
                                 ) : (
                                   <div className="form-group water-bill-section">
                                     <label
@@ -1638,10 +1678,10 @@ const TenantPayments = () => {
                                     >
                                       <span className="water-bill-icon">
                                         💧
-                                      </span>{" "}
-                                      Water Bill{" "}
+                                      </span>{' '}
+                                      Water Bill{' '}
                                       <span className="dropdown-toggle">
-                                        {waterBillDropdownOpen ? "⬆" : "⬇"}
+                                        {waterBillDropdownOpen ? '⬆' : '⬇'}
                                       </span>
                                     </label>
                                     {waterBillDropdownOpen && (
@@ -1691,7 +1731,7 @@ const TenantPayments = () => {
                             {payment?.garbageFee?.deficit > 0 ? (
                               <div className="form-group">
                                 <label>
-                                  Garbage Deficit:{" "}
+                                  Garbage Deficit:{' '}
                                   {payment?.garbageFee?.deficit}
                                 </label>
                                 {/* <input
@@ -1704,7 +1744,7 @@ const TenantPayments = () => {
                               /> */}
                               </div>
                             ) : (
-                              ""
+                              ''
                             )}
                             {payment?.extraCharges?.deficit > 0 ? (
                               <div className="form-group">
@@ -1722,7 +1762,7 @@ const TenantPayments = () => {
                               /> */}
                               </div>
                             ) : (
-                              ""
+                              ''
                             )}
                             <hr />
                           </>
@@ -1738,10 +1778,10 @@ const TenantPayments = () => {
                     >
                       <span>
                         {previousMonthSelectedExtraCharge.description ||
-                          "PreviousMonth  Extra Charge"}
+                          'PreviousMonth  Extra Charge'}
                       </span>
                       <span className="dropdown-toggle">
-                        {previousMonthExtraChargesDropdownOpen ? "⬆️" : "⬇️"}
+                        {previousMonthExtraChargesDropdownOpen ? '⬆️' : '⬇️'}
                       </span>
                     </label>
                     {previousMonthExtraChargesDropdownOpen && (
@@ -1785,7 +1825,7 @@ const TenantPayments = () => {
                             type="text"
                             value={
                               previousMonthSelectedExtraCharge.description ??
-                              "None"
+                              'None'
                             }
                             onChange={(e) =>
                               setPreviousMonthSelectedExtraCharge(
@@ -1939,7 +1979,7 @@ const TenantPayments = () => {
           <div className="popup-overlay">
             <div className="popup-content">
               <h2>
-                Complete {selectedPayment.month + `,` + selectedPayment.year}{" "}
+                Complete {selectedPayment.month + `,` + selectedPayment.year}{' '}
                 Pending Payment
               </h2>
               <form onSubmit={handlePaymentUpdate}>
@@ -1947,7 +1987,7 @@ const TenantPayments = () => {
                 {selectedPayment?.rent?.deficit ? (
                   <div className="form-group">
                     <label>
-                      Rent Deficit: {selectedPayment?.rent?.deficit || ""}
+                      Rent Deficit: {selectedPayment?.rent?.deficit || ''}
                     </label>
                     <input type="number" name="rentDeficit" />
                   </div>
@@ -1958,28 +1998,28 @@ const TenantPayments = () => {
                   <>
                     <div className="form-group">
                       <label>
-                        Water Bill {selectedPayment?.waterBill?.deficit || ""}
+                        Water Bill {selectedPayment?.waterBill?.deficit || ''}
                       </label>
                       <input type="number" name="waterDeficit" />
                     </div>
                   </>
                 ) : (
-                  ""
+                  ''
                 )}
 
                 {selectedPayment?.waterBill?.deficit ? (
-                  ""
+                  ''
                 ) : (
                   <>
-                    {" "}
+                    {' '}
                     <div className="form-group water-bill-section">
                       <label
                         onClick={toggleWaterBillDropdown}
                         className="water-bill-label"
                       >
-                        <span className="water-bill-icon">💧</span> Water Bill{" "}
+                        <span className="water-bill-icon">💧</span> Water Bill{' '}
                         <span className="dropdown-toggle">
-                          {waterBillDropdownOpen ? "⬆" : "⬇"}
+                          {waterBillDropdownOpen ? '⬆' : '⬇'}
                         </span>
                       </label>
                       {waterBillDropdownOpen && (
@@ -2024,8 +2064,8 @@ const TenantPayments = () => {
                 {selectedPayment?.garbageFee?.deficit ? (
                   <div className="form-group">
                     <label>
-                      Garbage Deficit:{" "}
-                      {selectedPayment?.garbageFee?.deficit || ""}
+                      Garbage Deficit:{' '}
+                      {selectedPayment?.garbageFee?.deficit || ''}
                     </label>
                     <input type="number" name="garbageDeficit" required />
                   </div>
@@ -2063,7 +2103,7 @@ const TenantPayments = () => {
           <div className="confirmation-modal">
             <div className="popup-content">
               <h2>
-                Update {selectedPayment.month + `,` + selectedPayment.year}{" "}
+                Update {selectedPayment.month + `,` + selectedPayment.year}{' '}
                 Deficits
               </h2>
               <form onSubmit={showConfirmationPopup}>
@@ -2071,8 +2111,8 @@ const TenantPayments = () => {
                 {selectedPayment?.rent?.deficit > 0 ? (
                   <div className="form-group">
                     <label>
-                      Current Rent Deficit:{" "}
-                      {selectedPayment?.rent?.deficit || ""}
+                      Current Rent Deficit:{' '}
+                      {selectedPayment?.rent?.deficit || ''}
                     </label>
                     <input
                       type="number"
@@ -2085,15 +2125,15 @@ const TenantPayments = () => {
 
                 {/* Water Deficit */}
                 {selectedPayment?.waterBill?.paid ? (
-                  ""
+                  ''
                 ) : (
                   <>
                     {selectedPayment?.waterBill?.deficit > 0 ? (
                       <>
                         <div className="form-group">
                           <label>
-                            Current Water Bill{" "}
-                            {selectedPayment?.waterBill?.deficit || ""}
+                            Current Water Bill{' '}
+                            {selectedPayment?.waterBill?.deficit || ''}
                           </label>
                           <input
                             type="number"
@@ -2106,30 +2146,30 @@ const TenantPayments = () => {
                         </div>
                       </>
                     ) : (
-                      ""
+                      ''
                     )}
                   </>
                 )}
 
                 {selectedPayment?.waterBill?.paid ? (
-                  ""
+                  ''
                 ) : (
                   <>
-                    {" "}
+                    {' '}
                     {selectedPayment?.waterBill?.deficit > 0 ? (
-                      ""
+                      ''
                     ) : (
                       <>
-                        {" "}
+                        {' '}
                         <div className="form-group water-bill-section">
                           <label
                             onClick={toggleWaterBillDropdown}
                             className="water-bill-label"
                           >
                             <span className="water-bill-icon">💧</span> Water
-                            Bill{" "}
+                            Bill{' '}
                             <span className="dropdown-toggle">
-                              {waterBillDropdownOpen ? "⬆" : "⬇"}
+                              {waterBillDropdownOpen ? '⬆' : '⬇'}
                             </span>
                           </label>
                           {waterBillDropdownOpen && (
@@ -2168,8 +2208,8 @@ const TenantPayments = () => {
                 {selectedPayment?.garbageFee?.deficit > 0 ? (
                   <div className="form-group">
                     <label>
-                      Current Garbage Deficit:{" "}
-                      {selectedPayment?.garbageFee?.deficit || ""}
+                      Current Garbage Deficit:{' '}
+                      {selectedPayment?.garbageFee?.deficit || ''}
                     </label>
                     <input
                       type="number"
@@ -2184,8 +2224,8 @@ const TenantPayments = () => {
                 {selectedPayment?.extraCharges?.deficit > 0 ? (
                   <div className="form-group">
                     <label>
-                      Current Extra Charges Deficit:{" "}
-                      {selectedPayment?.extraCharges?.deficit || ""}
+                      Current Extra Charges Deficit:{' '}
+                      {selectedPayment?.extraCharges?.deficit || ''}
                     </label>
                     <input
                       type="number"
@@ -2213,7 +2253,7 @@ const TenantPayments = () => {
 
                 {/* Submit and Cancel Buttons */}
                 <div className="closeAndUpdateBtns">
-                  {" "}
+                  {' '}
                   <button type="submit" className="confirm-btn">
                     Update Deficits
                   </button>
@@ -2232,10 +2272,10 @@ const TenantPayments = () => {
           </div>
         )}
         {/*Confirmation Modal */}
-        {showConfirmationModal && (
+        {/* {showConfirmationModal && (
           <div className="confirmation-modal">
             <div className="modal-content">
-              <p>Are you sure you want to proceed with this payment?</p>
+              <p></p>
               <div className="modal-actions">
                 <button className="cancel-btn" onClick={handleCloseModal}>
                   Cancel
@@ -2249,7 +2289,131 @@ const TenantPayments = () => {
               </div>
             </div>
           </div>
+        )} */}
+        {showConfirmationModal && (
+          <div className="glass-modal-container">
+            <div className="glass-modal-content">
+              <header className="glass-modal-header">
+                <h3>Payment & Tenant Details</h3>
+              </header>
+              <section className="glass-modal-body">
+                {currentData && currentData.length > 0 ? (
+                  <div className="data-grid">
+                    {currentData.map((item, index) => (
+                      <div key={index} className="data-card">
+                        {/* Payment Details */}
+                        <div className="section">
+                          <h4>Payment Details</h4>
+                          <p>
+                            <strong>Month:</strong> {item.paymentDetails.month}
+                          </p>
+                          <p>
+                            <strong>Year:</strong> {item.paymentDetails.year}
+                          </p>
+                          <p>
+                            <strong>Reference Number:</strong>{' '}
+                            {item.paymentDetails.referenceNumber}
+                          </p>
+                        </div>
+
+                        {/* Tenant Details */}
+                        <div className="section">
+                          <h4>Tenant Details</h4>
+                          <p>
+                            <strong>Name:</strong> {item.tenantDetails.name}
+                          </p>
+                          <p>
+                            <strong>Email:</strong> {item.tenantDetails.email}
+                          </p>
+                          <p>
+                            <strong>Phone No:</strong>{' '}
+                            {item.tenantDetails.phoneNo}
+                          </p>
+                          <p>
+                            <strong>House:</strong>{' '}
+                            {item.tenantDetails.houseDetails.houseNo}
+                          </p>
+                        </div>
+
+                        {/* Reference No History Entry */}
+                        <div className="section">
+                          <h4>Reference History</h4>
+                          <p>
+                            <strong>Previous Ref No:</strong>{' '}
+                            {item.referenceNoHistoryEntry.previousRefNo}
+                          </p>
+                          <p>
+                            <strong>Description:</strong>{' '}
+                            {item.referenceNoHistoryEntry.description}
+                          </p>
+                          <p>
+                            <strong>Amount:</strong>{' '}
+                            {item.referenceNoHistoryEntry.amount}
+                          </p>
+                          <p>
+                            <strong>Date:</strong>{' '}
+                            {new Date(
+                              item.referenceNoHistoryEntry.date
+                            ).toLocaleDateString()}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <>
+                    <p>No records available with that Reference Number.</p>
+                    <p>You are Clear to Proceed.</p>
+                  </>
+                )}
+              </section>
+              {/* Pagination */}
+              {currentData && currentData.length > 0 ? (
+                <div className="pagination-container">
+                  <Pagination
+                    activePage={currentPageReferenceNo}
+                    itemsCountPerPage={itemsPerPageReferenceNo}
+                    totalItemsCount={paymentDetailsListReferenceNo.length}
+                    pageRangeDisplayed={5}
+                    onChange={handlePageChangeReferenceNo}
+                    itemClass="page-item"
+                    linkClass="page-link"
+                    activeLinkClass="active"
+                    innerClass="pagination"
+                  />
+                </div>
+              ) : (
+                ''
+              )}
+
+              {currentData.some(
+                (item) => item.paymentDetails.referenceNumber
+              ) && (
+                <div className="reference-exists-message">
+                  <p style={{ color: 'red', fontWeight: 'bold' }}>
+                    Warning: You are proceeding with a reference number that is
+                    already in use.
+                  </p>
+                </div>
+              )}
+              <footer className="glass-modal-footer">
+                <button
+                  className="modal-action-btn cancel-btn"
+                  onClick={handleCloseModal}
+                >
+                  Cancel
+                </button>
+                <button
+                  className="modal-action-btn confirm-btn"
+                  onClick={handleConfirmAddPayment}
+                >
+                  Confirm
+                </button>
+              </footer>
+            </div>
+          </div>
         )}
+
         {deleteNotePopup && (
           <div className="confirmation-modal">
             <div className="modal-content">
@@ -2284,7 +2448,7 @@ const TenantPayments = () => {
                       <span>{update?.value}</span>
                     </li>
                   ) : (
-                    ""
+                    ''
                   )
                 )}
               </ul>
@@ -2305,16 +2469,16 @@ const TenantPayments = () => {
             <div className="deficit-modal-content">
               <p>Are you sure you want to proceed with this Extra payment?</p>
               <h4>
-                Amount to process:{" "}
+                Amount to process:{' '}
                 <span>
-                  {new Intl.NumberFormat("en-KE", {
-                    style: "currency",
-                    currency: "KES",
+                  {new Intl.NumberFormat('en-KE', {
+                    style: 'currency',
+                    currency: 'KES',
                   }).format(moneyWithinMonthData?.extraAmountProvided)}
                 </span>
               </h4>
               <h4>
-                ReferenceNo used:{" "}
+                ReferenceNo used:{' '}
                 <span>
                   {moneyWithinMonthData?.extraAmountReferenceNo?.toUpperCase()}
                 </span>
