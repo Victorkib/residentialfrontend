@@ -1,12 +1,12 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { FaClipboardList } from 'react-icons/fa';
-import { VscRecordSmall } from 'react-icons/vsc';
-import { TbSquarePercentage } from 'react-icons/tb';
-import { IoReceiptOutline } from 'react-icons/io5';
-import { FaUserLock } from 'react-icons/fa6';
-import { GiReceiveMoney } from 'react-icons/gi';
-import { MdOutlineFormatClear } from 'react-icons/md';
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import { FaClipboardList } from "react-icons/fa";
+import { VscRecordSmall } from "react-icons/vsc";
+import { TbSquarePercentage } from "react-icons/tb";
+import { IoReceiptOutline } from "react-icons/io5";
+import { FaUserLock } from "react-icons/fa6";
+import { GiReceiveMoney } from "react-icons/gi";
+import { MdOutlineFormatClear } from "react-icons/md";
 import {
   FaTachometerAlt,
   FaUsers,
@@ -16,8 +16,10 @@ import {
   FaCaretDown,
   FaBars,
   FaTimes,
-} from 'react-icons/fa';
-import './sidebar.css';
+} from "react-icons/fa";
+import { GiTap } from "react-icons/gi";
+import { PiBuildingApartmentFill } from "react-icons/pi";
+import "./sidebar.css";
 
 const Sidebar = () => {
   const [tenantDropdownOpen, setTenantDropdownOpen] = useState(false);
@@ -46,7 +48,7 @@ const Sidebar = () => {
       <button className="hamburger-menu" onClick={toggleSidebar}>
         <FaBars />
       </button>
-      <div className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
+      <div className={`sidebar ${sidebarOpen ? "open" : ""}`}>
         <button className="close-btn" onClick={toggleSidebar}>
           <FaTimes />
         </button>
@@ -70,7 +72,7 @@ const Sidebar = () => {
 
           <div className="dropdown">
             <div className="dash" onClick={toggleAddAppartmentOpen}>
-              <FaUsers className="icon" /> Appartments
+              <PiBuildingApartmentFill className="icon" /> Appartments
               <FaCaretDown className="caret" />
             </div>
             {addAppartmentOpen && (
@@ -91,7 +93,7 @@ const Sidebar = () => {
           <hr className="h" />
           <div className="dropdown">
             <div className="dash" onClick={toggleTenantDropdown}>
-              <FaUsers className="icon" /> Tenants{' '}
+              <FaUsers className="icon" /> Tenants{" "}
               <FaCaretDown className="caret" />
             </div>
             {tenantDropdownOpen && (
@@ -107,7 +109,7 @@ const Sidebar = () => {
           </div>
           <div className="dropdown">
             <div className="dash" onClick={toggleLandlordDropdown}>
-              <FaUserTie className="icon" /> CareTaker{' '}
+              <FaUserTie className="icon" /> CareTaker{" "}
               <FaCaretDown className="caret" />
             </div>
             {landlordDropdownOpen && (
@@ -125,8 +127,8 @@ const Sidebar = () => {
             <FaHouseUser className="icon" /> Rent Payment
           </Link>
           <Link to="/tenantCardsPage" className="dash">
-            <FaHouseUser className="icon" />
-            H20
+            <GiTap className="icon" />
+            Water Bills
           </Link>
           <Link to="/allPayments" className="dash">
             <GiReceiveMoney className="icon" /> All Payments

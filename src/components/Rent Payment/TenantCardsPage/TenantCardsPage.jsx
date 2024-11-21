@@ -1,22 +1,22 @@
-import { useState, useEffect } from 'react';
-import Pagination from 'react-js-pagination';
-import { Oval } from 'react-loader-spinner';
-import { useDispatch, useSelector } from 'react-redux';
-import './TenantCardsPage.scss';
-import apiRequest from '../../../lib/apiRequest';
-import { setTenants } from '../../../features/Tenants/TenantsSlice';
-import { useNavigate } from 'react-router-dom';
-import { toast, ToastContainer } from 'react-toastify';
+import { useState, useEffect } from "react";
+import Pagination from "react-js-pagination";
+import { Oval } from "react-loader-spinner";
+import { useDispatch, useSelector } from "react-redux";
+import "./TenantCardsPage.scss";
+import apiRequest from "../../../lib/apiRequest";
+import { setTenants } from "../../../features/Tenants/TenantsSlice";
+import { useNavigate } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
 
 const TenantCardsPage = () => {
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [activePage, setActivePage] = useState(1);
   const [showWaterBillPopup, setShowWaterBillPopup] = useState(false);
   const [selectedTenant, setSelectedTenant] = useState(null);
   const [showConfirmationPopup, setShowConfirmationPopup] = useState(false);
   const [paymentMonths, setPaymentMonths] = useState([]); // Store full payment data
-  const [selectedMonth, setSelectedMonth] = useState(''); // To track the selected month
+  const [selectedMonth, setSelectedMonth] = useState(""); // To track the selected month
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -32,16 +32,16 @@ const TenantCardsPage = () => {
   }, [dispatch, selectedTenant]);
 
   const fetchAllTenants = async () => {
-    setError('');
+    setError("");
     setLoading(true);
     try {
-      const res = await apiRequest.get('/v2/tenants/getToBeClearedFalse');
+      const res = await apiRequest.get("/v2/tenants/getToBeClearedFalse");
       dispatch(setTenants(res?.data?.length ? res.data : fallbackTenants));
     } catch {
-      setError('Error fetching tenants. Using fallback data.');
+      setError("Error fetching tenants. Using fallback data.");
       toast.error(
         error?.response?.data?.message ||
-          'Error fetching tenants. Using fallback data'
+          "Error fetching tenants. Using fallback data"
       );
       dispatch(setTenants(fallbackTenants));
     } finally {
@@ -63,9 +63,9 @@ const TenantCardsPage = () => {
       }));
       setPaymentMonths(payments);
     } catch (error) {
-      console.error('Error fetching unpaid payments:', error);
+      console.error("Error fetching unpaid payments:", error);
       toast.info(
-        error?.response?.data?.message || 'Error fetching unpaid payments'
+        error?.response?.data?.message || "Error fetching unpaid payments"
       );
     }
   };
@@ -114,13 +114,13 @@ const TenantCardsPage = () => {
         { amount, month, year } // Send both month and year
       );
       if (response.status == 200) {
-        toast.success('Success!');
+        toast.success("Success!");
         await fetchPayments();
         closeWaterBillPopup();
       }
     } catch (error) {
-      console.error('error: ', error);
-      toast.error(error?.response?.data?.message || 'Failed to add water bill');
+      console.error("error: ", error);
+      toast.error(error?.response?.data?.message || "Failed to add water bill");
     } finally {
       setLoading(false);
     }
@@ -137,13 +137,13 @@ const TenantCardsPage = () => {
 
   return (
     <div className="tenant-cards-page-addWater">
-      <h2>Tenant Management</h2>
+      <h2>Water Bills Management</h2>
       <div className="tenant-cards-container">
         {currentTenants.map((tenant) => (
           <div key={tenant._id} className="tenant-card">
             <h3>{tenant.name}</h3>
             <p>
-              House:{' '}
+              House:{" "}
               {`Floor:${tenant.houseDetails.floorNo}, ${tenant.houseDetails.houseNo}`}
             </p>
             <div className="addWaterBtns">
@@ -209,11 +209,11 @@ const TenantCardsPage = () => {
           >
             <div
               className={`tenant-cards-popup-left ${
-                showConfirmationPopup ? 'blurred not-allowed' : ''
+                showConfirmationPopup ? "blurred not-allowed" : ""
               }`}
               disabled={showConfirmationPopup}
             >
-              <h3>Add Water Bill for {selectedTenant.name}</h3>{' '}
+              <h3>Add Water Bill for {selectedTenant.name}</h3>{" "}
               <form
                 onSubmit={(e) => {
                   e.preventDefault();
@@ -243,9 +243,9 @@ const TenantCardsPage = () => {
                       {payment.month}
                     </option>
                   ))}
-                </select>{' '}
+                </select>{" "}
                 <div className="addWaterTitle">
-                  {' '}
+                  {" "}
                   <button
                     type="submit"
                     className="submit-btn"
