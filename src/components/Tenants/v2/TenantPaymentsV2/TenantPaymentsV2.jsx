@@ -507,12 +507,12 @@ const TenantPayments = () => {
         {
           rentDefault: rentDefault
             ? rentDefault
-            : tenantDetails.houseDetails.rent ||
+            : tenantDetails?.houseDetails?.rent ||
               fetchedTenantDetails?.houseDetails?.rent,
           garbageDefault: garbageDefault
             ? garbageDefault
-            : tenantDetails.houseDetails.garbageFee ||
-              fetchedTenantDetails.houseDetails.garbageFee,
+            : tenantDetails?.houseDetails?.garbageFee ||
+              fetchedTenantDetails?.houseDetails?.garbageFee,
         }
       );
       if (response.status) {
@@ -1101,8 +1101,8 @@ const TenantPayments = () => {
                 {tenantDetails?.name || fetchedTenantDetails?.name + `'s`}{' '}
               </span>{' '}
               <span>
-                {tenantDetails?.houseDetails.houseNo ||
-                  tenantDetails?.houseDetails.houseNo}
+                {tenantDetails?.houseDetails?.houseNo ||
+                  fetchedTenantDetails?.houseDetails?.houseNo}
               </span>
             </h1>
             <h1> </h1>
@@ -1925,7 +1925,7 @@ const TenantPayments = () => {
         {AddInternalAmountPopup && (
           <div className="popup-overlay">
             <div className="popup-content">
-              <h2>{tenantDetails?.name || fetchedTenantDetails.name}</h2>
+              <h2>{tenantDetails?.name || fetchedTenantDetails?.name}</h2>
               <h2>
                 Extra {extraAmount || 0} given within {previousMonth}
               </h2>
